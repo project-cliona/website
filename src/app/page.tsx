@@ -1111,7 +1111,7 @@ export default function Home() {
               Real Results Across Industries
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              See how businesses achieve measurable growth with Cliona's AI-powered messaging platform
+              See how businesses achieve measurable growth with Cliona&apos;s AI-powered messaging platform
             </p>
           </div>
           
@@ -1358,7 +1358,7 @@ export default function Home() {
                 <span className="ml-2 text-sm text-gray-600">5.0</span>
               </div>
               <blockquote className="text-gray-700 italic mb-4">
-                "Cliona transformed our customer engagement. We recovered 35% of abandoned carts via WhatsApp and saw 312% revenue growth in 6 months."
+                &quot;Cliona transformed our customer engagement. We recovered 35% of abandoned carts via WhatsApp and saw 312% revenue growth in 6 months.&quot;
               </blockquote>
               <div className="text-2xl font-bold text-green-600">+312% Revenue</div>
             </div>
@@ -1384,7 +1384,7 @@ export default function Home() {
                 <span className="ml-2 text-sm text-gray-600">5.0</span>
               </div>
               <blockquote className="text-gray-700 italic mb-4">
-                "Patient no-shows dropped by 76% with WhatsApp appointment reminders. The HIPAA-compliant messaging gives us peace of mind."
+                &quot;Patient no-shows dropped by 76% with WhatsApp appointment reminders. The HIPAA-compliant messaging gives us peace of mind.&quot;
               </blockquote>
               <div className="text-2xl font-bold text-blue-600">-76% No-shows</div>
             </div>
@@ -1410,7 +1410,7 @@ export default function Home() {
                 <span className="ml-2 text-sm text-gray-600">5.0</span>
               </div>
               <blockquote className="text-gray-700 italic mb-4">
-                "Lead conversion improved by 247% using WhatsApp nurturing campaigns. The AI chatbot handles enrollment queries 24/7."
+                &quot;Lead conversion improved by 247% using WhatsApp nurturing campaigns. The AI chatbot handles enrollment queries 24/7.&quot;
               </blockquote>
               <div className="text-2xl font-bold text-purple-600">+247% Leads</div>
             </div>
@@ -1476,7 +1476,7 @@ export default function Home() {
                   <div className="text-white font-bold text-lg">DPDP</div>
                 </div>
                 <h4 className="text-white font-semibold mb-2">DPDP Act Ready</h4>
-                <p className="text-gray-400 text-sm">Compliant with India's Digital Personal Data Protection Act 2023 requirements</p>
+                <p className="text-gray-400 text-sm">Compliant with India&apos;s Digital Personal Data Protection Act 2023 requirements</p>
               </div>
               
               <div className="group">
@@ -1761,7 +1761,7 @@ export default function Home() {
                 </div>
               </div>
               <blockquote className="text-white text-lg italic mb-4">
-                "We saw a 312% increase in revenue within 6 months. The WhatsApp cart recovery alone pays for the entire platform."
+                &quot;We saw a 312% increase in revenue within 6 months. The WhatsApp cart recovery alone pays for the entire platform.&quot;
               </blockquote>
               <cite className="text-pink-200 font-semibold">Sarah Chen, CMO at TechStyle Fashion</cite>
             </div>
