@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Privacy() {
   return (
     <div className="min-h-screen bg-white">
@@ -5,15 +7,15 @@ export default function Privacy() {
       <nav className="px-6 py-4 border-b border-gray-100">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="text-2xl font-bold text-gray-900">
-            <a href="/">Cliona</a>
+            <Link href="/">Cliona</Link>
           </div>
           <div className="hidden md:flex space-x-8">
-            <a href="/#features" className="text-gray-600 hover:text-gray-900">Features</a>
-            <a href="/#use-cases" className="text-gray-600 hover:text-gray-900">Use Cases</a>
-            <a href="/#about" className="text-gray-600 hover:text-gray-900">About</a>
+            <Link href="/#features" className="text-gray-600 hover:text-gray-900">Features</Link>
+            <Link href="/#use-cases" className="text-gray-600 hover:text-gray-900">Use Cases</Link>
+            <Link href="/#about" className="text-gray-600 hover:text-gray-900">About</Link>
           </div>
           <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
-            <a href="/">Get Early Access</a>
+            <Link href="/">Get Early Access</Link>
           </button>
         </div>
       </nav>
@@ -31,7 +33,7 @@ export default function Privacy() {
         <div className="prose max-w-none">
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">1. Introduction</h2>
           <p className="text-gray-600 mb-6">
-            At Cliona ("we," "our," or "us"), we are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI-first WhatsApp & RCS engagement platform.
+            At Cliona (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;), we are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI-first WhatsApp & RCS engagement platform.
           </p>
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">2. Information We Collect</h2>
@@ -117,7 +119,7 @@ export default function Privacy() {
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">9. Compliance</h2>
           <p className="text-gray-600 mb-6">
-            Our privacy practices comply with applicable data protection laws including GDPR (General Data Protection Regulation), India's DPDP Act (Digital Personal Data Protection Act), CCPA (California Consumer Privacy Act), and other relevant privacy regulations.
+            Our privacy practices comply with applicable data protection laws including GDPR (General Data Protection Regulation), India&apos;s DPDP Act (Digital Personal Data Protection Act), CCPA (California Consumer Privacy Act), and other relevant privacy regulations.
           </p>
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">10. Contact Us</h2>
@@ -132,7 +134,7 @@ export default function Privacy() {
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">11. Updates to This Policy</h2>
           <p className="text-gray-600 mb-6">
-            We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the new policy on this page and updating the "Last updated" date. We encourage you to review this policy periodically.
+            We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the new policy on this page and updating the &quot;Last updated&quot; date. We encourage you to review this policy periodically.
           </p>
         </div>
       </div>

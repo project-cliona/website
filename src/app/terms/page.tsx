@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Terms() {
   return (
     <div className="min-h-screen bg-white">
@@ -5,15 +7,15 @@ export default function Terms() {
       <nav className="px-6 py-4 border-b border-gray-100">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="text-2xl font-bold text-gray-900">
-            <a href="/">Cliona</a>
+            <Link href="/">Cliona</Link>
           </div>
           <div className="hidden md:flex space-x-8">
-            <a href="/#features" className="text-gray-600 hover:text-gray-900">Features</a>
-            <a href="/#use-cases" className="text-gray-600 hover:text-gray-900">Use Cases</a>
-            <a href="/#about" className="text-gray-600 hover:text-gray-900">About</a>
+            <Link href="/#features" className="text-gray-600 hover:text-gray-900">Features</Link>
+            <Link href="/#use-cases" className="text-gray-600 hover:text-gray-900">Use Cases</Link>
+            <Link href="/#about" className="text-gray-600 hover:text-gray-900">About</Link>
           </div>
           <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
-            <a href="/">Get Early Access</a>
+            <Link href="/">Get Early Access</Link>
           </button>
         </div>
       </nav>
@@ -31,7 +33,7 @@ export default function Terms() {
         <div className="prose max-w-none">
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">1. Agreement to Terms</h2>
           <p className="text-gray-600 mb-6">
-            By accessing and using Cliona's AI-first WhatsApp & RCS engagement platform ("Service"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
+            By accessing and using Cliona&apos;s AI-first WhatsApp & RCS engagement platform (&quot;Service&quot;), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
           </p>
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">2. Service Description</h2>
@@ -129,7 +131,7 @@ export default function Terms() {
           </p>
           <ul className="text-gray-600 mb-6 list-disc pl-6">
             <li>WhatsApp Business API (subject to WhatsApp Business Policy)</li>
-            <li>Google RCS Business Messaging (subject to Google's terms)</li>
+            <li>Google RCS Business Messaging (subject to Google&apos;s terms)</li>
             <li>Payment processors and banking partners</li>
             <li>Analytics and monitoring services</li>
           </ul>

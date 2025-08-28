@@ -132,7 +132,7 @@ export default function Home() {
                   </h2>
                 </div>
                 <p className="text-base text-gray-600 mb-6 text-center">
-                  Businesses lose leads because customers prefer WhatsApp & RCS, but traditional tools can't keep up with modern messaging demands.
+                  Businesses lose leads because customers prefer WhatsApp & RCS, but traditional tools can&apos;t keep up with modern messaging demands.
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-start group">
@@ -977,7 +977,7 @@ export default function Home() {
                 Why We Built Cliona
               </h2>
               <p className="text-lg text-gray-600 mb-6">
-                We saw businesses struggling to keep up with the shift to conversational commerce. While customers moved to WhatsApp and RCS, businesses were stuck with outdated tools that couldn't deliver the modern messaging experience customers expect.
+                We saw businesses struggling to keep up with the shift to conversational commerce. While customers moved to WhatsApp and RCS, businesses were stuck with outdated tools that couldn&apos;t deliver the modern messaging experience customers expect.
               </p>
               <p className="text-lg text-gray-600 mb-8">
                 Cliona bridges this gap with AI-first technology that makes sophisticated messaging automation accessible to businesses of all sizes.
