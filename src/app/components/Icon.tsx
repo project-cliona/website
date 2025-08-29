@@ -1,3 +1,5 @@
+import React from 'react'
+
 interface IconProps {
   name: string
   className?: string
@@ -7,7 +9,7 @@ interface IconProps {
 export function Icon({ name, className = "w-5 h-5", size }: IconProps) {
   const sizeClass = size ? `w-${size} h-${size}` : className
 
-  const icons: Record<string, JSX.Element> = {
+  const icons: Record<string, React.JSX.Element> = {
     // Navigation icons
     home: (
       <svg className={sizeClass} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">

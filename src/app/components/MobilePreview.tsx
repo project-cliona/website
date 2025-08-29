@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { Icon } from './Icon'
 
 interface MobilePreviewProps {
@@ -83,9 +84,11 @@ export function MobilePreview({ selectedAgent, selectedTemplate, agents, templat
                   <h3 className="font-semibold text-sm">{currentMockTemplate.title}</h3>
                   
                   {currentMockTemplate.image && (
-                    <img 
+                    <Image 
                       src={`https://via.placeholder.com/240x80/e5e7eb/6b7280?text=Preview+Image`}
                       alt="Template preview image"
+                      width={240}
+                      height={80}
                       className="w-full h-20 rounded object-cover bg-gray-200"
                     />
                   )}
