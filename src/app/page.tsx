@@ -20,9 +20,14 @@ export default function Home() {
             <a href="#use-cases" className="text-gray-600 hover:text-blue-600 transition-colors duration-200">Use Cases</a>
             <a href="#about" className="text-gray-600 hover:text-blue-600 transition-colors duration-200">About</a>
           </div>
-          <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-lg">
-            Get Early Access
-          </button>
+          <div className="flex items-center space-x-4">
+            <a href="/auth/login" className="text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium">
+              Sign In
+            </a>
+            <a href="/auth/signup" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-lg">
+              Get Started
+            </a>
+          </div>
         </div>
       </nav>
 
@@ -66,23 +71,23 @@ export default function Home() {
             
             {/* Enhanced CTA buttons with urgency */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
-              <button className="group relative bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 rounded-xl text-lg font-bold transition-all duration-200 transform hover:scale-105 shadow-xl hover:shadow-2xl overflow-hidden">
+              <a href="/auth/signup" className="group relative bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 rounded-xl text-lg font-bold transition-all duration-200 transform hover:scale-105 shadow-xl hover:shadow-2xl overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <span className="relative flex items-center justify-center">
                   <span className="mr-2 text-lg">🚀</span>
                   Start Free 14-Day Trial
                   <span className="ml-2 px-2 py-1 bg-yellow-400 text-green-800 text-xs font-bold rounded-full animate-pulse">FREE</span>
                 </span>
-              </button>
-              <button className="group bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-200 hover:border-blue-400 px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
+              </a>
+              <a href="/auth/login" className="group bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-200 hover:border-blue-400 px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
                 <span className="flex items-center justify-center">
-                  <span className="mr-2 text-lg">📞</span>
-                  Watch 2-Min Demo
+                  <span className="mr-2 text-lg">👤</span>
+                  Sign In to Dashboard
                   <svg className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
                 </span>
-              </button>
+              </a>
             </div>
             
             {/* Urgency indicator */}

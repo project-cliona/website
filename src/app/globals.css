@@ -24,3 +24,36 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Enhanced placeholder visibility */
+::placeholder {
+  color: #6b7280 !important;
+  opacity: 1 !important;
+}
+
+/* Dark mode placeholder adjustments */
+@media (prefers-color-scheme: dark) {
+  ::placeholder {
+    color: #9ca3af !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Select dropdown styling */
+select {
+  appearance: auto;
+}
+
+/* Select placeholder option styling */
+select option[value=""] {
+  color: #6b7280;
+  font-style: italic;
+}
+
+select:invalid {
+  color: #6b7280;
+}
+
+select:valid {
+  color: #374151;
+}
