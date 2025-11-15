@@ -1,5 +1,5 @@
-import { DashboardLayout } from '../components/DashboardLayout'
-import { StatsCard } from '../components/StatsCard'
+import { DashboardLayout } from '../../components/DashboardLayout'
+import { StatsCard } from '../../components/StatsCard'
 
 export default function Dashboard() {
   return (
