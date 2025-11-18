@@ -1,8 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { DashboardLayout } from '../../../components/DashboardLayout'
-import { MobilePreview } from '../../../components/MobilePreview'
+import { MobilePreview } from '@/components/ui/MobilePreview'
 
 export default function CreateTemplate() {
   const [templateName, setTemplateName] = useState('')
@@ -78,7 +77,6 @@ export default function CreateTemplate() {
   }
 
   return (
-    <DashboardLayout>
       <div className="space-y-6">
         <h1 className="text-3xl font-bold text-gray-900">Create Template</h1>
         
@@ -331,6 +329,5 @@ export default function CreateTemplate() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
   )
 }

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { DashboardLayout } from '../../../components/DashboardLayout'
 
 export default function CreateAgent() {
   const [formData, setFormData] = useState({
@@ -63,7 +62,6 @@ export default function CreateAgent() {
   }
 
   return (
-    <DashboardLayout>
       <div className="space-y-6">
         <h1 className="text-3xl font-bold text-gray-900">Add New Agent</h1>
         
@@ -437,6 +435,5 @@ export default function CreateAgent() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
   )
 }

@@ -1,10 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { DashboardLayout } from '../../components/DashboardLayout'
-import { MobilePreview } from '../../components/MobilePreview'
-import { FileUpload } from '../../components/FileUpload'
-
+import { MobilePreview } from '@/components/ui/MobilePreview'
+import { FileUpload } from "@/components/ui/FileUpload"
 export default function SendMessage() {
   const [selectedAgent, setSelectedAgent] = useState('')
   const [selectedTemplate, setSelectedTemplate] = useState('')
@@ -43,7 +41,6 @@ export default function SendMessage() {
   }
 
   return (
-    <DashboardLayout>
       <div className="space-y-8">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Send RCS Message</h1>
@@ -165,6 +162,5 @@ export default function SendMessage() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
   )
 }

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { DashboardLayout } from '../../components/DashboardLayout'
 
 export default function DeliveryReports() {
   const [filters, setFilters] = useState({
@@ -93,7 +92,6 @@ export default function DeliveryReports() {
   }
 
   return (
-    <DashboardLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">Delivery Reports</h1>
@@ -367,6 +365,5 @@ export default function DeliveryReports() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
   )
 }

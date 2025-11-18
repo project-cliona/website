@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { DashboardLayout } from '../../components/DashboardLayout'
 
 export default function Agents() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -115,12 +114,11 @@ export default function Agents() {
   }
 
   return (
-    <DashboardLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">Agents</h1>
           <Link 
-            href="/dashboard/agents/create"
+            href="/app/rcs/agents/create"
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
           >
             <span className="mr-2">+</span>
@@ -311,6 +309,5 @@ export default function Agents() {
           )}
         </div>
       </div>
-    </DashboardLayout>
   )
 }
