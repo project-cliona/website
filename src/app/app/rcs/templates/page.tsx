@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { PageHeading } from '@/components/PageHeading'
 
 export default function Templates() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -84,17 +85,10 @@ export default function Templates() {
 
   return (
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">Templates</h1>
-          <Link 
-            href="/app/rcs/templates/create"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
-          >
-            <span className="mr-2">+</span>
-            Add Template
-          </Link>
-        </div>
-
+        <PageHeading
+                title="Templates"
+                subtitle="Overview and manage your templates"
+              />
         {/* Search Bar */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex flex-col md:flex-row gap-4">

@@ -1,5 +1,6 @@
+import { PageHeading } from "@/components/PageHeading";
 import { StatsCard } from "../../../components/ui/StatsCard";
-import { BarChart, Send, CheckCircle, Users, LucideProps } from 'lucide-react'; 
+import { BarChart, Send, CheckCircle, Users, LucideProps } from 'lucide-react';
 
 const statsData = [
   {
@@ -41,14 +42,11 @@ export default function Dashboard() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-1">
-            Welcome back! Here's what's happening with your campaigns.
-          </p>
-        </div>
+        <PageHeading
+          title="Dashboard"
+          subtitle="Welcome back! Here's what's happening with your campaigns."
+        />
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statsData.map((item, index) => (
           <StatsCard
@@ -102,13 +100,12 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    campaign.status === "Delivered"
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${campaign.status === "Delivered"
                       ? "bg-green-50 text-green-700"
                       : campaign.status === "Sending"
-                      ? "bg-blue-50 text-blue-700"
-                      : "bg-gray-50 text-gray-700"
-                  }`}
+                        ? "bg-blue-50 text-blue-700"
+                        : "bg-gray-50 text-gray-700"
+                    }`}
                 >
                   {campaign.status}
                 </span>

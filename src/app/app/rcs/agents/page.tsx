@@ -321,6 +321,7 @@ import { DataTable } from "@/components/Table";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
+import { PageHeading } from "@/components/PageHeading";
 
 export type Item = {
   id: string;
@@ -373,10 +374,12 @@ const columns: ColumnDef<Item>[] = [
     cell: ({ row }) => (
       <div className="font-medium">{row.getValue("name")}</div>
     ),
+    size: 80,
   },
   {
     accessorKey: "email",
     header: "Email",
+    size: 160,
   },
   {
     accessorKey: "location",
@@ -386,6 +389,7 @@ const columns: ColumnDef<Item>[] = [
         {row.original.flag} {row.getValue("location")}
       </span>
     ),
+    size: 80,
   },
   {
     accessorKey: "status",
@@ -395,12 +399,13 @@ const columns: ColumnDef<Item>[] = [
       <Badge
         className={cn(
           row.getValue("status") === "Inactive" &&
-            "bg-muted-foreground/60 text-primary-foreground"
+          "bg-muted-foreground/60 text-primary-foreground"
         )}
       >
         {row.getValue("status")}
       </Badge>
     ),
+    size: 80,
   },
   {
     accessorKey: "balance",
@@ -410,6 +415,7 @@ const columns: ColumnDef<Item>[] = [
         style: "currency",
         currency: "USD",
       }).format(row.getValue("balance")),
+    size: 80,
   },
 ];
 
@@ -439,7 +445,11 @@ export default function UsersTable() {
   }, []);
 
   return (
-    <div className="p-4">
+    <div className="space-y-8">
+      <PageHeading
+        title="Agents"
+        subtitle="Overview and manage all active and inactive agents in your dashboard"
+      />
       <DataTable<Item> incomingData={data} columns={columns} />
     </div>
   );
