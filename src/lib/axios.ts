@@ -18,15 +18,15 @@ export const apiClient = (headers?: AxiosHeaders) => {
 };
 
 export const authenticatedApiClient = () => {
-  const supabase = createClient();
+  // const supabase = createClient();
   const axiosInstance = apiClient();
   axiosInstance.interceptors.request.use(async (config) => {
-    const access_token = localStorage.getItem("accessToken");
-    if (!access_token) {
-      console.warn("No access token found.");
-      return Promise.reject(new Error("Unauthorized: No token found"));
-    }
-    config.headers.Authorization = `Bearer ${access_token}`;
+    // const access_token = localStorage.getItem("accessToken");
+    // if (!access_token) {
+    //   console.warn("No access token found.");
+    //   return Promise.reject(new Error("Unauthorized: No token found"));
+    // }
+    // config.headers.Authorization = `Bearer ${access_token}`;
     return config;
   });
   return axiosInstance;

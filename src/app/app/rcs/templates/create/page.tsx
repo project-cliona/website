@@ -11,14 +11,14 @@ import { Input } from '@/components/ui/Input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Trash2 } from 'lucide-react'
+import { Info, Plus, Trash2, Image, CreditCard, Lightbulb } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
-
+import SubHeading from '@/components/SubHeading'
 export default function CreateTemplate() {
 
   const {
     control,
-     handleSubmit: rhfSubmit,
+    handleSubmit: rhfSubmit,
     watch,
     setValue,
     formState: { errors, isSubmitting, isValid },
@@ -96,9 +96,9 @@ export default function CreateTemplate() {
   }
 
   const onSubmit = (data: CreateTemplateForm) => {
-  console.log("Template Data:", data);
-  alert("Template created successfully!");
-};
+    console.log("Template Data:", data);
+    alert("Template created successfully!");
+  };
 
   return (
     <div className="space-y-6">
@@ -110,8 +110,8 @@ export default function CreateTemplate() {
         {/* Main Form */}
         <div className="lg:col-span-2 space-y-6">
           {/* Basic Information */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <SubHeading title="Basic Information" Icon={Info} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="templateName" className="mb-2 block">
@@ -208,9 +208,8 @@ export default function CreateTemplate() {
           </div>
 
           {/* Media Upload */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Media Content</h2>
-
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <SubHeading title="Media Content" Icon={Image} />
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Upload Media (Image/Video)
@@ -230,8 +229,11 @@ export default function CreateTemplate() {
           </div>
 
           {/* Card Content */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Card Content</h2>
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <SubHeading
+              title="Card Content"
+              Icon={CreditCard}
+            />
             <div className="space-y-4">
               <div>
                 <Label htmlFor="cardTitle" className="mb-2 block">
@@ -310,9 +312,12 @@ export default function CreateTemplate() {
           </div>
 
           {/* Suggestions (Buttons) */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Suggestions (Buttons)</h2>
+              <SubHeading
+                title="Suggestions (Buttons)"
+                Icon={Lightbulb}
+              />
               <Button
                 type="button"
                 variant="default"

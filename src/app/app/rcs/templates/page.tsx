@@ -385,7 +385,7 @@ export default function UsersTable() {
         title="Templates"
         subtitle="Overview and manage your templates"
       />
-      <DataTable<Item> incomingData={data} columns={columns} filterPlaceHolder={"Filter with template name"} />
+      <DataTable<Item> incomingData={data} columns={columns} filterPlaceHolder="Filter with template name" buttonTitle="Add template" navigateTo="templates/create" />
     </div>
   );
 }

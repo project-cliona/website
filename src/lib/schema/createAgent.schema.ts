@@ -1,11 +1,11 @@
 import { z } from "zod";
 
 export const createAgentSchema = z.object({
-  userName: z.string().min(1, "User is required"),
+  userId: z.number().min(1, "User is required"),
   agentname: z.string().min(2, "Agent name is required"),
   brandName: z.string().min(2, "Brand name is required"),
   agentdescription: z.string().min(10, "Description is too short"),
-  billingcategory: z.enum(["OTP", "Transactional", "Promotional"]),
+  billingcategory: z.enum(["otp", "transactional", "promotional"]),
   brandcolor: z.string(),
   country: z.string(),
   phoneno: z.string().min(10, "Phone is required"),

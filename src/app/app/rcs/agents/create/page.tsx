@@ -9,6 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/Label";
 import { Button } from '@/components/ui/Button';
 import { PageHeading } from '@/components/PageHeading';
+import { Info, Palette, Phone, Scale, UserCheck } from 'lucide-react';
+import SubHeading from '@/components/SubHeading';
+import { authenticatedApiClient } from '@/lib/axios';
 
 export default function CreateAgent() {
   const {
@@ -18,12 +21,13 @@ export default function CreateAgent() {
     formState: { isValid, errors, isSubmitting },
   } = useForm<CreateAgentForm>({
     resolver: zodResolver(createAgentSchema),
+    mode: "onChange",
     defaultValues: {
-      userName: "",
+      userId: 0,
       agentname: "",
       brandName: "",
       agentdescription: "",
-      billingcategory: "OTP",
+      billingcategory: "otp",
       brandcolor: "#3B82F6",
       country: "India",
       phoneno: "",
@@ -42,22 +46,60 @@ export default function CreateAgent() {
     },
   });
 
-  const [logoFile, setLogoFile] = useState<File | null>(null)
-  const [bannerFile, setBannerFile] = useState<File | null>(null)
+  console.log("Form errors:", errors);
+  console.log("isValid:", isValid);
+
+  const [agentlogo, setAgentlogo] = useState<File | null>(null)
+  const [agentheroimageURL, setAgentheroimageURL] = useState<File | null>(null)
 
   const users = [
-    { id: '1', name: 'John Doe' },
-    { id: '2', name: 'Jane Smith' },
-    { id: '3', name: 'Mike Johnson' }
+    { id: 1, name: 'John Doe' },
+    { id: 2, name: 'Jane Smith' },
+    { id: 3, name: 'Mike Johnson' }
   ]
 
   const countries = ['India']
 
-  const handleFileUpload = (type: 'logo' | 'banner', file: File | null) => {
+  const handleFileState = (type: 'logo' | 'banner', file: File | null) => {
     if (type === 'logo') {
-      setLogoFile(file)
+      setAgentlogo(file)
     } else {
-      setBannerFile(file)
+      setAgentheroimageURL(file)
+    }
+  }
+
+  const uploadImage = async (file: File) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const res = await authenticatedApiClient().post(
+      "/common/upload",
+      formData
+    );
+
+    return res.data;
+  };
+
+  const onSubmit = async (data: CreateAgentForm) => {
+    console.log("SUBMIT DATA:", data);
+    try {
+      if (!agentlogo) throw new Error("Agent logo is required");
+      if (!agentheroimageURL) throw new Error("Agent banner is required");
+
+      const [logoRes, bannerRes] = await Promise.all([
+        uploadImage(agentlogo),
+        uploadImage(agentheroimageURL),
+      ]);
+      const payload = {
+        ...data,
+        agentheroimageURL: logoRes.result.url,
+        agentlogo: bannerRes.result.url,
+      }
+      const res = await authenticatedApiClient().post('/rcs/agent', payload)
+      console.log(res.data);
+      reset();
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -68,388 +110,400 @@ export default function CreateAgent() {
         subtitle="Fill in the details below to create a new agent account."
       />
       <div>
-        {/* Basic Information */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label>User Name *</Label>
-              <Controller
-                name="userName"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a user" />
-                    </SelectTrigger>
-
-                    <SelectContent>
-                      {users.map((user) => (
-                        <SelectItem key={user.id} value={user.name}>
-                          {user.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              {errors.userName && (
-                <p className="text-xs text-red-500 mt-1">{errors.userName.message}</p>
-              )}
-            </div>
-
-            <div>
-              <Label>Agent Category *</Label>
-              <Controller
-                name="billingcategory"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select billing category" />
-                    </SelectTrigger>
-
-                    <SelectContent>
-                      <SelectItem value="OTP">OTP</SelectItem>
-                      <SelectItem value="Transactional">Transactional</SelectItem>
-                      <SelectItem value="Promotional">Promotional</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              <p className="text-xs text-red-500">{errors.billingcategory?.message}</p>
-            </div>
-
-            <div className="md:col-span-2">
-              <Label>Agent Name *</Label>
-              <Controller
-                name="agentname"
-                control={control}
-                render={({ field }) => (
-                  <Input {...field} placeholder="Enter agent name" />
-                )}
-              />
-              <p className="text-xs text-red-500">{errors.agentname?.message}</p>
-            </div>
-
-            <div className="md:col-span-2">
-              <Label>Brand Name *</Label>
-              <Controller
-                name="brandName"
-                control={control}
-                render={({ field }) => (
-                  <Input {...field} placeholder="Enter brand name" />
-                )}
-              />
-              <p className="text-xs text-red-500">{errors.brandName?.message}</p>
-            </div>
-
-            <div className="md:col-span-2">
-              <Label>Description *</Label>
-              <Controller
-                name="agentdescription"
-                control={control}
-                render={({ field }) => (
-                  <textarea
-                    {...field}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400"
-                    placeholder="Describe the agent's purpose and services"
-                  />
-                )}
-              />
-              <p className="text-xs text-red-500">{errors.agentdescription?.message}</p>
-            </div>
-
-            <div>
-              <Label>Brand Color</Label>
-              <Controller
-                name="brandcolor"
-                control={control}
-                render={({ field }) => (
-                  <div className="flex gap-3">
-                    <input type="color" {...field} className="h-10 w-12 rounded border" />
-                    <Input {...field} />
-                  </div>
-                )}
-              />
-            </div>
-
-            <div>
-              <Label>Country *</Label>
-              <Controller
-                name="country"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select country" />
-                    </SelectTrigger>
-
-                    <SelectContent>
-                      {countries.map((c) => (
-                        <SelectItem key={c} value={c}>
-                          {c}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              <p className="text-xs text-red-500">{errors.country?.message}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Contact Information */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h2>
-
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2">
-                <Label>Primary Phone *</Label>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {/* Basic Information */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+            <SubHeading
+              title="Basic Information"
+              Icon={Info}
+            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label>User Name *</Label>
                 <Controller
-                  name="phoneno"
+                  name="userId"
                   control={control}
                   render={({ field }) => (
-                    <Input {...field} placeholder="+91-0000000000" />
+                    <Select
+                      value={field.value?.toString()}
+                      onValueChange={(value) => field.onChange(Number(value))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a user" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        {users.map((user) => (
+                          <SelectItem key={user.id} value={user.id.toString()}>
+                            {user.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   )}
                 />
-                <p className="text-xs text-red-500">{errors.phoneno?.message}</p>
+                {errors.userId && (
+                  <p className="text-xs text-red-500 mt-1">{errors.userId.message}</p>
+                )}
               </div>
+
               <div>
-                <Label>Phone Label</Label>
+                <Label>Agent Category *</Label>
                 <Controller
-                  name="labelphoneno"
+                  name="billingcategory"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select billing category" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        <SelectItem value="otp">OTP</SelectItem>
+                        <SelectItem value="transactional">Transactional</SelectItem>
+                        <SelectItem value="promotional">Promotional</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                <p className="text-xs text-red-500">{errors.billingcategory?.message}</p>
+              </div>
+
+              <div className="md:col-span-2">
+                <Label>Agent Name *</Label>
+                <Controller
+                  name="agentname"
+                  control={control}
+                  render={({ field }) => (
+                    <Input {...field} placeholder="Enter agent name" />
+                  )}
+                />
+                <p className="text-xs text-red-500">{errors.agentname?.message}</p>
+              </div>
+
+              <div className="md:col-span-2">
+                <Label>Brand Name *</Label>
+                <Controller
+                  name="brandName"
+                  control={control}
+                  render={({ field }) => (
+                    <Input {...field} placeholder="Enter brand name" />
+                  )}
+                />
+                <p className="text-xs text-red-500">{errors.brandName?.message}</p>
+              </div>
+
+              <div className="md:col-span-2">
+                <Label>Description *</Label>
+                <Controller
+                  name="agentdescription"
+                  control={control}
+                  render={({ field }) => (
+                    <textarea
+                      {...field}
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400"
+                      placeholder="Describe the agent's purpose and services"
+                    />
+                  )}
+                />
+                <p className="text-xs text-red-500">{errors.agentdescription?.message}</p>
+              </div>
+
+              <div>
+                <Label>Brand Color</Label>
+                <Controller
+                  name="brandcolor"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex gap-3">
+                      <input type="color" {...field} className="h-10 w-12 rounded border" />
+                      <Input {...field} />
+                    </div>
+                  )}
+                />
+              </div>
+
+              <div>
+                <Label>Country *</Label>
+                <Controller
+                  name="country"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select country" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        {countries.map((c) => (
+                          <SelectItem key={c} value={c}>
+                            {c}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                <p className="text-xs text-red-500">{errors.country?.message}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Contact Information */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6"><SubHeading
+            title="Contact Information"
+            Icon={Phone}
+          />
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="md:col-span-2">
+                  <Label>Primary Phone *</Label>
+                  <Controller
+                    name="phoneno"
+                    control={control}
+                    render={({ field }) => (
+                      <Input {...field} placeholder="+91-0000000000" />
+                    )}
+                  />
+                  <p className="text-xs text-red-500">{errors.phoneno?.message}</p>
+                </div>
+                <div>
+                  <Label>Phone Label</Label>
+                  <Controller
+                    name="labelphoneno"
+                    control={control}
+                    render={({ field }) => <Input {...field} />}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="md:col-span-2">
+                  <Label>Email *</Label>
+                  <Controller
+                    name="email"
+                    control={control}
+                    render={({ field }) => (
+                      <Input type="email" {...field} />
+                    )}
+                  />
+                  <p className="text-xs text-red-500">{errors.email?.message}</p>
+                </div>
+                <div>
+                  <Label>Email Label</Label>
+                  <Controller
+                    name="labelemail"
+                    control={control}
+                    render={({ field }) => <Input {...field} />}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="md:col-span-2">
+                  <Label>Website *</Label>
+                  <Controller
+                    name="website"
+                    control={control}
+                    render={({ field }) => (
+                      <Input type="url" {...field} />
+                    )}
+                  />
+                  <p className="text-xs text-red-500">{errors.website?.message}</p>
+                </div>
+                <div>
+                  <Label>Website Label</Label>
+                  <Controller
+                    name="labelwebsite"
+                    control={control}
+                    render={({ field }) => <Input {...field} />}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SPOC Information */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+            <SubHeading
+              title="SPOC (Single Point of Contact)"
+              Icon={UserCheck}
+            />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label>SPOC Name *</Label>
+                <Controller
+                  name="spocname"
                   control={control}
                   render={({ field }) => <Input {...field} />}
                 />
+                <p className="text-xs text-red-500">{errors.spocname?.message}</p>
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2">
-                <Label>Email *</Label>
+              <div>
+                <Label>SPOC Email *</Label>
                 <Controller
-                  name="email"
+                  name="spocemail"
                   control={control}
                   render={({ field }) => (
                     <Input type="email" {...field} />
                   )}
                 />
-                <p className="text-xs text-red-500">{errors.email?.message}</p>
+                <p className="text-xs text-red-500">{errors.spocemail?.message}</p>
               </div>
+
               <div>
-                <Label>Email Label</Label>
+                <Label>SPOC Phone *</Label>
                 <Controller
-                  name="labelemail"
+                  name="spocphonenumber"
                   control={control}
-                  render={({ field }) => <Input {...field} />}
+                  render={({ field }) => (
+                    <Input type="tel" {...field} />
+                  )}
                 />
+                <p className="text-xs text-red-500">{errors.spocphonenumber?.message}</p>
               </div>
             </div>
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2">
-                <Label>Website *</Label>
+          {/* Media Upload */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+            <SubHeading
+              title="Brand Assets"
+              Icon={Palette}
+            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Logo Upload *
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileState('logo', e.target.files?.[0] || null)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
+                />
+                {agentlogo && (
+                  <p className="text-sm text-green-600 mt-2">
+                    ✅ Logo uploaded: {agentlogo.name}
+                  </p>
+                )}
+                <p className="text-xs text-gray-500 mt-1">Recommended: 200x200px, PNG/JPG</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Banner Image Upload *
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileState('banner', e.target.files?.[0] || null)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
+                />
+                {agentheroimageURL && (
+                  <p className="text-sm text-green-600 mt-2">
+                    ✅ Banner uploaded: {agentheroimageURL.name}
+                  </p>
+                )}
+                <p className="text-xs text-gray-500 mt-1">Recommended: 1200x600px, PNG/JPG</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Legal & Compliance */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+            <SubHeading
+              title="Legal & Compliance"
+              Icon={Scale}
+            />
+            <div className="space-y-4">
+              <div>
+                <Label>Opt-in URL *</Label>
                 <Controller
-                  name="website"
+                  name="optinUrl"
                   control={control}
                   render={({ field }) => (
                     <Input type="url" {...field} />
                   )}
                 />
-                <p className="text-xs text-red-500">{errors.website?.message}</p>
+                <p className="text-xs text-red-500">{errors.optinUrl?.message}</p>
+                <p className="text-xs text-gray-500 mt-1">URL where users can opt-in to receive messages</p>
               </div>
+
               <div>
-                <Label>Website Label</Label>
+                <Label>Terms URL *</Label>
                 <Controller
-                  name="labelwebsite"
+                  name="termconditonURL"
                   control={control}
-                  render={({ field }) => <Input {...field} />}
+                  render={({ field }) => (
+                    <Input type="url" {...field} />
+                  )}
+                />
+                <p className="text-xs text-red-500">{errors.termconditonURL?.message}</p>
+              </div>
+
+              <div>
+                <Label>Privacy URL *</Label>
+                <Controller
+                  name="privacypolicyURL"
+                  control={control}
+                  render={({ field }) => (
+                    <Input type="url" {...field} />
+                  )}
+                />
+                <p className="text-xs text-red-500">{errors.privacypolicyURL?.message}</p>
+              </div>
+
+              <div>
+                <Label>Status</Label>
+                <Controller
+                  name="status"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        <SelectItem value="Pending">Pending</SelectItem>
+                        <SelectItem value="Active">Active</SelectItem>
+                        <SelectItem value="Rejected">Rejected</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
                 />
               </div>
             </div>
           </div>
-        </div>
 
-        {/* SPOC Information */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">SPOC (Single Point of Contact)</h2>
+          <div className="flex gap-4">
+            <Button
+              type="submit"
+              disabled={!isValid || isSubmitting}
+            >
+              {isSubmitting ? "Creating..." : "Create Agent"}
+            </Button>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label>SPOC Name *</Label>
-              <Controller
-                name="spocname"
-                control={control}
-                render={({ field }) => <Input {...field} />}
-              />
-              <p className="text-xs text-red-500">{errors.spocname?.message}</p>
-            </div>
-
-            <div>
-              <Label>SPOC Email *</Label>
-              <Controller
-                name="spocemail"
-                control={control}
-                render={({ field }) => (
-                  <Input type="email" {...field} />
-                )}
-              />
-              <p className="text-xs text-red-500">{errors.spocemail?.message}</p>
-            </div>
-
-            <div>
-              <Label>SPOC Phone *</Label>
-              <Controller
-                name="spocphonenumber"
-                control={control}
-                render={({ field }) => (
-                  <Input type="tel" {...field} />
-                )}
-              />
-              <p className="text-xs text-red-500">{errors.spocphonenumber?.message}</p>
-            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => reset()}
+            >
+              Cancel
+            </Button>
           </div>
-        </div>
-
-        {/* Media Upload */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Brand Assets</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Logo Upload *
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleFileUpload('logo', e.target.files?.[0] || null)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
-              />
-              {logoFile && (
-                <p className="text-sm text-green-600 mt-2">
-                  ✅ Logo uploaded: {logoFile.name}
-                </p>
-              )}
-              <p className="text-xs text-gray-500 mt-1">Recommended: 200x200px, PNG/JPG</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Banner Image Upload *
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleFileUpload('banner', e.target.files?.[0] || null)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
-              />
-              {bannerFile && (
-                <p className="text-sm text-green-600 mt-2">
-                  ✅ Banner uploaded: {bannerFile.name}
-                </p>
-              )}
-              <p className="text-xs text-gray-500 mt-1">Recommended: 1200x600px, PNG/JPG</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Legal & Compliance */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Legal & Compliance</h2>
-
-          <div className="space-y-4">
-            <div>
-              <Label>Opt-in URL *</Label>
-              <Controller
-                name="optinUrl"
-                control={control}
-                render={({ field }) => (
-                  <Input type="url" {...field} />
-                )}
-              />
-              <p className="text-xs text-red-500">{errors.optinUrl?.message}</p>
-              <p className="text-xs text-gray-500 mt-1">URL where users can opt-in to receive messages</p>
-            </div>
-
-            <div>
-              <Label>Terms URL *</Label>
-              <Controller
-                name="termconditonURL"
-                control={control}
-                render={({ field }) => (
-                  <Input type="url" {...field} />
-                )}
-              />
-              <p className="text-xs text-red-500">{errors.termconditonURL?.message}</p>
-            </div>
-
-            <div>
-              <Label>Privacy URL *</Label>
-              <Controller
-                name="privacypolicyURL"
-                control={control}
-                render={({ field }) => (
-                  <Input type="url" {...field} />
-                )}
-              />
-              <p className="text-xs text-red-500">{errors.privacypolicyURL?.message}</p>
-            </div>
-
-            <div>
-              <Label>Status</Label>
-              <Controller
-                name="status"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-
-                    <SelectContent>
-                      <SelectItem value="Pending">Pending</SelectItem>
-                      <SelectItem value="Active">Active</SelectItem>
-                      <SelectItem value="Rejected">Rejected</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-4">
-          <Button
-            type="submit"
-            disabled={!isValid || isSubmitting}
-          >
-            {isSubmitting ? "Creating..." : "Create Agent"}
-          </Button>
-
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => reset()}
-          >
-            Cancel
-          </Button>
-        </div>
+        </form>
       </div>
     </div>
   )

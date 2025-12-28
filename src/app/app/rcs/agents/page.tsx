@@ -450,7 +450,7 @@ export default function UsersTable() {
         title="Agents"
         subtitle="Overview and manage all active and inactive agents in your dashboard"
       />
-      <DataTable<Item> incomingData={data} columns={columns} />
+      <DataTable<Item> incomingData={data} columns={columns} buttonTitle={"Add agent"} navigateTo="agents/create" />
     </div>
   );
 }
