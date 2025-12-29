@@ -322,6 +322,9 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { PageHeading } from "@/components/PageHeading";
+import { fetchAgents } from "@/lib/api/rcs/agents";
+import { useQuery } from "@tanstack/react-query";
+import { TableSkeleton } from "@/components/ui/skeleton/table";
 
 export type Item = {
   id: string;
@@ -426,29 +429,46 @@ const columns: ColumnDef<Item>[] = [
 /* ---------------- Component ---------------- */
 
 export default function UsersTable() {
-  const [data, setData] = useState<Item[]>([]);
+  const [agentData, setAgentData] = useState<Item[]>([]);
 
-useEffect(() => {
-  fetch("http://localhost:7000/api/v1/rcs/agent/user/2")
-    .then((res) => res.json())
-    .then((res) => {
-      const agents = res.result;
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["agents"],
+    queryFn: fetchAgents,
+  });
 
-      const mapped: Item[] = agents.map((u: any) => ({
-        id: String(u.id),
-        name: u.agentname,
-        agentdescription: u.agentdescription,
-        billingcategory: u.billingcategory,
-        status: u.status,
-        phoneno: u.phoneno,
-        email: u.email,
-      }));
+  useEffect(() => {
+    fetch("http://localhost:7000/api/v1/rcs/agent/user/2")
+      .then((res) => res.json())
+      .then((res) => {
+        const agents = res.result;
 
-      setData(mapped);
-    });
-}, []);
+        const mapped: Item[] = agents.map((u: any) => ({
+          id: String(u.id),
+          name: u.agentname,
+          agentdescription: u.agentdescription,
+          billingcategory: u.billingcategory,
+          status: u.status,
+          phoneno: u.phoneno,
+          email: u.email,
+        }));
+
+        setAgentData(mapped);
+      });
+  }, []);
 
 
+  if (isLoading) {
+    // Return skeleton while loading
+    return (
+      <div className="space-y-8">
+        <PageHeading
+          title="Agents"
+          subtitle="Overview and manage all active and inactive agents in your dashboard"
+        />
+        <TableSkeleton rows={5} columns={7} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -456,7 +476,7 @@ useEffect(() => {
         title="Agents"
         subtitle="Overview and manage all active and inactive agents in your dashboard"
       />
-      <DataTable<Item> incomingData={data} columns={columns} buttonTitle={"Add agent"} navigateTo="agents/create" />
+      <DataTable<Item> incomingData={agentData} columns={columns} buttonTitle={"Add agent"} navigateTo="agents/create" />
     </div>
   );
 }
