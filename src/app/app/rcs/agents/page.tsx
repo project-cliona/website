@@ -326,13 +326,22 @@ import { PageHeading } from "@/components/PageHeading";
 export type Item = {
   id: string;
   name: string;
+  agentdescription: string;
+  billingcategory: string;
+  status: "Active" | "Inactive" | "Pending" | "Rejected";
   email: string;
-  location: string;
-  flag: string;
-  status: "Active" | "Inactive" | "Pending";
-  balance: number;
+  phoneno: string;
 };
 
+
+// const multiColumnFilterFn = (row: any, _columnId: string, value: string) => {
+//   const search = value.toLowerCase();
+
+//   return (
+//     row.original.agentname?.toLowerCase().includes(search) ||
+//     row.original.email?.toLowerCase().includes(search)
+//   );
+// };
 const multiColumnFilterFn = (row: any, _columnId: string, value: string) => {
   const search = value.toLowerCase();
   return `${row.original.name} ${row.original.email}`
@@ -347,7 +356,7 @@ const statusFilterFn = (row: any, columnId: string, value: string[]) => {
 
 const columns: ColumnDef<Item>[] = [
   {
-    id: "select",
+    id: "id",
     header: ({ table }) => (
       <Checkbox
         checked={
@@ -365,31 +374,31 @@ const columns: ColumnDef<Item>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
-    size: 40,
+    size: 20,
   },
   {
     accessorKey: "name",
-    header: "Name",
+    header: "Agent Name",
     filterFn: multiColumnFilterFn,
     cell: ({ row }) => (
       <div className="font-medium">{row.getValue("name")}</div>
     ),
-    size: 80,
+    size: 60,
+  },
+  {
+    accessorKey: "billingcategory",
+    header: "Category",
+    size: 70,
   },
   {
     accessorKey: "email",
     header: "Email",
-    size: 160,
+    size: 120,
   },
   {
-    accessorKey: "location",
-    header: "Location",
-    cell: ({ row }) => (
-      <span>
-        {row.original.flag} {row.getValue("location")}
-      </span>
-    ),
-    size: 80,
+    accessorKey: "agentdescription",
+    header: "Description",
+    size: 150,
   },
   {
     accessorKey: "status",
@@ -405,16 +414,11 @@ const columns: ColumnDef<Item>[] = [
         {row.getValue("status")}
       </Badge>
     ),
-    size: 80,
+    size: 70,
   },
   {
-    accessorKey: "balance",
-    header: "Balance",
-    cell: ({ row }) =>
-      new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(row.getValue("balance")),
+    accessorKey: "phoneno",
+    header: "Phone No.",
     size: 80,
   },
 ];
@@ -424,25 +428,27 @@ const columns: ColumnDef<Item>[] = [
 export default function UsersTable() {
   const [data, setData] = useState<Item[]>([]);
 
-  useEffect(() => {
-    fetch("https://dummyjson.com/users")
-      .then((res) => res.json())
-      .then((res) => {
-        // Map DummyJSON to our Item type
-        const mapped: Item[] = res.users.map((u: any) => ({
-          id: String(u.id),
-          name: `${u.firstName} ${u.lastName}`,
-          email: u.email,
-          location: u.address.city,
-          status: ["Active", "Inactive", "Pending"][Math.floor(Math.random() * 3)] as
-            | "Active"
-            | "Inactive"
-            | "Pending",
-          balance: Math.floor(Math.random() * 5000),
-        }));
-        setData(mapped);
-      });
-  }, []);
+useEffect(() => {
+  fetch("http://localhost:7000/api/v1/rcs/agent/user/2")
+    .then((res) => res.json())
+    .then((res) => {
+      const agents = res.result;
+
+      const mapped: Item[] = agents.map((u: any) => ({
+        id: String(u.id),
+        name: u.agentname,
+        agentdescription: u.agentdescription,
+        billingcategory: u.billingcategory,
+        status: u.status,
+        phoneno: u.phoneno,
+        email: u.email,
+      }));
+
+      setData(mapped);
+    });
+}, []);
+
+
 
   return (
     <div className="space-y-8">
