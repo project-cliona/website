@@ -27,8 +27,8 @@ export default function CreateTemplate() {
     mode: "onChange",
     defaultValues: {
       templateName: "",
-      templateType: "Standalone",
-      selectedAgent: "",
+      templateType: "standalone",
+      agentID: "",
       agentCategory: "",
       cardTitle: "",
       cardDescription: "",
@@ -164,16 +164,16 @@ export default function CreateTemplate() {
               </div>
 
               <div>
-                <Label htmlFor="selectedAgent" className="mb-2 block">
+                <Label htmlFor="agentID" className="mb-2 block">
                   Agent Name *
                 </Label>
                 <Controller
-                  name="selectedAgent"
+                  name="agentID"
                   control={control}
                   render={({ field }) => (
                     <Select
                       {...field}
-                      onValueChange={(value) => handleAgentChange(value)} // keep your logic
+                      onValueChange={(value) => handleAgentChange(value)}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Choose an agent" />
@@ -188,8 +188,8 @@ export default function CreateTemplate() {
                     </Select>
                   )}
                 />
-                {errors.selectedAgent && (
-                  <p className="text-sm text-red-500 mt-1">{errors.selectedAgent.message}</p>
+                {errors.agentID && (
+                  <p className="text-sm text-red-500 mt-1">{errors.agentID.message}</p>
                 )}
               </div>
 

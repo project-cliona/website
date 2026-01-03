@@ -8,3 +8,13 @@ export interface StatsCardProps {
   trendUp?: boolean
   tooltip?: string
 }
+
+export type Agent = {
+  id: string;
+  name: string;
+  agentdescription: string;
+  billingcategory: string;
+  status: "Active" | "Inactive" | "Pending" | "Rejected";
+  email: string;
+  phoneno: string;
+};

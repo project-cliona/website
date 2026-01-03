@@ -2,8 +2,8 @@ import { z } from "zod"
 
 export const createTemplateSchema = z.object({
   templateName: z.string().min(1, "Template name is required"),
-  templateType: z.enum(["Standalone", "Carousel", "List"]),
-  selectedAgent: z.string().min(1, "Agent is required"),
+  templateType: z.enum(["standalone", "carousel", "text"]),
+  agentID: z.string().min(1, "Agent is required"),
   agentCategory: z.string().optional(),
   cardTitle: z.string().min(1).max(100),
   cardDescription: z.string().min(1).max(300),
