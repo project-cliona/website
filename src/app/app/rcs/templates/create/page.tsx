@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { MobilePreview } from '@/components/ui/MobilePreview'
 import { PageHeading } from '@/components/PageHeading'
 import { CreateTemplateForm, createTemplateSchema } from '@/lib/schema/createTemplate.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { Label } from '@/components/ui/Label'
 import { Input } from '@/components/ui/Input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
@@ -14,6 +14,8 @@ import { Badge } from '@/components/ui/badge'
 import { Info, Plus, Trash2, Image, CreditCard, Lightbulb } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import SubHeading from '@/components/SubHeading'
+import { useQuery } from '@tanstack/react-query'
+import { fetchAgents } from '@/lib/api/rcs/agents'
 export default function CreateTemplate() {
 
   const {
@@ -38,6 +40,69 @@ export default function CreateTemplate() {
     },
   })
 
+  const {
+  fields: suggestions,
+  append,
+  remove,
+  update,
+} = useFieldArray({
+  control,
+  name: "suggestions",
+});
+
+const addSuggestion = () => {
+  append({
+    actionType: "reply",
+    suggestionText: "",
+    postbackText: "",
+  });
+};
+
+const removeSuggestion = (index: number) => {
+  remove(index);
+};
+
+const updateSuggestion = (
+  index: number,
+  field: "actionType" | "suggestionText" | "postbackText",
+  value: string
+) => {
+  update(index, {
+    ...suggestions[index],
+    [field]: value,
+  });
+};
+
+  const onSubmit = async (data: CreateTemplateForm) => {
+    try {
+      console.log("Submitting template data:", data);
+
+      // Example payload cleanup / transformation if needed
+      const payload = {
+        ...data,
+        suggestions: data.suggestions.map(s => ({
+          ...s,
+          actionType: s.actionType.toLowerCase(), // safety
+        })),
+      };
+
+      // TODO: replace with actual API call
+      // await createTemplate(payload);
+
+      alert("Template created successfully ✅");
+    } catch (error) {
+      console.error("Template creation failed:", error);
+      alert("Failed to create template ❌");
+    }
+  };
+
+  const userId = 2;
+
+  const { data: agentData, isLoading } = useQuery({
+    queryKey: ["agents", userId],
+    queryFn: () => fetchAgents(userId),
+  })
+
   const [templateName, setTemplateName] = useState('')
   const [templateType, setTemplateType] = useState('Standalone')
   const [selectedAgent, setSelectedAgent] = useState('')
@@ -45,9 +110,6 @@ export default function CreateTemplate() {
   const [cardTitle, setCardTitle] = useState('')
   const [cardDescription, setCardDescription] = useState('')
   const [mediaFile, setMediaFile] = useState<File | null>(null)
-  const [suggestions, setSuggestions] = useState([
-    { id: '1', actionType: 'Reply', suggestionText: '', postbackText: '' }
-  ])
 
   const agents = [
     { id: '1', name: 'E-commerce Store', category: 'Promotional' },
@@ -65,23 +127,6 @@ export default function CreateTemplate() {
     setAgentCategory(agent?.category || '')
   }
 
-  const addSuggestion = () => {
-    setSuggestions([
-      ...suggestions,
-      { id: Date.now().toString(), actionType: 'Reply', suggestionText: '', postbackText: '' }
-    ])
-  }
-
-  const removeSuggestion = (id: string) => {
-    setSuggestions(suggestions.filter(s => s.id !== id))
-  }
-
-  const updateSuggestion = (id: string, field: string, value: string) => {
-    setSuggestions(suggestions.map(s =>
-      s.id === id ? { ...s, [field]: value } : s
-    ))
-  }
-
   const handleMediaUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file && (file.type.startsWith('image/') || file.type.startsWith('video/'))) {
@@ -95,10 +140,18 @@ export default function CreateTemplate() {
     setCardDescription(prev => prev + `#{${variable}#}`)
   }
 
-  const onSubmit = (data: CreateTemplateForm) => {
-    console.log("Template Data:", data);
-    alert("Template created successfully!");
-  };
+  const selectedAgentId = watch("agentID");
+  useEffect(() => {
+    if (!selectedAgentId || !agentData) return;
+
+    const category =
+      agentData.find(agent => agent.id === selectedAgentId)?.billingcategory ?? "";
+
+    setValue("agentCategory", category, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+  }, [selectedAgentId, agentData, setValue]);
 
   return (
     <div className="space-y-6">
@@ -106,7 +159,7 @@ export default function CreateTemplate() {
         title="Create Template"
         subtitle="Define the content and settings to create a new template."
       />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <form onSubmit={rhfSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Form */}
         <div className="lg:col-span-2 space-y-6">
           {/* Basic Information */}
@@ -144,14 +197,13 @@ export default function CreateTemplate() {
                   name="templateType"
                   control={control}
                   render={({ field }) => (
-                    <Select {...field}>
+                    <Select {...field} onValueChange={field.onChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select template type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Standalone">Standalone</SelectItem>
-                        <SelectItem value="Carousel">Carousel</SelectItem>
-                        <SelectItem value="List">List</SelectItem>
+                        <SelectItem value="standalone">standalone</SelectItem>
+                        <SelectItem value="carousel">Carousel</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
@@ -173,13 +225,15 @@ export default function CreateTemplate() {
                   render={({ field }) => (
                     <Select
                       {...field}
-                      onValueChange={(value) => handleAgentChange(value)}
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                      }}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Choose an agent" />
                       </SelectTrigger>
                       <SelectContent>
-                        {agents.map(agent => (
+                        {agentData?.map(agent => (
                           <SelectItem key={agent.id} value={agent.id}>
                             {agent.name}
                           </SelectItem>
@@ -197,11 +251,16 @@ export default function CreateTemplate() {
                 <Label htmlFor="agentCategory" className="mb-2 block">
                   Agent Category
                 </Label>
-                <Input
-                  id="agentCategory"
-                  value={agentCategory}
-                  disabled
-                  className="bg-gray-100"
+                <Controller
+                  name="agentCategory"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      disabled
+                      className="bg-gray-100"
+                    />
+                  )}
                 />
               </div>
             </div>
@@ -323,6 +382,7 @@ export default function CreateTemplate() {
                 variant="default"
                 size="sm"
                 onClick={addSuggestion}
+                disabled = {suggestions.length > 1}
               >
                 <Plus className="w-4 h-4" />
                 Add Button
@@ -411,8 +471,7 @@ export default function CreateTemplate() {
 
           <div className="flex gap-4">
             <Button
-              onClick={rhfSubmit(onSubmit)}
-              disabled={!isValid || isSubmitting}
+              // disabled={!isValid || isSubmitting}
               variant="default"
               size="lg"
             >
@@ -438,7 +497,7 @@ export default function CreateTemplate() {
             templates={templates}
           />
         </div>
-      </div>
+      </form>
     </div>
   )
 }

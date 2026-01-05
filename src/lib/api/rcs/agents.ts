@@ -1,4 +1,4 @@
-import { Agent } from "@/app/app/rcs/agents/page";
+import { Agent } from "@/lib/type";
 import { authenticatedApiClient } from "@/lib/axios";
 
 export const fetchAgents = async (userId: number) => {

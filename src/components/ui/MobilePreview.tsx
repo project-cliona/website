@@ -85,7 +85,7 @@ export function MobilePreview({ selectedAgent, selectedTemplate, agents, templat
                   
                   {currentMockTemplate.image && (
                     <Image 
-                      src={`https://via.placeholder.com/240x80/e5e7eb/6b7280?text=Preview+Image`}
+                      src={``}
                       alt="Template preview image"
                       width={240}
                       height={80}
