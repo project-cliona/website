@@ -76,6 +76,11 @@ export default function CreateTemplate() {
     })
   }, [selectedAgentId, agentData, setValue])
 
+  const cardTitle = watch('cardTitle');
+  const cardDescription = watch('cardDescription');
+  const mediaFile = watch('mediaFile');
+  const suggestionsPreview = watch('suggestions');
+
   // Submit handler
   const onSubmit = async (data: CreateTemplateForm) => {
     try {
@@ -128,10 +133,6 @@ export default function CreateTemplate() {
 
     return res.data.result.url;
   };
-
-
-  // For MobilePreview
-  const agents = agentData || []
 
   return (
     <div className="space-y-6">
@@ -194,7 +195,7 @@ export default function CreateTemplate() {
                         <SelectValue placeholder="Choose an agent" />
                       </SelectTrigger>
                       <SelectContent>
-                        {agents.map((agent) => (
+                        {agentData?.map((agent) => (
                           <SelectItem key={agent.id} value={agent.id}>
                             {agent.name}
                           </SelectItem>
@@ -279,7 +280,7 @@ export default function CreateTemplate() {
                   />
                   {field.value && (
                     <p className="text-sm text-green-600 mt-2">
-                      ✅ File uploaded: {(field.value as File).name}
+                      File uploaded: {(field.value as File).name}
                     </p>
                   )}
                 </div>
@@ -355,11 +356,12 @@ export default function CreateTemplate() {
             </Button>
           </div>
         </div>
-
-        {/* Mobile Preview */}
-        {/* <div className="lg:col-span-1">
-          <MobilePreview selectedAgent={selectedAgentId} selectedTemplate="1" agents={agents} templates={templates} />
-        </div> */}
+        <div className="lg:col-span-1">
+          <MobilePreview title={cardTitle}
+            description={cardDescription}
+            mediaFile={mediaFile}
+            suggestions={suggestionsPreview} />
+        </div>
       </form>
     </div>
   )
