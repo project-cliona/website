@@ -6,10 +6,10 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { signupSchema, SignupForm } from '@/lib/schema/common.schema'
 import { useState } from 'react'
-
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
 import { Checkbox } from '@/components/ui/checkbox'
+import { authenticatedApiClient } from '@/lib/axios'
 
 export default function Signup() {
   const router = useRouter()
@@ -18,14 +18,13 @@ export default function Signup() {
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors }
   } = useForm<SignupForm>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       name: '',
       email: '',
-      company: '',
-      phone: '',
       password: '',
       confirmPassword: '',
       terms: false
@@ -33,22 +32,20 @@ export default function Signup() {
   })
 
   const onSubmit = async (data: SignupForm) => {
-    setLoading(true)
-
-    setTimeout(() => {
-      localStorage.setItem(
-        'user',
-        JSON.stringify({
-          name: data.name,
-          email: data.email,
-          company: data.company,
-          role: 'user'
-        })
-      )
-
-      router.push('/dashboard')
-      setLoading(false)
-    }, 1000)
+    try {
+      setLoading(true);
+      const response = await authenticatedApiClient().post('/auth/signup', {
+        username: data.name,
+        email: data.email,
+        password: data.password
+      })
+      reset()
+      router.push(`/auth/verify?email=${encodeURIComponent(data.email)}`)
+    } catch (error) {
+      console.log(error);
+    } finally{
+      setLoading(false);
+    }
   }
 
   return (
@@ -95,30 +92,6 @@ export default function Signup() {
               {errors.email && (
                 <p className="text-xs text-red-600">{errors.email.message}</p>
               )}
-            </div>
-
-            {/* Company */}
-            <div className="space-y-1">
-              <Label htmlFor="company">Company Name</Label>
-              <Controller
-                name="company"
-                control={control}
-                render={({ field }) => (
-                  <Input id="company" placeholder="Enter company name" {...field} />
-                )}
-              />
-            </div>
-
-            {/* Phone */}
-            <div className="space-y-1">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Controller
-                name="phone"
-                control={control}
-                render={({ field }) => (
-                  <Input id="phone" placeholder="+91-9876543210" {...field} />
-                )}
-              />
             </div>
 
             {/* Password */}

@@ -160,11 +160,12 @@ export default function SendMessage() {
                   control={control}
                   render={({ field }) => (
                     <div className="space-y-2">
-                      <Label>Enter Mobile Numbers</Label>
+                      <Label className="text-sm font-medium text-gray-700 mb-3">Enter Mobile Numbers</Label>
                       <Textarea
                         {...field}
                         rows={6}
                         placeholder="Enter numbers separated by commas or new lines"
+                        className='mt-3'
                       />
                       {errors.mobileNumbers && (
                         <p className="text-sm text-red-500">
