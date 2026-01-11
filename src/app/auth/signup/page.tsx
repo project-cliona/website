@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { authenticatedApiClient } from '@/lib/axios'
+import { supabase } from '@/lib/supabase/client'
 
 export default function Signup() {
   const router = useRouter()
@@ -43,8 +44,26 @@ export default function Signup() {
       router.push(`/auth/verify?email=${encodeURIComponent(data.email)}`)
     } catch (error) {
       console.log(error);
-    } finally{
+    } finally {
       setLoading(false);
+    }
+  }
+
+  const handleSocialLogin = async (provider: 'google' | 'github') => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      })
+
+      if (error) {
+        console.error('Social login error:', error.message)
+        return
+      }
+    } catch (err) {
+      console.error(err)
     }
   }
 
@@ -156,6 +175,27 @@ export default function Signup() {
               {loading ? 'Creating account...' : 'Create Account'}
             </button>
           </form>
+          <div className="mt-6">
+            <p className="text-center text-sm text-gray-500 mb-3">Or sign up with</p>
+            <div className="flex justify-center gap-4">
+
+              {/* Google Button */}
+              <button
+                type="button"
+                onClick={() => handleSocialLogin('google')}
+                className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 shadow-sm"
+              >
+                {/* Google logo */}
+                <svg className="w-5 h-5" viewBox="0 0 533.5 544.3">
+                  <path fill="#4285F4" d="M533.5 278.4c0-17.4-1.6-34.3-4.7-50.7H272v95.9h147.1c-6.3 33.8-25 62.5-53.2 81.6v67h85.8c50.1-46.1 79-114.3 79-193.8z" />
+                  <path fill="#34A853" d="M272 544.3c71.8 0 132.1-23.8 176.1-64.6l-85.8-67c-23.9 16-54.7 25.3-90.3 25.3-69 0-127.5-46.6-148.6-109.3H33.3v68.7c44.1 87.1 135.8 147.9 238.7 147.9z" />
+                  <path fill="#FBBC05" d="M123.4 322.7c-10.5-31-10.5-64.2 0-95.2V158.8H33.3c-42.8 85.5-42.8 187.2 0 272.7l90.1-68.8z" />
+                  <path fill="#EA4335" d="M272 107.6c37.4-.6 73.4 13.3 100.6 38.6l75.4-75.4C404.1 25.7 343.8 0 272 0 169.1 0 77.4 60.8 33.3 147.9l90.1 68.7C144.5 154.2 203 107.6 272 107.6z" />
+                </svg>
+                <span className="text-sm font-medium text-gray-700">Sign in with Google</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
