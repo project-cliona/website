@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createAgentSchema, CreateAgentForm } from "@/lib/schema/createAgent.schema";
+import { createAgentSchema, CreateAgentForm } from "@/lib/schema/rcs.schema";
 import { Input } from "@/components/ui/Input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import { Label } from "@/components/ui/Label";

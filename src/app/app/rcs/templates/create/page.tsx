@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import { MobilePreview } from '@/components/ui/MobilePreview'
 import { PageHeading } from '@/components/PageHeading'
-import { CreateTemplateForm, createTemplateSchema } from '@/lib/schema/createTemplate.schema'
+import { CreateTemplateForm, createTemplateSchema } from '@/lib/schema/rcs.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { Label } from '@/components/ui/Label'
@@ -44,7 +44,7 @@ export default function CreateTemplate() {
       cardTitle: '',
       cardDescription: '',
       mediaFile: null,
-      suggestions: [{ actionType: 'reply', suggestionText: '', postbackText: '' }],
+      suggestions: [{ actionType: 'reply', displayText: '', actionData: '' }],
     },
   })
 
@@ -55,7 +55,7 @@ export default function CreateTemplate() {
   })
 
   const addSuggestion = () => {
-    append({ actionType: 'reply', suggestionText: '', postbackText: '' })
+    append({ actionType: 'reply', displayText: '', actionData: '' })
   }
 
   const removeSuggestionByIndex = (index: number) => {
@@ -105,8 +105,8 @@ export default function CreateTemplate() {
             cardOrder: 1,
             suggestions: data.suggestions.map((sug) => ({
               actionType: sug.actionType,
-              displayText: sug.suggestionText,
-              actionData: sug.postbackText || null,
+              displayText: sug.displayText,
+              actionData: sug.actionData || null,
             })),
           },
         ],
@@ -330,7 +330,7 @@ export default function CreateTemplate() {
                     <div>
                       <Label>Suggestion Text</Label>
                       <Controller
-                        name={`suggestions.${index}.suggestionText`}
+                        name={`suggestions.${index}.displayText`}
                         control={control}
                         render={({ field }) => <Input {...field} placeholder="Button text" />}
                       />
@@ -338,7 +338,7 @@ export default function CreateTemplate() {
                     <div>
                       <Label>Postback Text</Label>
                       <Controller
-                        name={`suggestions.${index}.postbackText`}
+                        name={`suggestions.${index}.actionData`}
                         control={control}
                         render={({ field }) => <Input {...field} placeholder="Postback value" />}
                       />

@@ -22,5 +22,34 @@ export const createAgentSchema = z.object({
   privacypolicyURL: z.string().url(),
   status: z.enum(["Pending", "Active", "Rejected"]),
 });
-
 export type CreateAgentForm = z.infer<typeof createAgentSchema>;
+
+
+export const sendRCSSchema = z.object({
+  agentID: z.string().min(1, "Agent is required"),
+  templateID: z.string().min(1, "Template is required"),
+  mobileNumbers: z.string().optional(),
+  removeDuplicates: z.boolean(),
+  uploadedFile: z.any().optional(),
+})
+export type SendRCSForm = z.infer<typeof sendRCSSchema>
+
+
+export const createTemplateSchema = z.object({
+  templateName: z.string().min(1, "Template name is required"),
+  templateType: z.enum(["standalone", "carousel", "text"]),
+  agentID: z.string().min(1, "Agent is required"),
+  agentCategory: z.string(),
+  cardTitle: z.string().min(1).max(100),
+  cardDescription: z.string().min(1).max(300),
+  mediaFile: z.any(),
+  suggestions: z.array(
+    z.object({
+      actionType: z.string(),
+      displayText: z.string(),
+      actionData: z.string(),
+    })
+  ),
+})
+export type CreateTemplateForm = z.infer<typeof createTemplateSchema>
+

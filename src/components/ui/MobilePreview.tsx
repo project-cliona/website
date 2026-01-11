@@ -3,28 +3,29 @@
 import Image from 'next/image'
 import { useEffect, useMemo } from 'react'
 import { Icon } from './Icon'
+import { TemplateSuggestion } from '@/lib/type'
 
 interface MobilePreviewProps {
   title?: string
   description?: string
   mediaFile?: File | null
-  suggestions?: {
-    actionType: string
-    suggestionText: string
-    postbackText?: string
-  }[]
+  fileUrl?: string
+  suggestions?: TemplateSuggestion[]
 }
 
 export function MobilePreview({
   title,
   description,
   mediaFile,
+  fileUrl,
   suggestions = [],
 }: MobilePreviewProps) {
 
   const mediaUrl = useMemo(() => {
-    return mediaFile ? URL.createObjectURL(mediaFile) : null
-  }, [mediaFile])
+    if (mediaFile) return URL.createObjectURL(mediaFile)
+    if (fileUrl) return fileUrl
+    return null
+  }, [mediaFile, fileUrl])
 
   useEffect(() => {
     return () => {
@@ -75,7 +76,7 @@ export function MobilePreview({
                     <h3 className="font-semibold text-sm">{title}</h3>
                   )}
                   {mediaUrl && (
-                    mediaFile?.type.startsWith('image') ? (
+                    mediaFile?.type.startsWith('image') || (!mediaFile && fileUrl?.endsWith('.png') || fileUrl?.endsWith('.jpg')) ? (
                       <Image
                         src={mediaUrl}
                         alt="Preview media"
@@ -108,7 +109,7 @@ export function MobilePreview({
                           className="w-full text-xs bg-white border border-blue-300 text-blue-600 py-2 rounded font-medium hover:bg-blue-50"
                         >
                           <span className="flex items-center justify-center gap-1">
-                            {btn.suggestionText || 'Button'}
+                            {btn.displayText || 'Button'}
                             <Icon
                               name={
                                 btn.actionType === 'url'

@@ -1,45 +1,61 @@
 'use client'
 
-import { useState } from 'react'
 import { MobilePreview } from '@/components/ui/MobilePreview'
 import { FileUpload } from "@/components/ui/FileUpload"
 import { PageHeading } from '@/components/PageHeading'
+import { useQuery } from '@tanstack/react-query'
+import { fetchAgents } from '@/lib/api/rcs/agents'
+import { Label } from '@/components/ui/Label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
+import { Controller, useForm } from 'react-hook-form'
+import { SendRCSForm, sendRCSSchema } from '@/lib/schema/rcs.schema'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Textarea } from '@/components/ui/Textarea'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/Button'
+import { fetchTemplatesByAgentID } from '@/lib/api/rcs/templates'
+import { RCSTemplate } from '@/lib/type'
 export default function SendMessage() {
-  const [selectedAgent, setSelectedAgent] = useState('')
-  const [selectedTemplate, setSelectedTemplate] = useState('')
-  const [mobileNumbers, setMobileNumbers] = useState('')
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
-  const [removeDuplicates, setRemoveDuplicates] = useState(true)
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<SendRCSForm>({
+    resolver: zodResolver(sendRCSSchema),
+    defaultValues: {
+      agentID: "",
+      templateID: "",
+      mobileNumbers: "",
+      removeDuplicates: false,
+      uploadedFile: null,
+    },
+  })
 
-  const agents = [
-    { id: '1', name: 'E-commerce Store', category: 'Promotional' },
-    { id: '2', name: 'Banking Services', category: 'Transactional' },
-    { id: '3', name: 'Healthcare OTP', category: 'OTP' }
-  ]
+  const selectedAgent = watch("agentID")
+  const selectedTemplate = watch("templateID")
+  const mobileNumbers = watch("mobileNumbers")
 
-  const templates = [
-    { id: '1', name: 'Holiday Sale', type: 'Standalone', agentId: '1' },
-    { id: '2', name: 'Account Statement', type: 'Standalone', agentId: '2' },
-    { id: '3', name: 'Login OTP', type: 'Standalone', agentId: '3' }
-  ]
+  const userId = 2
 
-  const filteredTemplates = templates.filter(t => t.agentId === selectedAgent)
+  const { data: agentData } = useQuery({
+    queryKey: ['agents', userId],
+    queryFn: () => fetchAgents(userId),
+  })
 
-  const handleFileUpload = (file: File) => {
-    setUploadedFile(file)
-  }
+  const { data: templateData } = useQuery({
+    queryKey: ['agents', selectedAgent],
+    queryFn: () => fetchTemplatesByAgentID(selectedAgent),
+  })
 
-  const handleSubmit = () => {
-    const data = {
-      agent: selectedAgent,
-      template: selectedTemplate,
-      mobileNumbers: mobileNumbers,
-      uploadedFile: uploadedFile?.name,
-      removeDuplicates
-    }
-    console.log('Campaign data:', data)
-    alert('Campaign submitted successfully!')
-  }
+  const template: RCSTemplate = templateData?.find(
+    (temp: RCSTemplate) => temp.id.toString() === selectedTemplate
+  );
+
+  const onSubmit = (data: SendRCSForm) => {
+    console.log("Form submitted:", data);
+    // Here you can call your API to send the RCS campaign
+  };
 
   return (
     <div className="space-y-8">
@@ -48,120 +64,165 @@ export default function SendMessage() {
         subtitle="Create and send RCS campaigns to your audience"
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Form */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white border border-gray-100 rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Campaign Settings</h2>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Select Agent
-                </label>
-                <select
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
-                  value={selectedAgent}
-                  onChange={(e) => setSelectedAgent(e.target.value)}
-                >
-                  <option value="" className="text-gray-500">Choose an agent</option>
-                  {agents.map(agent => (
-                    <option key={agent.id} value={agent.id}>
-                      {agent.name} ({agent.category})
-                    </option>
-                  ))}
-                </select>
-              </div>
+          {/* Main Form */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white border border-gray-100 rounded-xl p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Campaign Settings
+              </h2>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Select Template
-                </label>
-                <select
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
-                  value={selectedTemplate}
-                  onChange={(e) => setSelectedTemplate(e.target.value)}
-                  disabled={!selectedAgent}
-                >
-                  <option value="" className="text-gray-500">Choose a template</option>
-                  {filteredTemplates.map(template => (
-                    <option key={template.id} value={template.id}>
-                      {template.name} ({template.type})
-                    </option>
-                  ))}
-                </select>
-                {!selectedAgent && (
-                  <p className="text-sm text-gray-500 mt-1">Select an agent first</p>
-                )}
+              <div className="space-y-4">
+                {/* Agent */}
+                <div>
+                  <Label className="mb-2 block">Agent Name *</Label>
+                  <Controller
+                    name="agentID"
+                    control={control}
+                    render={({ field }) => (
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose an agent" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {agentData?.map((agent) => (
+                            <SelectItem key={agent.id} value={agent.id}>
+                              {agent.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  {errors.agentID && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.agentID.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* Template */}
+                <div>
+                  <Label className="mb-2 block">Select Template *</Label>
+                  <Controller
+                    name="templateID"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        disabled={!selectedAgent || !templateData || templateData.length === 0}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose a template" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {templateData && templateData.length > 0 ? (
+                            templateData.map((template: RCSTemplate) => (
+                              <SelectItem key={template.id} value={template.id.toString()}>
+                                {template.templateName} ({template.templateType})
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value="no-template" disabled>
+                              No templates available
+                            </SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  {!selectedAgent && (
+                    <p className="text-sm text-gray-500 mt-1">
+                      Select an agent first
+                    </p>
+                  )}
+                  {errors.templateID && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.templateID.message}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Mobile Numbers Section */}
-          <div className="bg-white border border-gray-100 rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Mobile Numbers</h2>
+            {/* Mobile Numbers */}
+            <div className="bg-white border border-gray-100 rounded-xl p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Mobile Numbers
+              </h2>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Enter Mobile Numbers
-                </label>
-                <textarea
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 placeholder-gray-500 h-32"
-                  placeholder="Enter mobile numbers separated by commas or new lines&#10;Example:&#10;+919876543210&#10;+919876543211&#10;+919876543212"
-                  value={mobileNumbers}
-                  onChange={(e) => setMobileNumbers(e.target.value)}
+              <div className="space-y-4">
+                <Controller
+                  name="mobileNumbers"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="space-y-2">
+                      <Label>Enter Mobile Numbers</Label>
+                      <Textarea
+                        {...field}
+                        rows={6}
+                        placeholder="Enter numbers separated by commas or new lines"
+                      />
+                      {errors.mobileNumbers && (
+                        <p className="text-sm text-red-500">
+                          {errors.mobileNumbers.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 />
-                <p className="text-sm text-gray-500 mt-1">
-                  Up to 100,000 numbers allowed. Separate by commas or new lines.
-                </p>
-              </div>
 
-              <div className="border-t border-gray-200 pt-4">
-                <p className="text-sm font-medium text-gray-700 mb-3">OR Upload File</p>
-                <FileUpload onFileUpload={handleFileUpload} />
-                {uploadedFile && (
-                  <p className="text-sm text-green-600 mt-2">
-                    ✅ File uploaded: {uploadedFile.name}
+                <div className="border-t border-gray-200 pt-4">
+                  <p className="text-sm font-medium text-gray-700 mb-3">
+                    OR Upload File
                   </p>
-                )}
-              </div>
+                  <Controller
+                    name="uploadedFile"
+                    control={control}
+                    render={({ field }) => (
+                      <FileUpload onFileUpload={field.onChange} />
+                    )}
+                  />
+                </div>
 
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="removeDuplicates"
-                  checked={removeDuplicates}
-                  onChange={(e) => setRemoveDuplicates(e.target.checked)}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                <Controller
+                  name="removeDuplicates"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(checked) =>
+                          field.onChange(checked === true)
+                        }
+                      />
+                      <Label className="cursor-pointer">
+                        Remove duplicate numbers
+                      </Label>
+                    </div>
+                  )}
                 />
-                <label htmlFor="removeDuplicates" className="ml-2 text-sm text-gray-700">
-                  Remove duplicate numbers
-                </label>
               </div>
             </div>
+
+            {/* Submit */}
+            <Button type="submit" className="w-full">
+              Send Campaign
+            </Button>
           </div>
 
-          {/* Submit Button */}
-          <button
-            onClick={handleSubmit}
-            disabled={!selectedAgent || !selectedTemplate || (!mobileNumbers && !uploadedFile)}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-          >
-            Send Campaign
-          </button>
+          {/* Mobile Preview */}
+          <div className="lg:col-span-1">
+            <MobilePreview title={template?.cards[0].cardTitle}
+              description={template?.cards[0].cardDescription}
+              fileUrl={template?.cards[0].fileUrl}
+              suggestions={template?.cards[0].suggestions} />
+          </div>
         </div>
-
-        {/* Mobile Preview */}
-        <div className="lg:col-span-1">
-          <MobilePreview
-            selectedAgent={selectedAgent}
-            selectedTemplate={selectedTemplate}
-            agents={agents}
-            templates={templates}
-          />
-        </div>
-      </div>
+      </form>
     </div>
   )
 }
