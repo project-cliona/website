@@ -32,7 +32,7 @@ export default function Login() {
           email: formData.email,
           role: 'admin'
         }))
-        router.push('/dashboard')
+        router.push('/app')
       } else {
         setError('Please fill in all fields')
       }

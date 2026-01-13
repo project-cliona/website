@@ -9,7 +9,7 @@ const links = [
   { label: "Dashboard", href: "/app/rcs/", icon: <LayoutDashboard  /> },
   { label: "Send Message", href: "/app/rcs/sendMessage", icon: <Send /> },
   { label: "Templates", href: "/app/rcs/templates", icon: <Book /> },
-   { label: "Agents", href: "/app/rcs/agents", icon: <UserRoundCog  /> },
+  { label: "Agents", href: "/app/rcs/agents", icon: <UserRoundCog  /> },
   { label: "Delivery Reports", href: "/app/rcs/deliveryReport", icon: <ChartBar /> },
   { label: "Campaign Reports", href: "/app/rcs/campaignReport", icon: <ChartNoAxesColumnDecreasing /> },
 ];
