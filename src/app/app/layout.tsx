@@ -1,35 +1,40 @@
 "use client";
+
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import { motion } from "framer-motion";
-import { Book, UserRoundCog , LayoutDashboard, Send, ChartBar, ChartNoAxesColumnDecreasing } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import Image from "next/image";
-const links = [
-  { label: "Dashboard", href: "/app/rcs/", icon: <LayoutDashboard  /> },
-  { label: "Send Message", href: "/app/rcs/sendMessage", icon: <Send /> },
-  { label: "Templates", href: "/app/rcs/templates", icon: <Book /> },
-  { label: "Agents", href: "/app/rcs/agents", icon: <UserRoundCog  /> },
-  { label: "Delivery Reports", href: "/app/rcs/deliveryReport", icon: <ChartBar /> },
-  { label: "Campaign Reports", href: "/app/rcs/campaignReport", icon: <ChartNoAxesColumnDecreasing /> },
-];
+import { useState } from "react";
+import { usePathname } from "next/navigation";
+
+import { appLinks, rcsLinks } from "@/lib/sidebarLinks";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isRcsRoute = pathname.startsWith("/app/rcs");
+
+  const links = isRcsRoute ? rcsLinks : appLinks;
+
   return (
-    <>
-      <Sidebar open={open} setOpen={setOpen}>
-        <div className="flex">
-          <SidebarBody className="space-y-4">
-            <div>{open ? <Logo /> : <LogoIcon />}</div>
-            {links.map((link) => (
-              <SidebarLink className="font-medium" key={link.href} link={link} />
-            ))}
-          </SidebarBody>
-          <main className="flex-1 p-4">{children}</main>
-        </div>
-      </Sidebar>
-    </>
+    <Sidebar open={open} setOpen={setOpen}>
+      <div className="flex">
+        <SidebarBody className="space-y-4">
+          <div>{open ? <Logo /> : <LogoIcon />}</div>
+
+          {links.map((link) => (
+            <SidebarLink
+              key={link.href}
+              link={link}
+              className="font-medium"
+            />
+          ))}
+        </SidebarBody>
+
+        <main className="flex-1 p-4">{children}</main>
+      </div>
+    </Sidebar>
   );
 }
 
