@@ -56,3 +56,33 @@ export interface RCSTemplate {
   disapproveReason: string | null;
   cards: TemplateCard[];
 }
+
+export interface User {
+  id: string;
+  email: string;
+  userName: string;
+  isSocialLogin: boolean;
+  status: string;
+  isEmailConfirmed: boolean;
+  isPhoneConfirmed: boolean;
+  createdOn: string;
+}
+
+export interface UserProfile {
+  userId: string;
+  profileId: string;
+  fullName: string;
+  mobile: string;
+  address: string;
+  city: string;
+  state: string;
+  companyName: string;
+  companyUrl: string;
+  parentId: string;
+  salesPersonId: string;
+  expiry: string;
+  roleId: number;
+  currency: string;
+  profileStatus: string;
+  createdAt: string;
+}
