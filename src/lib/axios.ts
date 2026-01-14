@@ -20,6 +20,7 @@ export const authenticatedApiClient = () => {
   const axiosInstance = apiClient();
   axiosInstance.interceptors.request.use(async (config) => {
     const access_token = localStorage.getItem("accessToken");
+    console.log({'this is from the axios utlis': access_token})
     if (!access_token) {
       console.warn("No access token found.");
       return Promise.reject(new Error("Unauthorized: No token found"));

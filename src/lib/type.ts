@@ -58,7 +58,7 @@ export interface RCSTemplate {
 }
 
 export interface User {
-  id: string;
+  userId: number;
   email: string;
   userName: string;
   isSocialLogin: boolean;
