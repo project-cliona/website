@@ -46,7 +46,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const userAuthLoading = userLoading || profileLoading;
 
     useEffect(() => {
-        if (userAuthLoading) return;
+        if (userAuthLoading)
 
         if (!user) {
             router.replace("/auth/login");
