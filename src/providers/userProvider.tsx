@@ -48,10 +48,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         if (userAuthLoading)
 
-        if (!user) {
-            router.replace("/auth/login");
-            return;
-        }
+        // if (!user) {
+        //     router.replace("/auth/login");
+        //     return;
+        // }
        
         if (!profile) return;
 

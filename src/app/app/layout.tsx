@@ -6,7 +6,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-
 import { appLinks, rcsLinks } from "@/lib/sidebarLinks";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
