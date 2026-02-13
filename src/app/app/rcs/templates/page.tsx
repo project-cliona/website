@@ -122,7 +122,7 @@ export default function UsersTable() {
         title="Templates"
         subtitle="Overview and manage your templates"
       />
-      <DataTable<RCSTemplate> incomingData={templateData ?? []} columns={columns} filterPlaceHolder="Filter with template name" buttonTitle="Add template" navigateTo="templates/create" />
+      <DataTable<RCSTemplate> incomingData={templateData ?? []} columns={columns} filterPlaceHolder="Filter with template name" buttonTitle="Add template" navigateTo="templates/create" rowNavigate="app/rcs/templates"/>
     </div>
   );
 }

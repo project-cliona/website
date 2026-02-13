@@ -29,3 +29,13 @@ export const fetchTemplatesByAgentID = async (agentId: string) => {
   }
 };
 
+export const getTemplateById = async(id: string) =>{
+  try {
+    const res = await authenticatedApiClient().get(`/rcs/template?id=${id}`);
+    return res.data.result;
+  } catch (error) {
+    console.log(error);
+    return;
+  }
+}
+
