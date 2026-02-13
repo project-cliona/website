@@ -36,10 +36,12 @@ const columns: ColumnDef<Agent>[] = [
       />
     ),
     cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(val) => row.toggleSelected(!!val)}
-      />
+      <div onClick={(e) => e.stopPropagation()}>
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(val) => row.toggleSelected(!!val)}
+        />
+      </div>
     ),
     enableSorting: false,
     enableHiding: false,
@@ -124,7 +126,7 @@ export default function UsersTable() {
         title="Agents"
         subtitle="Overview and manage all active and inactive agents in your dashboard"
       />
-      <DataTable<Agent> incomingData={agentData ?? []} columns={columns} buttonTitle={"Add agent"} navigateTo="agents/create" />
+      <DataTable<Agent> incomingData={agentData ?? []} columns={columns} buttonTitle={"Add agent"} navigateTo="agents/create" rowNavigate="app/rcs/agents"/>
     </div>
   );
 }

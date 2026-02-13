@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
 import { Button } from '@/components/ui/Button'
 import { apiClient } from '@/lib/axios'
-import { useUser } from '@/providers/userProvider'
 
 export default function VerifyEmail() {
     const router = useRouter()
@@ -115,7 +114,6 @@ export default function VerifyEmail() {
                                 placeholder="Confirm new password"
                             />
                         </div>
-
 
                         <Button
                             className="w-full"

@@ -10,13 +10,37 @@ export interface StatsCardProps {
 }
 
 export type Agent = {
-  id: string;
-  name: string;
+  id: number;
+  agentKey: string | null;
+  userId: number;
+  agentname: string;
   agentdescription: string;
+  agentheroimageURL: string;
+  agentlogo: string;
+  brandcolor: string;
+  agentusecase: string | null;
   billingcategory: string;
-  status: "Active" | "Inactive" | "Pending" | "Rejected";
-  email: string;
   phoneno: string;
+  labelphoneno: string;
+  website: string;
+  labelwebsite: string;
+  email: string;
+  labelemail: string;
+  agentopt: string | null;
+  privacypolicyURL: string;
+  termconditonURL: string;
+  agentbrand: string | null;
+  agentlegalbrand: string | null;
+  spocname: string;
+  spocemail: string;
+  spocdesignation: string | null;
+  spocphonenumber: string;
+  status: "Active" | "Inactive" | "Pending" | "Rejected";
+  createdAt: string;
+  modifiedAt: string;
+  createdby: string | null;
+  modifiedby: string | null;
+  disapproveReason: string | null;
 };
 
 export interface TemplateSuggestion {

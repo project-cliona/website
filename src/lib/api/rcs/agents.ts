@@ -19,3 +19,13 @@ export const fetchAgents = async (userId: number) => {
     return [];
   }
 };
+
+export const fetchAgentById = async (id: string)=>{
+  try {
+    const res = await authenticatedApiClient().get(`/rcs/agent/${id}`);
+    return res.data.result;
+  } catch (error) {
+    console.log(error);
+    return;
+  }
+}
