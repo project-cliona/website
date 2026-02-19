@@ -37,10 +37,12 @@ const columns: ColumnDef<RCSTemplate>[] = [
       />
     ),
     cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(val) => row.toggleSelected(!!val)}
-      />
+      <div onClick={(e) => e.stopPropagation()}>
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(val) => row.toggleSelected(!!val)}
+        />
+      </div>
     ),
     enableSorting: false,
     enableHiding: false,
@@ -65,7 +67,7 @@ const columns: ColumnDef<RCSTemplate>[] = [
     header: "Created On",
     size: 120,
   },
-   {
+  {
     accessorKey: "agentID",
     header: "Agent ID",
     size: 120,
@@ -122,7 +124,7 @@ export default function UsersTable() {
         title="Templates"
         subtitle="Overview and manage your templates"
       />
-      <DataTable<RCSTemplate> incomingData={templateData ?? []} columns={columns} filterPlaceHolder="Filter with template name" buttonTitle="Add template" navigateTo="templates/create" rowNavigate="app/rcs/templates"/>
+      <DataTable<RCSTemplate> incomingData={templateData ?? []} columns={columns} filterPlaceHolder="Filter with template name" buttonTitle="Add template" navigateTo="templates/create" rowNavigate="app/rcs/templates" />
     </div>
   );
 }

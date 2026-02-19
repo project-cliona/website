@@ -4,16 +4,7 @@ import { authenticatedApiClient } from "@/lib/axios";
 export const fetchAgents = async (userId: number) => {
   try {
     const res = await authenticatedApiClient().get(`/rcs/agent/user/${userId}`);
-    const mapped: Agent[] = res.data.result.map((u: any) => ({
-      id: String(u.id),
-      name: u.agentname,
-      agentdescription: u.agentdescription,
-      billingcategory: u.billingcategory,
-      status: u.status,
-      phoneno: u.phoneno,
-      email: u.email,
-    }));
-    return mapped;
+    return res.data.result;
   } catch (error) {
     console.log(error);
     return [];

@@ -17,21 +17,37 @@ import SubHeading from '@/components/SubHeading'
 import { useQuery } from '@tanstack/react-query'
 import { fetchAgents } from '@/lib/api/rcs/agents'
 import { authenticatedApiClient } from '@/lib/axios'
+import { useSearchParams } from 'next/navigation'
+import { getTemplateById } from '@/lib/api/rcs/templates'
+import { Agent, RCSTemplate } from '@/lib/type'
 
 export default function CreateTemplate() {
   const userId = 2
+  const searchParams = useSearchParams()
+  const isEdit = searchParams.get('edit') === 'true'
+  const id = searchParams.get('id')
 
-  const { data: agentData } = useQuery({
+  const { data: agentData } = useQuery<Agent[]>({
     queryKey: ['agents', userId],
     queryFn: () => fetchAgents(userId),
   })
 
-  // React Hook Form
+  const {
+    data: template,
+    isLoading,
+    error
+  } = useQuery<RCSTemplate>({
+    queryKey: ['template', id],
+    queryFn: () => getTemplateById(id as string),
+    enabled: isEdit,
+  })
+
   const {
     control,
     handleSubmit: rhfSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors, isSubmitting, isValid },
   } = useForm<CreateTemplateForm>({
     resolver: zodResolver(createTemplateSchema),
@@ -47,6 +63,29 @@ export default function CreateTemplate() {
       suggestions: [{ actionType: 'reply', displayText: '', actionData: '' }],
     },
   })
+
+  useEffect(() => {
+    if (!template || !isEdit) return
+
+    const card = template.cards?.[0]
+
+    reset({
+      templateName: template.templateName ?? '',
+      templateType: template.templateType ?? 'standalone',
+      agentID: String(template.agentID ?? ''),
+      agentCategory: template.agentCategory ?? '',
+      cardTitle: card?.cardTitle ?? '',
+      cardDescription: card?.cardDescription ?? '',
+      mediaFile: null, // ❗ cannot set File from URL
+      suggestions:
+        card?.suggestions?.map((s: any) => ({
+          actionType: s.actionType,
+          displayText: s.displayText,
+          actionData: s.actionData ?? '',
+        })) ?? [{ actionType: 'reply', displayText: '', actionData: '' }],
+    })
+  }, [template, isEdit, reset])
+
 
   // Manage suggestions with useFieldArray
   const { fields: suggestions, append, remove } = useFieldArray({
@@ -190,14 +229,14 @@ export default function CreateTemplate() {
                   name="agentID"
                   control={control}
                   render={({ field }) => (
-                    <Select {...field} onValueChange={field.onChange}>
+                    <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Choose an agent" />
                       </SelectTrigger>
                       <SelectContent>
                         {agentData?.map((agent) => (
-                          <SelectItem key={agent.id} value={agent.id}>
-                            {agent.name}
+                          <SelectItem key={agent.id} value={String(agent.id)}>
+                            {agent.agentname}
                           </SelectItem>
                         ))}
                       </SelectContent>
