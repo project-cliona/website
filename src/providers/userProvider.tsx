@@ -1,10 +1,11 @@
 "use client";
 
 import React, { createContext, useContext, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { User, UserProfile } from "@/lib/type";
-import { getCurrentUser, getUserProfile } from "@/lib/api/auth";
-import { useRouter, usePathname } from "next/navigation";
+import { getCurrentUser, getUserProfile, logoutUser } from "@/lib/api/auth";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase/client";
 
 interface UserContextType {
     user: User | null;
@@ -12,13 +13,14 @@ interface UserContextType {
     userAuthLoading: boolean;
     refetchUser: () => Promise<any>;
     refetchProfile: () => Promise<any>;
+    logout: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const router = useRouter();
-    const pathname = usePathname();
+    const queryClient = useQueryClient();
 
     const {
         data: user,
@@ -45,21 +47,38 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     const userAuthLoading = userLoading || profileLoading;
 
-    useEffect(() => {
-        if (userAuthLoading)
+    const logout = async () => {
+        try {
+            // 1. Notify backend to invalidate the token server-side
+            await logoutUser();
+        } catch {
+            // Continue with client-side cleanup even if backend call fails
+        } finally {
+            // 2. Remove access token from localStorage
+            localStorage.removeItem("accessToken");
 
-        // if (!user) {
-        //     router.replace("/auth/login");
-        //     return;
-        // }
-       
+            // 3. Sign out from Supabase to clear any active OAuth session
+            await supabase.auth.signOut();
+
+            // 4. Clear entire React Query cache — prevents stale user data
+            //    from being accessible after logout (back-button attack)
+            queryClient.clear();
+
+            // 5. Redirect to login
+            router.replace("/auth/login");
+        }
+    };
+
+    useEffect(() => {
+        if (userAuthLoading) return;
+
         if (!profile) return;
 
         if (profile?.profileStatus === "incomplete") {
             router.replace("/kyc");
             return;
         }
-        
+
         if (profile?.profileStatus === "active") {
             router.replace("/app");
         }
@@ -73,6 +92,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
                 userAuthLoading,
                 refetchUser,
                 refetchProfile,
+                logout,
             }}
         >
             {children}
@@ -81,7 +101,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 };
 
 
-// ✅ THIS WAS MISSING 👇
+// THIS WAS MISSING
 export const useUser = () => {
     const context = useContext(UserContext);
     if (!context) {

@@ -7,6 +7,26 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   const { user, userAuthLoading } = useUser();
   const router = useRouter();
 
+  // Redirect immediately if no token exists (catches Next.js router cache restores)
+  useEffect(() => {
+    if (!localStorage.getItem('accessToken')) {
+      router.replace('/auth/login');
+    }
+  }, [router]);
+
+  // Handle browser back button after logout via bfcache (Back/Forward Cache).
+  // bfcache freezes the entire JS heap and restores it without re-running effects,
+  // so the only reliable hook is the 'pageshow' event with event.persisted === true.
+  useEffect(() => {
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted && !localStorage.getItem('accessToken')) {
+        router.replace('/auth/login');
+      }
+    };
+    window.addEventListener('pageshow', handlePageShow);
+    return () => window.removeEventListener('pageshow', handlePageShow);
+  }, [router]);
+
   useEffect(() => {
     if (!userAuthLoading && !user) {
       router.replace('/auth/login');
