@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { appLinks, rcsLinks } from "@/lib/sidebarLinks";
+import { appLinks, rcsLinks, whatsappLinks } from "@/lib/sidebarLinks";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import LogoutButton from "@/components/LogoutButton";
 
@@ -15,8 +15,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
 
     const isRcsRoute = pathname.startsWith("/app/rcs");
+    const isWhatsappRoute = pathname.startsWith("/app/whatsapp");
 
-    const links = isRcsRoute ? rcsLinks : appLinks;
+    const links = isRcsRoute ? rcsLinks : isWhatsappRoute ? whatsappLinks : appLinks;
 
     return (
         <ProtectedRoute>

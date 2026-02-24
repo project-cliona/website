@@ -110,3 +110,61 @@ export interface UserProfile {
   profileStatus: string;
   createdAt: string;
 }
+
+// --- WhatsApp Types ---
+
+export interface WhatsappTemplate {
+  id: number;
+  name: string;
+  language: string;
+  category: "utility" | "marketing" | "authentication";
+  wabaId: string;
+  status: string | null;
+  components: any;
+  modifiedBy: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WhatsappContact {
+  id: number;
+  name: string;
+  phoneNumber: string;
+  countryCode: string;
+  createdAt: string;
+}
+
+export interface WhatsappCampaign {
+  id: string;
+  campaignName: string;
+  templateName: string;
+  scheduledTime: string;
+  messageCount: number;
+  deliveryRate: number;
+  readRate: number;
+  status: "Completed" | "Scheduled" | "Sending" | "Failed";
+}
+
+export interface WhatsappDeliveryRecord {
+  id: string;
+  campaignName: string;
+  templateName: string;
+  submissionTime: string;
+  totalNumbers: number;
+  sent: number;
+  delivered: number;
+  undelivered: number;
+  read: number;
+  uploadSource: string;
+}
+
+export interface WhatsappDeliveryReportResponse {
+  summary: {
+    totalSubmitted: number;
+    sent: number;
+    delivered: number;
+    undelivered: number;
+    read: number;
+  };
+  records: WhatsappDeliveryRecord[];
+}
