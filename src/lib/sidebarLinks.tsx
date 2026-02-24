@@ -11,6 +11,7 @@ import {
   BarChart,
   User,
   Boxes,
+  Users,
 } from "lucide-react";
 
 export const appLinks = [
@@ -28,4 +29,13 @@ export const rcsLinks = [
   { label: "Agents", href: "/app/rcs/agents", icon: <UserRoundCog /> },
   { label: "Delivery Reports", href: "/app/rcs/deliveryReport", icon: <ChartBar /> },
   { label: "Campaign Reports", href: "/app/rcs/campaignReport", icon: <ChartNoAxesColumnDecreasing /> },
+];
+
+export const whatsappLinks = [
+  { label: "Dashboard", href: "/app/whatsapp", icon: <LayoutDashboard /> },
+  { label: "Send Message", href: "/app/whatsapp/sendMessage", icon: <Send /> },
+  { label: "Templates", href: "/app/whatsapp/templates", icon: <Book /> },
+  { label: "Contacts", href: "/app/whatsapp/contacts", icon: <Users /> },
+  { label: "Delivery Reports", href: "/app/whatsapp/deliveryReport", icon: <ChartBar /> },
+  { label: "Campaign Reports", href: "/app/whatsapp/campaignReport", icon: <ChartNoAxesColumnDecreasing /> },
 ];

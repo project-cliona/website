@@ -55,7 +55,7 @@ export default function Dashboard() {
             {/* Projects Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                {/* Project Card */}
+                {/* RCS Project Card */}
                 <Link href="/app/rcs" className="block">
                     <div className="border rounded-lg p-5 hover:shadow-md transition cursor-pointer bg-white">
                         <div className="flex items-start justify-between">
@@ -75,7 +75,31 @@ export default function Dashboard() {
                                 NANO
                             </span>
                         </div>
-                    </div></Link>
+                    </div>
+                </Link>
+
+                {/* WhatsApp Project Card */}
+                <Link href="/app/whatsapp" className="block">
+                    <div className="border rounded-lg p-5 hover:shadow-md transition cursor-pointer bg-white">
+                        <div className="flex items-start justify-between">
+                            <div>
+                                <h3 className="font-medium text-gray-900">
+                                    WhatsApp
+                                </h3>
+                                <p className="text-sm text-gray-500 mt-1">
+                                    Meta | Cloud API
+                                </p>
+                            </div>
+                            <ChevronRight className="h-5 w-5 text-gray-400" />
+                        </div>
+
+                        <div className="mt-4">
+                            <span className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium text-gray-700">
+                                NANO
+                            </span>
+                        </div>
+                    </div>
+                </Link>
 
             </div>
         </div>
