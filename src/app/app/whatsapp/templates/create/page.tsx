@@ -24,8 +24,9 @@ import SubHeading from "@/components/SubHeading";
 import { authenticatedApiClient } from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/providers/userProvider";
-import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getWhatsappConnectionStatus } from "@/lib/api/whatsapp/onboarding";
 
 export default function CreateWhatsappTemplate() {
   const router = useRouter();
@@ -33,10 +34,18 @@ export default function CreateWhatsappTemplate() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
+  // Fetch connection status to auto-populate wabaId
+  const { data: connectionStatus } = useQuery({
+    queryKey: ["whatsapp-connection-status"],
+    queryFn: getWhatsappConnectionStatus,
+  });
+  const connectedWabaId = connectionStatus?.account?.wabaId ?? "";
+
   const {
     control,
     handleSubmit: rhfSubmit,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<CreateWhatsappTemplateForm>({
     resolver: zodResolver(createWhatsappTemplateSchema),
@@ -53,6 +62,13 @@ export default function CreateWhatsappTemplate() {
       buttons: [],
     },
   });
+
+  // Sync wabaId when connection status loads
+  useEffect(() => {
+    if (connectedWabaId) {
+      setValue("wabaId", connectedWabaId);
+    }
+  }, [connectedWabaId, setValue]);
 
   const {
     fields: buttonFields,
@@ -240,27 +256,23 @@ export default function CreateWhatsappTemplate() {
               </div>
 
               <div>
-                <Label htmlFor="wabaId" className="mb-2 block">
-                  WABA ID *
-                </Label>
-                <Controller
-                  name="wabaId"
-                  control={control}
-                  render={({ field, fieldState }) => (
-                    <>
-                      <Input
-                        id="wabaId"
-                        placeholder="Enter your WABA ID"
-                        {...field}
-                      />
-                      {fieldState.error && (
-                        <p className="mt-1 text-sm text-red-500">
-                          {fieldState.error.message}
-                        </p>
-                      )}
-                    </>
-                  )}
-                />
+                <Label className="mb-2 block">WABA ID</Label>
+                {connectedWabaId ? (
+                  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm text-gray-700 font-mono">
+                    {connectedWabaId}
+                  </div>
+                ) : (
+                  <div className="px-3 py-2 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-yellow-800">
+                    No WhatsApp account connected.{" "}
+                    <a
+                      href="/app/whatsapp"
+                      className="underline font-medium"
+                    >
+                      Connect your account
+                    </a>{" "}
+                    to create templates.
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -489,7 +501,7 @@ export default function CreateWhatsappTemplate() {
 
           {/* Submit */}
           <div className="flex gap-4">
-            <Button type="submit" variant="default" size="lg" disabled={isSubmitting || mutation.isPending}>
+            <Button type="submit" variant="default" size="lg" disabled={isSubmitting || mutation.isPending || !connectedWabaId}>
               {isSubmitting || mutation.isPending ? "Creating..." : "Create Template"}
             </Button>
           </div>

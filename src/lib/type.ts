@@ -168,3 +168,23 @@ export interface WhatsappDeliveryReportResponse {
   };
   records: WhatsappDeliveryRecord[];
 }
+
+export interface WhatsappBusinessAccount {
+  id: number;
+  userId: number;
+  metaBusinessId: string;
+  wabaId: string;
+  phoneNumberId: string;
+  displayPhoneNumber: string;
+  businessName: string | null;
+  qualityRating: string | null;
+  status: "active" | "disconnected" | "suspended";
+  tokenExpiresAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WhatsappConnectionStatus {
+  connected: boolean;
+  account: WhatsappBusinessAccount | null;
+}
