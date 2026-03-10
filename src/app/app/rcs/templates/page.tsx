@@ -12,14 +12,14 @@ import { VariantProps } from "class-variance-authority";
 import { RCSTemplate } from "@/lib/type";
 
 
-const multiColumnFilterFn = (row: any, _columnId: string, value: string) => {
+const multiColumnFilterFn = (row: unknown, _columnId: string, value: string) => {
   const search = value.toLowerCase();
   return `${row.original.name} ${row.original.email}`
     .toLowerCase()
     .includes(search);
 };
 
-const statusFilterFn = (row: any, columnId: string, value: string[]) => {
+const statusFilterFn = (row: unknown, columnId: string, value: string[]) => {
   if (!value?.length) return true;
   return value.includes(row.getValue(columnId));
 };
@@ -101,7 +101,7 @@ const columns: ColumnDef<RCSTemplate>[] = [
 export default function UsersTable() {
   const userId = 2;
 
-  const { data: templateData, isLoading, error } = useQuery({
+  const { data: templateData, isLoading } = useQuery({
     queryKey: ["templates", userId],
     queryFn: () => fetchTemplates(userId),
   });

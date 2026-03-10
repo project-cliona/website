@@ -48,6 +48,7 @@ export default function VerifyEmail() {
                 otp,
                 password: Password
             })
+            console.log(response)
             router.push('/auth/login')
         } catch (err) {
             console.error(err)

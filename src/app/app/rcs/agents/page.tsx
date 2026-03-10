@@ -1,6 +1,6 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, FilterFn } from "@tanstack/react-table";
 import { DataTable } from "@/components/Table";
 import { Badge, badgeVariants } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,14 +11,14 @@ import { TableSkeleton } from "@/components/ui/skeleton/table";
 import { VariantProps } from "class-variance-authority";
 import { Agent } from "@/lib/type";
 
-const multiColumnFilterFn = (row: any, _columnId: string, value: string) => {
+const multiColumnFilterFn: FilterFn<Agent> = (row, value) => {
   const search = value.toLowerCase();
   return `${row.original.name} ${row.original.email}`
     .toLowerCase()
     .includes(search);
 };
 
-const statusFilterFn = (row: any, columnId: string, value: string[]) => {
+const statusFilterFn: FilterFn<Agent> = (row, columnId, value) => {
   if (!value?.length) return true;
   return value.includes(row.getValue(columnId));
 };
@@ -103,7 +103,7 @@ const columns: ColumnDef<Agent>[] = [
 export default function UsersTable() {
   const userId = 2;
 
-  const { data: agentData, isLoading, error } = useQuery({
+  const { data: agentData, isLoading } = useQuery<Agent[]>({
     queryKey: ["agents", userId],
     queryFn: () => fetchAgents(userId),
   });

@@ -7,7 +7,7 @@ import { Agent } from '@/lib/type'
 import { PageHeading } from '@/components/PageHeading'
 import SubHeading from '@/components/SubHeading'
 import { Label } from '@/components/ui/Label'
-import { Info, Palette, Phone, Scale, UserCheck } from 'lucide-react'
+import { Info, Phone, Scale, UserCheck } from 'lucide-react'
 
 const ReadOnlyValue = ({ value }: { value?: string | null }) => (
   <div className="mt-1 text-sm text-gray-500 break-all">

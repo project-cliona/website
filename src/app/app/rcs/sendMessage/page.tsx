@@ -34,7 +34,7 @@ export default function SendMessage() {
 
   const selectedAgent = watch("agentID")
   const selectedTemplate = watch("templateID")
-  const mobileNumbers = watch("mobileNumbers")
+  // const mobileNumbers = watch("mobileNumbers")
 
   const userId = 2
 

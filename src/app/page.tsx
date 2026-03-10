@@ -14,6 +14,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const C = {
@@ -33,7 +34,7 @@ function Navbar() {
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
-        <a href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <Image
             src="/220630895.png"
             alt="Cliona"
@@ -41,8 +42,10 @@ function Navbar() {
             height={32}
             className="rounded-md"
           />
-          <span className="text-xl font-semibold text-[#0F1117]">Cliona</span>
-        </a>
+          <span className="text-xl font-semibold text-[#0F1117]">
+            Cliona
+          </span>
+        </Link>
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">

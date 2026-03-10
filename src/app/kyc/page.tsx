@@ -34,6 +34,7 @@ export default function KycPage({ userId }: { userId: number }) {
   const onSubmit = async (data: KycFormType) => {
     try {
       const res = await authenticatedApiClient().post(`/common/profile/${userId}`, data);
+      console.log(res.data);
       reset();
     } catch (err) {
       console.error(err);

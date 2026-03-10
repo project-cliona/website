@@ -13,22 +13,21 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
+    // DropdownMenuGroup,
+    // DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuPortal,
-    DropdownMenuSeparator,
-    DropdownMenuShortcut,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
+    // DropdownMenuPortal,
+    // DropdownMenuSeparator,
+    // DropdownMenuShortcut,
+    // DropdownMenuSub,
+    // DropdownMenuSubContent,
+    // DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/Input";
@@ -53,9 +52,9 @@ import {
 import {
     ColumnDef,
     ColumnFiltersState,
-    FilterFn,
+    // FilterFn,
     PaginationState,
-    Row,
+    // Row,
     SortingState,
     VisibilityState,
     flexRender,
@@ -76,7 +75,7 @@ import {
     CircleAlert,
     CircleX,
     Columns3,
-    Ellipsis,
+    // Ellipsis,
     Filter,
     ListFilter,
     Plus,
@@ -87,7 +86,7 @@ import { useRouter } from "next/navigation";
 
 interface DataTableProps<TData> {
     incomingData: TData[];
-    columns: ColumnDef<TData, any>[];
+    columns: ColumnDef<TData, unknown>[];
     filterPlaceHolder?: string;
     buttonTitle?: string;
     navigateTo?: string;
@@ -164,19 +163,19 @@ export const DataTable = <TData extends { id: string | number },>({
         const values = Array.from(statusColumn.getFacetedUniqueValues().keys());
 
         return values.sort();
-    }, [table.getColumn("status")?.getFacetedUniqueValues()]);
+    }, [table]);
 
     // Get counts for each status
     const statusCounts = useMemo(() => {
         const statusColumn = table.getColumn("status");
         if (!statusColumn) return new Map();
         return statusColumn.getFacetedUniqueValues();
-    }, [table.getColumn("status")?.getFacetedUniqueValues()]);
+    }, [table]);
 
     const selectedStatuses = useMemo(() => {
         const filterValue = table.getColumn("status")?.getFilterValue() as string[];
         return filterValue ?? [];
-    }, [table.getColumn("status")?.getFilterValue()]);
+    }, [table]);
 
     const handleStatusChange = (checked: boolean, value: string) => {
         const filterValue = table.getColumn("status")?.getFilterValue() as string[];
@@ -199,59 +198,59 @@ export const DataTable = <TData extends { id: string | number },>({
             router.push(navigateTo);
     }
 
-    function RowActions({ row }: { row: Row<TData> }) {
-        return (
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <div className="flex justify-end">
-                        <Button size="icon" variant="ghost" className="shadow-none" aria-label="Edit item">
-                            <Ellipsis size={16} strokeWidth={2} aria-hidden="true" />
-                        </Button>
-                    </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuGroup>
-                        <DropdownMenuItem>
-                            <span>Edit</span>
-                            <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <span>Duplicate</span>
-                            <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
-                        </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuGroup>
-                        <DropdownMenuItem>
-                            <span>Archive</span>
-                            <DropdownMenuShortcut>⌘A</DropdownMenuShortcut>
-                        </DropdownMenuItem>
-                        <DropdownMenuSub>
-                            <DropdownMenuSubTrigger>More</DropdownMenuSubTrigger>
-                            <DropdownMenuPortal>
-                                <DropdownMenuSubContent>
-                                    <DropdownMenuItem>Move to project</DropdownMenuItem>
-                                    <DropdownMenuItem>Move to folder</DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem>Advanced options</DropdownMenuItem>
-                                </DropdownMenuSubContent>
-                            </DropdownMenuPortal>
-                        </DropdownMenuSub>
-                    </DropdownMenuGroup>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuGroup>
-                        <DropdownMenuItem>Share</DropdownMenuItem>
-                        <DropdownMenuItem>Add to favorites</DropdownMenuItem>
-                    </DropdownMenuGroup>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-destructive focus:text-destructive">
-                        <span>Delete</span>
-                        <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        );
-    }
+    // function RowActions() {
+    //     return (
+    //         <DropdownMenu>
+    //             <DropdownMenuTrigger asChild>
+    //                 <div className="flex justify-end">
+    //                     <Button size="icon" variant="ghost" className="shadow-none" aria-label="Edit item">
+    //                         <Ellipsis size={16} strokeWidth={2} aria-hidden="true" />
+    //                     </Button>
+    //                 </div>
+    //             </DropdownMenuTrigger>
+    //             <DropdownMenuContent align="end">
+    //                 <DropdownMenuGroup>
+    //                     <DropdownMenuItem>
+    //                         <span>Edit</span>
+    //                         <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
+    //                     </DropdownMenuItem>
+    //                     <DropdownMenuItem>
+    //                         <span>Duplicate</span>
+    //                         <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
+    //                     </DropdownMenuItem>
+    //                 </DropdownMenuGroup>
+    //                 <DropdownMenuSeparator />
+    //                 <DropdownMenuGroup>
+    //                     <DropdownMenuItem>
+    //                         <span>Archive</span>
+    //                         <DropdownMenuShortcut>⌘A</DropdownMenuShortcut>
+    //                     </DropdownMenuItem>
+    //                     <DropdownMenuSub>
+    //                         <DropdownMenuSubTrigger>More</DropdownMenuSubTrigger>
+    //                         <DropdownMenuPortal>
+    //                             <DropdownMenuSubContent>
+    //                                 <DropdownMenuItem>Move to project</DropdownMenuItem>
+    //                                 <DropdownMenuItem>Move to folder</DropdownMenuItem>
+    //                                 <DropdownMenuSeparator />
+    //                                 <DropdownMenuItem>Advanced options</DropdownMenuItem>
+    //                             </DropdownMenuSubContent>
+    //                         </DropdownMenuPortal>
+    //                     </DropdownMenuSub>
+    //                 </DropdownMenuGroup>
+    //                 <DropdownMenuSeparator />
+    //                 <DropdownMenuGroup>
+    //                     <DropdownMenuItem>Share</DropdownMenuItem>
+    //                     <DropdownMenuItem>Add to favorites</DropdownMenuItem>
+    //                 </DropdownMenuGroup>
+    //                 <DropdownMenuSeparator />
+    //                 <DropdownMenuItem className="text-destructive focus:text-destructive">
+    //                     <span>Delete</span>
+    //                     <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+    //                 </DropdownMenuItem>
+    //             </DropdownMenuContent>
+    //         </DropdownMenu>
+    //     );
+    // }
 
     return (
         <div className="space-y-4 max-w-full">

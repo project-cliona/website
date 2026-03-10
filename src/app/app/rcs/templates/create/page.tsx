@@ -10,8 +10,7 @@ import { Label } from '@/components/ui/Label'
 import { Input } from '@/components/ui/Input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
-import { Badge } from '@/components/ui/badge'
-import { Info, Plus, Trash2, Image, CreditCard, Lightbulb } from 'lucide-react'
+import { Info, Plus, Trash2, Image, Lightbulb } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import SubHeading from '@/components/SubHeading'
 import { useQuery } from '@tanstack/react-query'
@@ -34,8 +33,6 @@ export default function CreateTemplate() {
 
   const {
     data: template,
-    isLoading,
-    error
   } = useQuery<RCSTemplate>({
     queryKey: ['template', id],
     queryFn: () => getTemplateById(id as string),
@@ -48,7 +45,7 @@ export default function CreateTemplate() {
     watch,
     setValue,
     reset,
-    formState: { errors, isSubmitting, isValid },
+    formState: { errors, isSubmitting },
   } = useForm<CreateTemplateForm>({
     resolver: zodResolver(createTemplateSchema),
     mode: 'onChange',
@@ -76,9 +73,9 @@ export default function CreateTemplate() {
       agentCategory: template.agentCategory ?? '',
       cardTitle: card?.cardTitle ?? '',
       cardDescription: card?.cardDescription ?? '',
-      mediaFile: null, // ❗ cannot set File from URL
+      mediaFile: null,
       suggestions:
-        card?.suggestions?.map((s: any) => ({
+        card?.suggestions?.map((s: unknown) => ({
           actionType: s.actionType,
           displayText: s.displayText,
           actionData: s.actionData ?? '',
@@ -154,6 +151,7 @@ export default function CreateTemplate() {
       console.log(payload)
 
       const res = await authenticatedApiClient().post('/rcs/template', payload)
+      console.log(res.data)
       alert('Template created successfully ✅')
     } catch (error) {
       console.error('Template creation failed:', error)

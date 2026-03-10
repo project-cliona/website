@@ -1,6 +1,6 @@
 'use client'
 
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
@@ -9,7 +9,6 @@ import { apiClient } from '@/lib/axios'
 import { useUser } from '@/providers/userProvider'
 
 export default function VerifyEmail() {
-    const router = useRouter()
     const searchParams = useSearchParams()
 
     const email = searchParams.get('email')
