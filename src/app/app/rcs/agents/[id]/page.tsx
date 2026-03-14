@@ -8,6 +8,7 @@ import { PageHeading } from '@/components/PageHeading'
 import SubHeading from '@/components/SubHeading'
 import { Label } from '@/components/ui/Label'
 import { Info, Phone, Scale, UserCheck } from 'lucide-react'
+import Image from 'next/image'
 
 const ReadOnlyValue = ({ value }: { value?: string | null }) => (
   <div className="mt-1 text-sm text-gray-500 break-all">
@@ -47,10 +48,12 @@ export default function CreateAgent() {
         {/* Banner */}
         <div className="h-44 w-full bg-gray-100">
           {agentData.agentheroimageURL && (
-            <img
+            <Image
               src={agentData.agentheroimageURL}
               className="h-full w-full object-cover"
               alt="Agent banner"
+              width={800}
+              height={176}
             />
           )}
         </div>
@@ -61,10 +64,12 @@ export default function CreateAgent() {
           <div className="flex items-center gap-4">
             <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl border bg-white">
               {agentData.agentlogo && (
-                <img
+                <Image
                   src={agentData.agentlogo}
                   className="h-full w-full object-contain p-1"
                   alt="Agent logo"
+                  width={80}
+                  height={80}
                 />
               )}
             </div>

@@ -120,7 +120,7 @@ export interface WhatsappTemplate {
   category: "utility" | "marketing" | "authentication";
   wabaId: string;
   status: string | null;
-  components: any;
+  components: Record<string, unknown>;
   modifiedBy: number;
   createdAt: string;
   updatedAt: string;
