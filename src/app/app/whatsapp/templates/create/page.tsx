@@ -1,3 +1,11 @@
+export default function WhatsappTemplateCreate() {
+  return (
+    <div className="p-6 text-gray-500">
+      Create Template — coming soon.
+    </div>
+  );
+}
+
 // "use client";
 
 // import { PageHeading } from "@/components/PageHeading";

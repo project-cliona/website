@@ -68,14 +68,14 @@ export default function CreateTemplate() {
 
     reset({
       templateName: template.templateName ?? '',
-      templateType: template.templateType ?? 'standalone',
+      templateType: (template.templateType ?? 'standalone') as 'standalone' | 'carousel' | 'text',
       agentID: String(template.agentID ?? ''),
-      agentCategory: template.agentCategory ?? '',
+      agentCategory: (template as RCSTemplate & { agentCategory?: string }).agentCategory ?? '',
       cardTitle: card?.cardTitle ?? '',
       cardDescription: card?.cardDescription ?? '',
       mediaFile: null,
       suggestions:
-        card?.suggestions?.map((s: unknown) => ({
+        card?.suggestions?.map((s) => ({
           actionType: s.actionType,
           displayText: s.displayText,
           actionData: s.actionData ?? '',
@@ -104,7 +104,7 @@ export default function CreateTemplate() {
     if (!selectedAgentId || !agentData) return
 
     const category =
-      agentData.find((agent) => agent.id === selectedAgentId)?.billingcategory ?? ''
+      agentData.find((agent) => String(agent.id) === selectedAgentId)?.billingcategory ?? ''
 
     setValue('agentCategory', category, {
       shouldValidate: true,

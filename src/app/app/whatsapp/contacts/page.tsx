@@ -1,3 +1,11 @@
+export default function WhatsappContacts() {
+  return (
+    <div className="p-6 text-gray-500">
+      Contacts — coming soon.
+    </div>
+  );
+}
+
 // "use client";
 
 // import { PageHeading } from "@/components/PageHeading";

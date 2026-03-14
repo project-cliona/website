@@ -1,6 +1,6 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, FilterFn } from "@tanstack/react-table";
 import { DataTable } from "@/components/Table";
 import { Badge, badgeVariants } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,14 +12,14 @@ import { VariantProps } from "class-variance-authority";
 import { RCSTemplate } from "@/lib/type";
 
 
-const multiColumnFilterFn = (row: unknown, _columnId: string, value: string) => {
+const multiColumnFilterFn: FilterFn<RCSTemplate> = (row, _columnId, value) => {
   const search = value.toLowerCase();
-  return `${row.original.name} ${row.original.email}`
+  return `${row.original.templateName} ${row.original.agentID}`
     .toLowerCase()
     .includes(search);
 };
 
-const statusFilterFn = (row: unknown, columnId: string, value: string[]) => {
+const statusFilterFn: FilterFn<RCSTemplate> = (row, columnId, value) => {
   if (!value?.length) return true;
   return value.includes(row.getValue(columnId));
 };

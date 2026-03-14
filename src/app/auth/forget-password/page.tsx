@@ -1,13 +1,13 @@
 'use client'
 
 import { useSearchParams, useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
 import { Button } from '@/components/ui/Button'
 import { apiClient } from '@/lib/axios'
 
-export default function VerifyEmail() {
+function ForgetPasswordForm() {
     const router = useRouter()
     const searchParams = useSearchParams()
 
@@ -63,7 +63,7 @@ export default function VerifyEmail() {
                 <div className="text-center">
                     <h1 className="text-2xl font-semibold">Enter your email</h1>
                     <p className="text-sm text-gray-500 mt-1">
-                        We’ll send an OTP to your email
+                        We'll send an OTP to your email
                     </p>
                 </div>
 
@@ -127,5 +127,13 @@ export default function VerifyEmail() {
                 )}
             </div>
         </div>
+    )
+}
+
+export default function VerifyEmail() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+            <ForgetPasswordForm />
+        </Suspense>
     )
 }

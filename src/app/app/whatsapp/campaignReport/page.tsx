@@ -1,3 +1,11 @@
+export default function WhatsappCampaignReports() {
+  return (
+    <div className="p-6 text-gray-500">
+      Campaign Reports — coming soon.
+    </div>
+  );
+}
+
 // "use client";
 
 // import { useState, useMemo } from "react";

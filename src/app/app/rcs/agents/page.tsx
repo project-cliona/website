@@ -13,7 +13,7 @@ import { Agent } from "@/lib/type";
 
 const multiColumnFilterFn: FilterFn<Agent> = (row, value) => {
   const search = value.toLowerCase();
-  return `${row.original.name} ${row.original.email}`
+  return `${row.original.agentname} ${row.original.email}`
     .toLowerCase()
     .includes(search);
 };

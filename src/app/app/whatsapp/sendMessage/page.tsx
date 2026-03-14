@@ -1,3 +1,11 @@
+export default function WhatsappSendMessage() {
+  return (
+    <div className="p-6 text-gray-500">
+      Send Message — coming soon.
+    </div>
+  );
+}
+
 // "use client";
 
 // import { WhatsappPreview } from "@/components/ui/WhatsappPreview";

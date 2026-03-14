@@ -1,3 +1,11 @@
+export default function WhatsappDeliveryReports() {
+  return (
+    <div className="p-6 text-gray-500">
+      Delivery Reports — coming soon.
+    </div>
+  );
+}
+
 // "use client";
 
 // import { useState } from "react";
