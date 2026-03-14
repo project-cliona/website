@@ -73,12 +73,12 @@ export default function SendWhatsappMessage() {
     for (const comp of selectedTemplate.components) {
       if (comp.type === "BODY") previewBody = comp.text || "";
       if (comp.type === "HEADER") {
-        previewHeaderType = (comp.format?.toLowerCase() || "text") as any;
+        previewHeaderType = (comp.format?.toLowerCase() || "text") as typeof previewHeaderType;
         previewHeaderValue = comp.text || "";
       }
       if (comp.type === "FOOTER") previewFooter = comp.text || "";
       if (comp.type === "BUTTONS" && Array.isArray(comp.buttons)) {
-        previewButtons = comp.buttons.map((b: any) => ({
+        previewButtons = comp.buttons.map((b: Record<string, string>) => ({
           type: b.type,
           text: b.text,
         }));
@@ -112,7 +112,7 @@ export default function SendWhatsappMessage() {
       reset();
       setTimeout(() => setSubmitSuccess(false), 5000);
     },
-    onError: (error: any) => {
+    onError: (error: Error & { response?: { data?: { message?: string } } }) => {
       const msg =
         error?.response?.data?.message ||
         error?.message ||
@@ -209,12 +209,12 @@ export default function SendWhatsappMessage() {
 //     for (const comp of selectedTemplate.components) {
 //       if (comp.type === "BODY") previewBody = comp.text || "";
 //       if (comp.type === "HEADER") {
-//         previewHeaderType = (comp.format?.toLowerCase() || "text") as any;
+//         previewHeaderType = (comp.format?.toLowerCase() || "text") as typeof previewHeaderType;
 //         previewHeaderValue = comp.text || "";
 //       }
 //       if (comp.type === "FOOTER") previewFooter = comp.text || "";
 //       if (comp.type === "BUTTONS" && Array.isArray(comp.buttons)) {
-//         previewButtons = comp.buttons.map((b: any) => ({
+//         previewButtons = comp.buttons.map((b: Record<string, string>) => ({
 //           type: b.type,
 //           text: b.text,
 //         }));

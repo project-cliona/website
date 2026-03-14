@@ -1,5 +1,6 @@
 declare global {
   interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     FB: any;
     fbAsyncInit: () => void;
   }
@@ -67,6 +68,7 @@ export async function launchEmbeddedSignup(): Promise<EmbeddedSignupResult> {
 
   return new Promise((resolve) => {
     window.FB.login(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (response: any) => {
         if (response.authResponse?.code) {
           resolve({ status: "success", code: response.authResponse.code });

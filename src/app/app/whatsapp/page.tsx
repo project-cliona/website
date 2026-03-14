@@ -39,7 +39,7 @@ export default function WhatsappDashboard() {
       queryClient.invalidateQueries({ queryKey: ["whatsapp-connection-status"] });
       queryClient.invalidateQueries({ queryKey: ["whatsapp-dashboard"] });
     },
-    onError: (error: any) => {
+    onError: (error: Error & { response?: { data?: { message?: string } } }) => {
       setConnectError(
         error?.response?.data?.message ??
           "Failed to connect WhatsApp account. Please try again."

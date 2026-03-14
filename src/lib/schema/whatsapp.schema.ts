@@ -9,7 +9,7 @@ export const createWhatsappTemplateSchema = z.object({
   language: z.enum(["en", "en_US", "hi", "ta", "te", "mr", "bn", "gu", "kn", "ml", "pa"]),
   category: z.enum(["utility", "marketing", "authentication"]),
   wabaId: z.string().min(1, "WABA ID is required"),
-  headerType: z.enum(["none", "text", "image", "video", "document"]).default("none"),
+  headerType: z.enum(["none", "text", "image", "video", "document"]).optional().default("none"),
   headerValue: z.string().optional(),
   body: z.string().min(1, "Body text is required").max(1024),
   footer: z.string().max(60).optional(),
@@ -25,7 +25,7 @@ export const createWhatsappTemplateSchema = z.object({
     .optional(),
 });
 
-export type CreateWhatsappTemplateForm = z.infer<typeof createWhatsappTemplateSchema>;
+export type CreateWhatsappTemplateForm = z.input<typeof createWhatsappTemplateSchema>;
 
 export const addContactSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -45,7 +45,7 @@ export const sendWhatsappCampaignSchema = z.object({
   mobileNumbers: z.string().optional(),
   uploadedFile: z.any().nullable().optional(),
   scheduledAt: z.string().optional(),
-  removeDuplicates: z.boolean().default(false),
+  removeDuplicates: z.boolean().optional().default(false),
 });
 
-export type SendWhatsappCampaignForm = z.infer<typeof sendWhatsappCampaignSchema>;
+export type SendWhatsappCampaignForm = z.input<typeof sendWhatsappCampaignSchema>;

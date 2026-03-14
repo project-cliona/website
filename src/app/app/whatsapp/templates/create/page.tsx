@@ -20,18 +20,25 @@ import {
 import { Textarea } from "@/components/ui/Textarea";
 import { Plus, Trash2, Info, MessageSquare, Zap } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import SubHeading from "@/components/SubHeading";
+import SubHeading from "@/components/ui/SubHeading";
 import { authenticatedApiClient } from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/providers/userProvider";
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getWhatsappConnectionStatus } from "@/lib/api/whatsapp/onboarding";
 
 export default function CreateWhatsappTemplate() {
   const router = useRouter();
   const { user } = useUser();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const { data: connectionStatus } = useQuery({
+    queryKey: ["whatsapp-connection-status"],
+    queryFn: getWhatsappConnectionStatus,
+  });
+  const connectedWabaId = connectionStatus?.account?.wabaId ?? null;
 
   const {
     control,
@@ -77,7 +84,7 @@ export default function CreateWhatsappTemplate() {
 
   const mutation = useMutation({
     mutationFn: async (data: CreateWhatsappTemplateForm) => {
-      const components: any[] = [];
+      const components: Record<string, unknown>[] = [];
 
       if (data.headerType !== "none") {
         components.push({
@@ -121,7 +128,7 @@ export default function CreateWhatsappTemplate() {
       setSubmitSuccess(true);
       router.push("/app/whatsapp/templates");
     },
-    onError: (error: any) => {
+    onError: (error: Error & { response?: { data?: { message?: string } } }) => {
       const msg =
         error?.response?.data?.message ||
         error?.message ||
@@ -528,7 +535,7 @@ export default function CreateWhatsappTemplate() {
 // import { Textarea } from "@/components/ui/Textarea";
 // import { Plus, Trash2, Info, MessageSquare, Zap } from "lucide-react";
 // import { Button } from "@/components/ui/Button";
-// import SubHeading from "@/components/SubHeading";
+// import SubHeading from "@/components/ui/SubHeading";
 // import { authenticatedApiClient } from "@/lib/axios";
 // import { useRouter } from "next/navigation";
 // import { useUser } from "@/providers/userProvider";
@@ -585,7 +592,7 @@ export default function CreateWhatsappTemplate() {
 
 //   const mutation = useMutation({
 //     mutationFn: async (data: CreateWhatsappTemplateForm) => {
-//       const components: any[] = [];
+//       const components: Record<string, unknown>[] = [];
 
 //       if (data.headerType !== "none") {
 //         components.push({
@@ -629,7 +636,7 @@ export default function CreateWhatsappTemplate() {
 //       setSubmitSuccess(true);
 //       router.push("/app/whatsapp/templates");
 //     },
-//     onError: (error: any) => {
+//     onError: (error: Error & { response?: { data?: { message?: string } } }) => {
 //       const msg =
 //         error?.response?.data?.message ||
 //         error?.message ||
