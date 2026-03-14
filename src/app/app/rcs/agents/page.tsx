@@ -4,7 +4,7 @@ import { ColumnDef, FilterFn } from "@tanstack/react-table";
 import { DataTable } from "@/components/Table";
 import { Badge, badgeVariants } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { PageHeading } from "@/components/PageHeading";
+import { PageHeading } from "@/components/ui/PageHeading";
 import { fetchAgents } from "@/lib/api/rcs/agents";
 import { useQuery } from "@tanstack/react-query";
 import { TableSkeleton } from "@/components/ui/skeleton/table";
@@ -13,7 +13,7 @@ import { Agent } from "@/lib/type";
 
 const multiColumnFilterFn: FilterFn<Agent> = (row, value) => {
   const search = value.toLowerCase();
-  return `${row.original.name} ${row.original.email}`
+  return `${row.original.agentname} ${row.original.email}`
     .toLowerCase()
     .includes(search);
 };

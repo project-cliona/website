@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Button } from './ui/Button';
+import { Button } from '../ui/Button';
 
 import {
 	AppleIcon,
@@ -11,7 +11,7 @@ import {
 	GithubIcon,
 	Grid2x2PlusIcon,
 } from 'lucide-react';
-import { Input } from './ui/Input';
+import { Input } from '../ui/Input';
 
 export function AuthPage() {
 	return (

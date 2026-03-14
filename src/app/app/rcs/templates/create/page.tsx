@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { MobilePreview } from '@/components/ui/MobilePreview'
-import { PageHeading } from '@/components/PageHeading'
+import { PageHeading } from '@/components/ui/PageHeading'
 import { CreateTemplateForm, createTemplateSchema } from '@/lib/schema/rcs.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/Textarea'
 import { Info, Plus, Trash2, Image, Lightbulb } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
-import SubHeading from '@/components/SubHeading'
+import SubHeading from '@/components/ui/SubHeading'
 import { useQuery } from '@tanstack/react-query'
 import { fetchAgents } from '@/lib/api/rcs/agents'
 import { authenticatedApiClient } from '@/lib/axios'
@@ -68,14 +68,14 @@ export default function CreateTemplate() {
 
     reset({
       templateName: template.templateName ?? '',
-      templateType: template.templateType ?? 'standalone',
+      templateType: (template.templateType ?? 'standalone') as 'standalone' | 'carousel' | 'text',
       agentID: String(template.agentID ?? ''),
-      agentCategory: template.agentCategory ?? '',
+      agentCategory: (template as RCSTemplate & { agentCategory?: string }).agentCategory ?? '',
       cardTitle: card?.cardTitle ?? '',
       cardDescription: card?.cardDescription ?? '',
       mediaFile: null,
       suggestions:
-        card?.suggestions?.map((s: unknown) => ({
+        card?.suggestions?.map((s) => ({
           actionType: s.actionType,
           displayText: s.displayText,
           actionData: s.actionData ?? '',
@@ -104,7 +104,7 @@ export default function CreateTemplate() {
     if (!selectedAgentId || !agentData) return
 
     const category =
-      agentData.find((agent) => agent.id === selectedAgentId)?.billingcategory ?? ''
+      agentData.find((agent) => String(agent.id) === selectedAgentId)?.billingcategory ?? ''
 
     setValue('agentCategory', category, {
       shouldValidate: true,

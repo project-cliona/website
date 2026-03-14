@@ -120,7 +120,7 @@ export interface WhatsappTemplate {
   category: "utility" | "marketing" | "authentication";
   wabaId: string;
   status: string | null;
-  components: any;
+  components: Record<string, unknown>;
   modifiedBy: number;
   createdAt: string;
   updatedAt: string;
@@ -167,4 +167,24 @@ export interface WhatsappDeliveryReportResponse {
     read: number;
   };
   records: WhatsappDeliveryRecord[];
+}
+
+export interface WhatsappBusinessAccount {
+  id: number;
+  userId: number;
+  metaBusinessId: string;
+  wabaId: string;
+  phoneNumberId: string;
+  displayPhoneNumber: string;
+  businessName: string | null;
+  qualityRating: string | null;
+  status: "active" | "disconnected" | "suspended";
+  tokenExpiresAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WhatsappConnectionStatus {
+  connected: boolean;
+  account: WhatsappBusinessAccount | null;
 }

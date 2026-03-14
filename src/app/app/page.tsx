@@ -1,4 +1,4 @@
-import { PageHeading } from "@/components/PageHeading";
+import { PageHeading } from "@/components/ui/PageHeading";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import {
