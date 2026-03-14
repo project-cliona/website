@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryObserverResult, useQuery, useQueryClient } from "@tanstack/react-query";
 import { User, UserProfile } from "@/lib/type";
 import { getCurrentUser, getUserProfile, logoutUser } from "@/lib/api/auth";
 import { useRouter } from "next/navigation";
@@ -11,8 +11,8 @@ interface UserContextType {
     user: User | null;
     profile: UserProfile | null;
     userAuthLoading: boolean;
-    refetchUser: () => Promise<any>;
-    refetchProfile: () => Promise<any>;
+    refetchUser: () => Promise<QueryObserverResult<User, Error>>;
+    refetchProfile: () => Promise<QueryObserverResult<UserProfile, Error>>;
     logout: () => Promise<void>;
 }
 

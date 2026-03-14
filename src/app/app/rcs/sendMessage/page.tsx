@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/Textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/Button'
 import { fetchTemplatesByAgentID } from '@/lib/api/rcs/templates'
-import { RCSTemplate } from '@/lib/type'
+import { Agent, RCSTemplate } from '@/lib/type'
 export default function SendMessage() {
   const {
     control,
@@ -34,21 +34,21 @@ export default function SendMessage() {
 
   const selectedAgent = watch("agentID")
   const selectedTemplate = watch("templateID")
-  const mobileNumbers = watch("mobileNumbers")
+  // const mobileNumbers = watch("mobileNumbers")
 
   const userId = 2
 
-  const { data: agentData } = useQuery({
+  const { data: agentData } = useQuery<Agent[]>({
     queryKey: ['agents', userId],
     queryFn: () => fetchAgents(userId),
   })
 
-  const { data: templateData } = useQuery({
+  const { data: templateData } = useQuery<RCSTemplate[]>({
     queryKey: ['agents', selectedAgent],
     queryFn: () => fetchTemplatesByAgentID(selectedAgent),
   })
 
-  const template: RCSTemplate = templateData?.find(
+  const template = templateData?.find(
     (temp: RCSTemplate) => temp.id.toString() === selectedTemplate
   );
 
@@ -88,8 +88,8 @@ export default function SendMessage() {
                         </SelectTrigger>
                         <SelectContent>
                           {agentData?.map((agent) => (
-                            <SelectItem key={agent.id} value={agent.id}>
-                              {agent.name}
+                            <SelectItem key={agent.id} value={String(agent.id)}>
+                              {agent.agentname}
                             </SelectItem>
                           ))}
                         </SelectContent>

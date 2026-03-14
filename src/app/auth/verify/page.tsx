@@ -1,15 +1,14 @@
 'use client'
 
-import { useSearchParams, useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { useState, Suspense } from 'react'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
 import { Button } from '@/components/ui/Button'
 import { apiClient } from '@/lib/axios'
 import { useUser } from '@/providers/userProvider'
 
-export default function VerifyEmail() {
-    const router = useRouter()
+function VerifyEmailForm() {
     const searchParams = useSearchParams()
 
     const email = searchParams.get('email')
@@ -57,14 +56,14 @@ export default function VerifyEmail() {
                     <div className="text-center">
                         <h1 className="text-2xl font-semibold">Verify your email</h1>
                         <p className="text-sm text-gray-500 mt-1">
-                            We’ve sent an OTP to your email
+                            We've sent an OTP to your email
                         </p>
                     </div>
                 ) : (
                     <div className="text-center">
                         <h1 className="text-2xl font-semibold">Login with your email</h1>
                         <p className="text-sm text-gray-500 mt-1">
-                            We’ll an OTP to your email
+                            We'll an OTP to your email
                         </p>
                     </div>
                 )}
@@ -109,5 +108,13 @@ export default function VerifyEmail() {
                 )}
             </div>
         </div>
+    )
+}
+
+export default function VerifyEmail() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+            <VerifyEmailForm />
+        </Suspense>
     )
 }

@@ -40,6 +40,7 @@ export default function Signup() {
         email: data.email,
         password: data.password
       })
+      console.log(response)
       reset()
       router.push(`/auth/verify?email=${encodeURIComponent(data.email)}`)
     } catch (error) {
@@ -57,6 +58,7 @@ export default function Signup() {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
       })
+      console.log(data)
 
       if (error) {
         console.error('Social login error:', error.message)

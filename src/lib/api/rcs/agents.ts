@@ -1,4 +1,3 @@
-import { Agent } from "@/lib/type";
 import { authenticatedApiClient } from "@/lib/axios";
 
 export const fetchAgents = async (userId: number) => {

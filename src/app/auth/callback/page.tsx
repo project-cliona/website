@@ -44,7 +44,8 @@ export default function OAuthCallback() {
 
         // UserProvider's useEffect handles navigation to /kyc or /app
         // based on profileStatus. No manual router.push needed here.
-      } catch (err: any) {
+      } catch (err: unknown) {
+        console.log(err)
         setError('Login failed. Redirecting to login...')
         setTimeout(() => router.replace('/auth/login'), 2000)
       }

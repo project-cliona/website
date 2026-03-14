@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
@@ -12,9 +11,9 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { apiClient } from '@/lib/axios'
 import { supabase } from '@/lib/supabase/client'
 import { useUser } from '@/providers/userProvider'
+import axios from 'axios'
 
 export default function Login() {
-  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [apiError, setApiError] = useState('')
   const { refetchUser, refetchProfile, userAuthLoading } = useUser()
@@ -43,10 +42,14 @@ export default function Login() {
 
       localStorage.setItem('accessToken', response.data.result.accessToken)
       await Promise.all([refetchUser(), refetchProfile()])
-    } catch (error: any) {
-      setApiError(
-        error?.response?.data?.message || 'Invalid email or password'
-      )
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setApiError(
+          error.response?.data?.message || "Invalid email or password"
+        )
+      } else {
+        setApiError("Something went wrong")
+      }
     } finally {
       setLoading(false)
     }
