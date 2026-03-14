@@ -7,8 +7,8 @@ import Image from "next/image";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { appLinks, rcsLinks, whatsappLinks } from "@/lib/sidebarLinks";
-import ProtectedRoute from "@/components/ProtectedRoute";
-import LogoutButton from "@/components/LogoutButton";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import LogoutButton from "@/components/auth/LogoutButton";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     const [open, setOpen] = useState(false);

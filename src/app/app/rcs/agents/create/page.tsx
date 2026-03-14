@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/Input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import { Label } from "@/components/ui/Label";
 import { Button } from '@/components/ui/Button';
-import { PageHeading } from '@/components/PageHeading';
+import { PageHeading } from '@/components/ui/PageHeading';
 import { Info, Palette, Phone, Scale, UserCheck } from 'lucide-react';
-import SubHeading from '@/components/SubHeading';
+import SubHeading from '@/components/ui/SubHeading';
 import { authenticatedApiClient } from '@/lib/axios';
 
 export default function CreateAgent() {

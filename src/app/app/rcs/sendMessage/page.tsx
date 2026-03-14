@@ -2,7 +2,7 @@
 
 import { MobilePreview } from '@/components/ui/MobilePreview'
 import { FileUpload } from "@/components/ui/FileUpload"
-import { PageHeading } from '@/components/PageHeading'
+import { PageHeading } from '@/components/ui/PageHeading'
 import { useQuery } from '@tanstack/react-query'
 import { fetchAgents } from '@/lib/api/rcs/agents'
 import { Label } from '@/components/ui/Label'

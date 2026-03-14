@@ -1,6 +1,6 @@
 "use client";
 
-import { PageHeading } from "@/components/PageHeading";
+import { PageHeading } from "@/components/ui/PageHeading";
 import { StatsCard } from "@/components/ui/StatsCard";
 import { TableSkeleton } from "@/components/ui/skeleton/table";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";

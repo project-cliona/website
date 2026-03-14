@@ -2,7 +2,7 @@
 
 import { WhatsappPreview } from "@/components/ui/WhatsappPreview";
 import { FileUpload } from "@/components/ui/FileUpload";
-import { PageHeading } from "@/components/PageHeading";
+import { PageHeading } from "@/components/ui/PageHeading";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { fetchWhatsappTemplates } from "@/lib/api/whatsapp/templates";
 import { sendWhatsappCampaign } from "@/lib/api/whatsapp/campaigns";

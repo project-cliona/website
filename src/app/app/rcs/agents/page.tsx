@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/Table";
 import { Badge, badgeVariants } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { PageHeading } from "@/components/PageHeading";
+import { PageHeading } from "@/components/ui/PageHeading";
 import { fetchAgents } from "@/lib/api/rcs/agents";
 import { useQuery } from "@tanstack/react-query";
 import { TableSkeleton } from "@/components/ui/skeleton/table";

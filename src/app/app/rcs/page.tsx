@@ -1,4 +1,4 @@
-import { PageHeading } from "@/components/PageHeading";
+import { PageHeading } from "@/components/ui/PageHeading";
 import { StatsCard } from "../../../components/ui/StatsCard";
 import { BarChart, Send, CheckCircle, Users, LucideProps } from 'lucide-react';
 
