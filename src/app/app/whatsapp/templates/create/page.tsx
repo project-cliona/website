@@ -155,7 +155,7 @@ export default function CreateWhatsappTemplate() {
         {/* Main Form -- Left 2/3 */}
         <div className="lg:col-span-2 space-y-6">
           {/* Template Info */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-card rounded-xl border border-border p-6">
             <SubHeading title="Template Info" Icon={Info} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -249,7 +249,7 @@ export default function CreateWhatsappTemplate() {
               <div>
                 <Label className="mb-2 block">WABA ID</Label>
                 {connectedWabaId ? (
-                  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm text-gray-700 font-mono">
+                  <div className="px-3 py-2 bg-muted/50 border border-border rounded-md text-sm text-foreground font-mono">
                     {connectedWabaId}
                   </div>
                 ) : (
@@ -269,7 +269,7 @@ export default function CreateWhatsappTemplate() {
           </div>
 
           {/* Message Content */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-card rounded-xl border border-border p-6">
             <SubHeading title="Message Content" Icon={MessageSquare} />
 
             {/* Header */}
@@ -370,7 +370,7 @@ export default function CreateWhatsappTemplate() {
           </div>
 
           {/* Buttons */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-card rounded-xl border border-border p-6">
             <div className="flex items-center justify-between mb-4">
               <SubHeading title="Buttons (Optional)" Icon={Zap} />
               <Button
@@ -385,7 +385,7 @@ export default function CreateWhatsappTemplate() {
             </div>
 
             {buttonFields.length === 0 && (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 No buttons added. Click "Add Button" to include interactive
                 buttons.
               </p>
@@ -395,10 +395,10 @@ export default function CreateWhatsappTemplate() {
               {buttonFields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="border border-gray-200 rounded-lg p-4"
+                  className="border border-border rounded-xl p-4"
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium text-gray-900">
+                    <h3 className="font-medium text-foreground">
                       Button {index + 1}
                     </h3>
                     <Button
@@ -480,12 +480,12 @@ export default function CreateWhatsappTemplate() {
 
           {/* Error / Success Messages */}
           {submitError && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
               {submitError}
             </div>
           )}
           {submitSuccess && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-700">
+            <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-sm text-green-700">
               Template created successfully! Redirecting...
             </div>
           )}
@@ -663,7 +663,7 @@ export default function CreateWhatsappTemplate() {
 //         {/* Main Form -- Left 2/3 */}
 //         <div className="lg:col-span-2 space-y-6">
 //           {/* Template Info */}
-//           <div className="bg-white rounded-lg border border-gray-200 p-6">
+//           <div className="bg-card rounded-xl border border-border p-6">
 //             <SubHeading title="Template Info" Icon={Info} />
 //             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 //               <div>
@@ -781,7 +781,7 @@ export default function CreateWhatsappTemplate() {
 //           </div>
 
 //           {/* Message Content */}
-//           <div className="bg-white rounded-lg border border-gray-200 p-6">
+//           <div className="bg-card rounded-xl border border-border p-6">
 //             <SubHeading title="Message Content" Icon={MessageSquare} />
 
 //             {/* Header */}
@@ -882,7 +882,7 @@ export default function CreateWhatsappTemplate() {
 //           </div>
 
 //           {/* Buttons */}
-//           <div className="bg-white rounded-lg border border-gray-200 p-6">
+//           <div className="bg-card rounded-xl border border-border p-6">
 //             <div className="flex items-center justify-between mb-4">
 //               <SubHeading title="Buttons (Optional)" Icon={Zap} />
 //               <Button
@@ -897,7 +897,7 @@ export default function CreateWhatsappTemplate() {
 //             </div>
 
 //             {buttonFields.length === 0 && (
-//               <p className="text-sm text-gray-500">
+//               <p className="text-sm text-muted-foreground">
 //                 No buttons added. Click "Add Button" to include interactive
 //                 buttons.
 //               </p>
@@ -907,10 +907,10 @@ export default function CreateWhatsappTemplate() {
 //               {buttonFields.map((field, index) => (
 //                 <div
 //                   key={field.id}
-//                   className="border border-gray-200 rounded-lg p-4"
+//                   className="border border-border rounded-xl p-4"
 //                 >
 //                   <div className="flex items-center justify-between mb-3">
-//                     <h3 className="font-medium text-gray-900">
+//                     <h3 className="font-medium text-foreground">
 //                       Button {index + 1}
 //                     </h3>
 //                     <Button
@@ -992,12 +992,12 @@ export default function CreateWhatsappTemplate() {
 
 //           {/* Error / Success Messages */}
 //           {submitError && (
-//             <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
+//             <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
 //               {submitError}
 //             </div>
 //           )}
 //           {submitSuccess && (
-//             <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-700">
+//             <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-sm text-green-700">
 //               Template created successfully! Redirecting...
 //             </div>
 //           )}

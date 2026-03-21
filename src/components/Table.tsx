@@ -77,6 +77,7 @@ import {
     Columns3,
     // Ellipsis,
     Filter,
+    Inbox,
     ListFilter,
     Plus,
     Trash,
@@ -255,7 +256,7 @@ export const DataTable = <TData extends { id: string | number },>({
     return (
         <div className="space-y-4 max-w-full">
             {/* Filters */}
-            <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 bg-background rounded-xl px-4 py-3 border border-border">
                 <div className="flex items-center gap-3">
                     {/* Filter by name or email */}
                     <div className="relative">
@@ -411,7 +412,7 @@ export const DataTable = <TData extends { id: string | number },>({
                         </AlertDialog>
                     )}
                     {/* Add user button */}
-                    {buttonTitle && (<Button className="ml-auto" variant="outline" onClick={handleButtonNav}>
+                    {buttonTitle && (<Button className="ml-auto" variant="default" onClick={handleButtonNav}>
                         <Plus className="-ms-1 me-2 opacity-60" size={16} strokeWidth={2} aria-hidden="true" />
                         {buttonTitle}
                     </Button>)}
@@ -419,11 +420,11 @@ export const DataTable = <TData extends { id: string | number },>({
             </div>
 
             {/* Table */}
-            <div className="overflow-hidden rounded-lg border border-border bg-background">
+            <div className="overflow-hidden rounded-2xl border border-border bg-card">
                 <Table className="table-fixed">
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id} className="hover:bg-transparent">
+                            <TableRow key={headerGroup.id} className="hover:bg-transparent bg-muted/50">
                                 {headerGroup.headers.map((header) => {
                                     return (
                                         <TableHead
@@ -495,8 +496,16 @@ export const DataTable = <TData extends { id: string | number },>({
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
+                                <TableCell colSpan={columns.length}>
+                                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                                        <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center mb-4">
+                                            <Inbox className="h-5 w-5 text-muted-foreground" />
+                                        </div>
+                                        <p className="text-sm font-medium text-foreground">No results found</p>
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                            Try adjusting your filters or create a new entry.
+                                        </p>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         )}

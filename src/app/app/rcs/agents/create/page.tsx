@@ -112,7 +112,7 @@ export default function CreateAgent() {
       <div>
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Basic Information */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+          <div className="bg-card rounded-xl border border-border p-6 mb-6">
             <SubHeading
               title="Basic Information"
               Icon={Info}
@@ -204,7 +204,7 @@ export default function CreateAgent() {
                   render={({ field }) => (
                     <textarea
                       {...field}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400"
+                      className="w-full rounded-md border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400"
                       placeholder="Describe the agent's purpose and services"
                     />
                   )}
@@ -256,7 +256,7 @@ export default function CreateAgent() {
           </div>
 
           {/* Contact Information */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6"><SubHeading
+          <div className="bg-card rounded-xl border border-border p-6 mb-6"><SubHeading
             title="Contact Information"
             Icon={Phone}
           />
@@ -330,7 +330,7 @@ export default function CreateAgent() {
           </div>
 
           {/* SPOC Information */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+          <div className="bg-card rounded-xl border border-border p-6 mb-6">
             <SubHeading
               title="SPOC (Single Point of Contact)"
               Icon={UserCheck}
@@ -373,52 +373,52 @@ export default function CreateAgent() {
           </div>
 
           {/* Media Upload */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+          <div className="bg-card rounded-xl border border-border p-6 mb-6">
             <SubHeading
               title="Brand Assets"
               Icon={Palette}
             />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Logo Upload *
                 </label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={(e) => handleFileState('logo', e.target.files?.[0] || null)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
+                  className="w-full border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-foreground"
                 />
                 {agentlogo && (
                   <p className="text-sm text-green-600 mt-2">
                     ✅ Logo uploaded: {agentlogo.name}
                   </p>
                 )}
-                <p className="text-xs text-gray-500 mt-1">Recommended: 200x200px, PNG/JPG</p>
+                <p className="text-xs text-muted-foreground mt-1">Recommended: 200x200px, PNG/JPG</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Banner Image Upload *
                 </label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={(e) => handleFileState('banner', e.target.files?.[0] || null)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
+                  className="w-full border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-foreground"
                 />
                 {agentheroimageURL && (
                   <p className="text-sm text-green-600 mt-2">
                     ✅ Banner uploaded: {agentheroimageURL.name}
                   </p>
                 )}
-                <p className="text-xs text-gray-500 mt-1">Recommended: 1200x600px, PNG/JPG</p>
+                <p className="text-xs text-muted-foreground mt-1">Recommended: 1200x600px, PNG/JPG</p>
               </div>
             </div>
           </div>
 
           {/* Legal & Compliance */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+          <div className="bg-card rounded-xl border border-border p-6 mb-6">
             <SubHeading
               title="Legal & Compliance"
               Icon={Scale}
@@ -434,7 +434,7 @@ export default function CreateAgent() {
                   )}
                 />
                 <p className="text-xs text-red-500">{errors.optinUrl?.message}</p>
-                <p className="text-xs text-gray-500 mt-1">URL where users can opt-in to receive messages</p>
+                <p className="text-xs text-muted-foreground mt-1">URL where users can opt-in to receive messages</p>
               </div>
 
               <div>

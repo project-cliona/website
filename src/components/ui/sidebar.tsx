@@ -89,9 +89,10 @@ export const DesktopSidebar = ({
   return (
     <motion.div
       className={cn(
-        "h-full px-4 py-4 hidden md:flex md:flex-col bg-gray-50 dark:bg-neutral-800 w-[300px] flex-shrink-0",
+        "h-full px-4 py-4 hidden md:flex md:flex-col bg-sidebar border-r border-sidebar-border w-[300px] flex-shrink-0",
         className
       )}
+      style={{ boxShadow: "2px 0 8px rgba(28,26,23,0.05)" }}
       animate={{
         width: animate ? (open ? "300px" : "60px") : "300px",
       }}
@@ -114,13 +115,13 @@ export const MobileSidebar = ({
     <>
       <div
         className={cn(
-          "h-10 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-neutral-100 dark:bg-neutral-800 w-full"
+          "h-10 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-sidebar w-full"
         )}
         {...props}
       >
         <div className="flex justify-end z-20 w-full">
           <Menu
-            className="text-neutral-800 dark:text-neutral-200 cursor-pointer"
+            className="text-foreground cursor-pointer"
             onClick={() => setOpen(!open)}
           />
         </div>
@@ -135,12 +136,12 @@ export const MobileSidebar = ({
                 ease: "easeInOut",
               }}
               className={cn(
-                "fixed top-0 left-0 h-full w-full inset-0 bg-white dark:bg-neutral-900 p-10 z-[100] flex flex-col justify-between",
+                "fixed top-0 left-0 h-full w-full inset-0 bg-sidebar p-10 z-[100] flex flex-col justify-between",
                 className
               )}
             >
               <div
-                className="absolute right-10 top-10 z-50 text-neutral-800 dark:text-neutral-200 cursor-pointer"
+                className="absolute right-10 top-10 z-50 text-foreground cursor-pointer"
                 onClick={() => setOpen(!open)}
               >
                 <X />
@@ -157,10 +158,12 @@ export const MobileSidebar = ({
 export const SidebarLink = ({
   link,
   className,
+  isActive,
   ...props
 }: {
   link: Links;
   className?: string;
+  isActive?: boolean;
   props?: LinkProps;
 }) => {
   const { open, animate, setOpen } = useSidebar();
@@ -169,7 +172,10 @@ export const SidebarLink = ({
       href={link.href}
       onClick={() => setOpen(false)}
       className={cn(
-        "flex items-center justify-start gap-2 group/sidebar py-2",
+        "flex items-center justify-start gap-2 group/sidebar py-2 rounded-[10px] px-3 transition-colors duration-150",
+        isActive
+          ? "bg-primary/10 text-primary font-medium"
+          : "text-foreground hover:bg-sidebar-accent",
         className
       )}
       {...props}
@@ -180,7 +186,7 @@ export const SidebarLink = ({
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="text-neutral-700 dark:text-neutral-200 text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+        className="text-inherit text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
       >
         {link.label}
       </motion.span>

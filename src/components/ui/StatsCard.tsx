@@ -1,6 +1,14 @@
+import React from "react";
 import { StatsCardProps } from "@/lib/type";
-import { Info } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
+import { TrendingUp, TrendingDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const iconVariantClasses: Record<number, string> = {
+  0: "bg-primary/10 text-primary",
+  1: "bg-blue-50 text-blue-600",
+  2: "bg-green-50 text-green-700",
+  3: "bg-amber-50 text-amber-700",
+};
 
 export function StatsCard({
   title,
@@ -8,53 +16,35 @@ export function StatsCard({
   icon,
   trend,
   trendUp,
-  tooltip,
+  iconVariant = 0,
 }: StatsCardProps) {
+  const iconBoxClass = iconVariantClasses[iconVariant] ?? iconVariantClasses[0];
+
   return (
-    <div className="bg-white border border-gray-100 rounded-xl">
-      <div className="p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex-1">
-            <div className="flex gap-2 items-center">
-              <div>{icon}</div>
-              <p className="text-sm font-medium text-gray-600">{title}</p>
-              <Tooltip >
-                <TooltipTrigger><Info className="text-gray-400 h-3 w-3" /></TooltipTrigger>
-                <TooltipContent sideOffset={8}>
-                  {tooltip}
-                </TooltipContent>
-              </Tooltip>
-            </div>
-            <div className="flex justify-between mt-2">
-              <p className="text-2xl font-semibold text-gray-900 mt-1">
-                {value}
-              </p>
-              {trend && (
-                <div
-                  className={`flex items-center mt-2 text-sm font-medium ${
-                    trendUp ? "text-green-600" : "text-red-600"
-                  }`}
-                >
-                  <svg
-                    className={`w-4 h-4 mr-1 ${trendUp ? "" : "rotate-180"}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M7 17l9.2-9.2M17 17V7H7"
-                    />
-                  </svg>
-                  {trend}
-                </div>
-              )}
-            </div>
-          </div>
+    <div className="card-warm transition-shadow duration-200">
+      <div className="flex items-start justify-between">
+        <p className="text-sm font-medium text-muted-foreground">{title}</p>
+        <div
+          className={cn(
+            "w-10 h-10 rounded-xl flex items-center justify-center",
+            iconBoxClass
+          )}
+        >
+          {React.cloneElement(icon, { size: 18, strokeWidth: 2 })}
         </div>
       </div>
+      <p className="stat-number mt-4">{value}</p>
+      {trend && (
+        <div
+          className={cn(
+            "inline-flex items-center gap-1 mt-3 text-xs font-medium px-2 py-1 rounded-full",
+            trendUp ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"
+          )}
+        >
+          {trendUp ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+          {trend}
+        </div>
+      )}
     </div>
   );
 }

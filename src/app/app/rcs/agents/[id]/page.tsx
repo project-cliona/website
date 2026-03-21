@@ -11,7 +11,7 @@ import { Info, Phone, Scale, UserCheck } from 'lucide-react'
 import Image from 'next/image'
 
 const ReadOnlyValue = ({ value }: { value?: string | null }) => (
-  <div className="mt-1 text-sm text-gray-500 break-all">
+  <div className="mt-1 text-sm text-muted-foreground break-all">
     {value && value.trim() !== '' ? value : '—'}
   </div>
 )
@@ -43,10 +43,10 @@ export default function CreateAgent() {
       />
 
       {/* Hero / header card */}
-      <div className="relative overflow-hidden rounded-xl border bg-white">
+      <div className="relative overflow-hidden rounded-xl border bg-card">
 
         {/* Banner */}
-        <div className="h-44 w-full bg-gray-100">
+        <div className="h-44 w-full bg-muted">
           {agentData.agentheroimageURL && (
             <Image
               src={agentData.agentheroimageURL}
@@ -62,7 +62,7 @@ export default function CreateAgent() {
         <div className="flex flex-col gap-4 px-6 py-4 md:flex-row md:items-center md:justify-between">
 
           <div className="flex items-center gap-4">
-            <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl border bg-white">
+            <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl border bg-card">
               {agentData.agentlogo && (
                 <Image
                   src={agentData.agentlogo}
@@ -75,10 +75,10 @@ export default function CreateAgent() {
             </div>
 
             {/* <div>
-              <div className="text-lg font-semibold text-gray-900">
+              <div className="text-lg font-semibold text-foreground">
                 {agentData.agentname}
               </div>
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-muted-foreground">
                 {agentData.billingcategory}
               </div>
             </div> */}
@@ -109,7 +109,7 @@ export default function CreateAgent() {
         <div className="space-y-6 lg:col-span-2">
 
           {/* Basic information */}
-          <div className="rounded-xl border bg-white p-6">
+          <div className="rounded-xl border bg-card p-6">
             <SubHeading title="Basic Information" Icon={Info} />
 
             <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -125,7 +125,7 @@ export default function CreateAgent() {
                     className="h-5 w-5 rounded border"
                     style={{ backgroundColor: agentData.brandcolor }}
                   />
-                  <span className="text-sm text-gray-800">
+                  <span className="text-sm text-foreground">
                     {agentData.brandcolor || '—'}
                   </span>
                 </div>
@@ -149,7 +149,7 @@ export default function CreateAgent() {
           </div>
 
           {/* Contact information */}
-          <div className="rounded-xl border bg-white p-6">
+          <div className="rounded-xl border bg-card p-6">
             <SubHeading title="Contact Information" Icon={Phone} />
 
             <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -197,7 +197,7 @@ export default function CreateAgent() {
           </div>
 
           {/* Legal */}
-          <div className="rounded-xl border bg-white p-6">
+          <div className="rounded-xl border bg-card p-6">
             <SubHeading title="Legal & Compliance" Icon={Scale} />
 
             <div className="mt-4 space-y-4">
@@ -251,7 +251,7 @@ export default function CreateAgent() {
         <div className="space-y-6">
 
           {/* SPOC */}
-          <div className="rounded-xl border bg-white p-6">
+          <div className="rounded-xl border bg-card p-6">
             <SubHeading title="SPOC" Icon={UserCheck} />
 
             <div className="mt-4 space-y-4">
@@ -278,14 +278,14 @@ export default function CreateAgent() {
           </div>
 
           {/* Brand assets */}
-          {/* <div className="rounded-xl border bg-white p-6">
+          {/* <div className="rounded-xl border bg-card p-6">
             <SubHeading title="Brand Assets" Icon={Palette} />
 
             <div className="mt-4 space-y-4">
 
               <div>
                 <Label>Logo</Label>
-                <div className="mt-2 flex h-28 items-center justify-center rounded border bg-gray-50">
+                <div className="mt-2 flex h-28 items-center justify-center rounded border bg-muted/50">
                   {agentData.agentlogo ? (
                     <img
                       src={agentData.agentlogo}
@@ -293,14 +293,14 @@ export default function CreateAgent() {
                       alt="Logo"
                     />
                   ) : (
-                    <span className="text-sm text-gray-400">No logo</span>
+                    <span className="text-sm text-muted-foreground">No logo</span>
                   )}
                 </div>
               </div>
 
               <div>
                 <Label>Banner</Label>
-                <div className="mt-2 overflow-hidden rounded border bg-gray-50">
+                <div className="mt-2 overflow-hidden rounded border bg-muted/50">
                   {agentData.agentheroimageURL ? (
                     <img
                       src={agentData.agentheroimageURL}
@@ -308,7 +308,7 @@ export default function CreateAgent() {
                       alt="Banner"
                     />
                   ) : (
-                    <div className="flex h-32 items-center justify-center text-sm text-gray-400">
+                    <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
                       No banner
                     </div>
                   )}
