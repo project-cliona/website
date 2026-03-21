@@ -23,24 +23,38 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <ProtectedRoute>
             <Sidebar open={open} setOpen={setOpen}>
-                <div className="md:flex">
+                <div className="min-h-screen bg-background md:flex">
                     <SidebarBody className="space-y-4 justify-between">
                         <div className="flex flex-col space-y-4">
-                            <div>{open ? <Logo /> : <LogoIcon />}</div>
+                            <div className="pb-5 mb-1 border-b border-sidebar-border">
+                                {open ? <Logo /> : <LogoIcon />}
+                            </div>
 
                             {links.map((link) => (
                                 <SidebarLink
                                     key={link.href}
                                     link={link}
+                                    isActive={
+                                        link.href === "/app"
+                                            ? pathname === "/app"
+                                            : pathname.startsWith(link.href)
+                                    }
                                     className="font-medium"
                                 />
                             ))}
                         </div>
 
-                        {open ? <div className="flex gap-3 justify-center items-center"><LogOut/><LogoutButton className="flex items-center gap-2 text-sm font-medium dark:text-neutral-200 text-red-600 hover:text-red-400 transition-colors py-2 cursor-pointer w-full" /></div> : <LogOut/>}
+                        {open ? (
+                            <div className="flex gap-3 justify-center items-center">
+                                <LogOut className="text-muted-foreground" />
+                                <LogoutButton className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-destructive transition-colors py-2 cursor-pointer w-full" />
+                            </div>
+                        ) : (
+                            <LogOut className="text-muted-foreground mx-auto" />
+                        )}
                     </SidebarBody>
 
-                    <main className="flex-1 w-full p-4">{children}</main>
+                    <main className="flex-1 w-full min-h-screen p-8 bg-background">{children}</main>
                 </div>
             </Sidebar>
         </ProtectedRoute>
@@ -57,7 +71,7 @@ export const Logo = () => {
             <motion.span
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="font-medium text-black dark:text-white whitespace-pre"
+                className="font-medium text-foreground whitespace-pre"
             >
                 Squalto
             </motion.span>

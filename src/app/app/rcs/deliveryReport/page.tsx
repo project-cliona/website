@@ -94,18 +94,18 @@ export default function DeliveryReports() {
   return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">Delivery Reports</h1>
+          <h1 className="text-3xl font-bold text-foreground">Delivery Reports</h1>
           <div className="flex gap-2">
             <button 
               onClick={exportToExcel}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center"
+              className="bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700 transition-colors flex items-center"
             >
               <span className="mr-2">📊</span>
               Export to Excel
             </button>
             <button 
               onClick={downloadReport}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+              className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors flex items-center"
             >
               <span className="mr-2">⬇️</span>
               Download
@@ -114,16 +114,16 @@ export default function DeliveryReports() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">Filters</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 User Name
               </label>
               <select 
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
+                className="w-full border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-foreground"
                 value={filters.userName}
                 onChange={(e) => handleFilterChange('userName', e.target.value)}
               >
@@ -136,11 +136,11 @@ export default function DeliveryReports() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Date Type
               </label>
               <select 
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
+                className="w-full border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-foreground"
                 value={filters.dateType}
                 onChange={(e) => handleFilterChange('dateType', e.target.value)}
               >
@@ -150,12 +150,12 @@ export default function DeliveryReports() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 {filters.dateType === 'Day' ? 'Date' : 'Start Date'}
               </label>
               <input
                 type="date"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
+                className="w-full border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-foreground"
                 value={filters.startDate}
                 onChange={(e) => handleFilterChange('startDate', e.target.value)}
               />
@@ -163,12 +163,12 @@ export default function DeliveryReports() {
 
             {filters.dateType === 'Range' && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   End Date
                 </label>
                 <input
                   type="date"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
+                  className="w-full border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-foreground"
                   value={filters.endDate}
                   onChange={(e) => handleFilterChange('endDate', e.target.value)}
                 />
@@ -176,11 +176,11 @@ export default function DeliveryReports() {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Upload Source
               </label>
               <select 
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
+                className="w-full border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-foreground"
                 value={filters.uploadSource}
                 onChange={(e) => handleFilterChange('uploadSource', e.target.value)}
               >
@@ -194,57 +194,57 @@ export default function DeliveryReports() {
 
         {/* Metrics Overview */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">{deliveryData.totalSubmitted.toLocaleString()}</div>
-              <div className="text-sm text-gray-600 mt-1">Total Submitted</div>
+              <div className="text-sm text-muted-foreground mt-1">Total Submitted</div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">{deliveryData.sent.toLocaleString()}</div>
-              <div className="text-sm text-gray-600 mt-1">Sent</div>
+              <div className="text-sm text-muted-foreground mt-1">Sent</div>
               <div className="text-xs text-green-500">
                 {((deliveryData.sent / deliveryData.totalSubmitted) * 100).toFixed(1)}%
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">{deliveryData.delivered.toLocaleString()}</div>
-              <div className="text-sm text-gray-600 mt-1">Delivered</div>
+              <div className="text-sm text-muted-foreground mt-1">Delivered</div>
               <div className="text-xs text-blue-500">{getDeliveryRate()}%</div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-red-600">{deliveryData.undelivered.toLocaleString()}</div>
-              <div className="text-sm text-gray-600 mt-1">Undelivered</div>
+              <div className="text-sm text-muted-foreground mt-1">Undelivered</div>
               <div className="text-xs text-red-500">
                 {((deliveryData.undelivered / deliveryData.sent) * 100).toFixed(1)}%
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-purple-600">{deliveryData.read.toLocaleString()}</div>
-              <div className="text-sm text-gray-600 mt-1">Read</div>
+              <div className="text-sm text-muted-foreground mt-1">Read</div>
               <div className="text-xs text-purple-500">{getReadRate()}%</div>
             </div>
           </div>
         </div>
 
         {/* Delivery Funnel Visualization */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Delivery Funnel</h2>
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">Delivery Funnel</h2>
           
           <div className="space-y-3">
             <div className="flex items-center">
-              <div className="w-24 text-sm text-gray-600">Submitted</div>
+              <div className="w-24 text-sm text-muted-foreground">Submitted</div>
               <div className="flex-1 bg-gray-200 rounded-full h-4 ml-4">
                 <div className="bg-blue-500 h-4 rounded-full" style={{width: '100%'}}></div>
               </div>
@@ -252,7 +252,7 @@ export default function DeliveryReports() {
             </div>
 
             <div className="flex items-center">
-              <div className="w-24 text-sm text-gray-600">Sent</div>
+              <div className="w-24 text-sm text-muted-foreground">Sent</div>
               <div className="flex-1 bg-gray-200 rounded-full h-4 ml-4">
                 <div className="bg-green-500 h-4 rounded-full" style={{width: `${(deliveryData.sent / deliveryData.totalSubmitted) * 100}%`}}></div>
               </div>
@@ -260,7 +260,7 @@ export default function DeliveryReports() {
             </div>
 
             <div className="flex items-center">
-              <div className="w-24 text-sm text-gray-600">Delivered</div>
+              <div className="w-24 text-sm text-muted-foreground">Delivered</div>
               <div className="flex-1 bg-gray-200 rounded-full h-4 ml-4">
                 <div className="bg-blue-500 h-4 rounded-full" style={{width: `${(deliveryData.delivered / deliveryData.totalSubmitted) * 100}%`}}></div>
               </div>
@@ -268,7 +268,7 @@ export default function DeliveryReports() {
             </div>
 
             <div className="flex items-center">
-              <div className="w-24 text-sm text-gray-600">Read</div>
+              <div className="w-24 text-sm text-muted-foreground">Read</div>
               <div className="flex-1 bg-gray-200 rounded-full h-4 ml-4">
                 <div className="bg-purple-500 h-4 rounded-full" style={{width: `${(deliveryData.read / deliveryData.totalSubmitted) * 100}%`}}></div>
               </div>
@@ -278,63 +278,63 @@ export default function DeliveryReports() {
         </div>
 
         {/* Detailed Reports Table */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Detailed Delivery Reports</h2>
+        <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
+          <div className="px-6 py-4 border-b border-border">
+            <h2 className="text-lg font-semibold text-foreground">Detailed Delivery Reports</h2>
           </div>
           
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="bg-muted/50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Campaign
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Agent
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     User
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Submission Time
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Total Numbers
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Sent
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Delivered
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Undelivered
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Read
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Source
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card divide-y divide-gray-200">
                 {deliveryDetails.map((report) => (
-                  <tr key={report.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <tr key={report.id} className="hover:bg-muted/30">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                       {report.campaignName}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                       {report.agentName}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                       {report.userName}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                       {report.submissionTime}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                       {report.totalNumbers.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-medium">

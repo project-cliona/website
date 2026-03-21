@@ -1,6 +1,6 @@
 export default function WhatsappCampaignReports() {
   return (
-    <div className="p-6 text-gray-500">
+    <div className="p-6 text-muted-foreground">
       Campaign Reports — coming soon.
     </div>
   );
@@ -78,7 +78,7 @@ export default function WhatsappCampaignReports() {
 //       case "Failed":
 //         return "bg-red-100 text-red-700";
 //       default:
-//         return "bg-gray-100 text-gray-700";
+//         return "bg-muted text-foreground";
 //     }
 //   };
 
@@ -119,22 +119,22 @@ export default function WhatsappCampaignReports() {
 //         />
 //         <button
 //           onClick={exportAllReports}
-//           className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center text-sm"
+//           className="bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700 transition-colors flex items-center text-sm"
 //         >
 //           Export All Reports
 //         </button>
 //       </div>
 
 //       {/* Filters */}
-//       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-//         <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
+//       <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+//         <h2 className="text-lg font-semibold text-foreground mb-4">Filters</h2>
 //         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 //           <div>
-//             <label className="block text-sm font-medium text-gray-700 mb-2">
+//             <label className="block text-sm font-medium text-foreground mb-2">
 //               Date Type
 //             </label>
 //             <select
-//               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
+//               className="w-full border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-foreground"
 //               value={filters.dateType}
 //               onChange={(e) => handleFilterChange("dateType", e.target.value)}
 //             >
@@ -144,12 +144,12 @@ export default function WhatsappCampaignReports() {
 //           </div>
 
 //           <div>
-//             <label className="block text-sm font-medium text-gray-700 mb-2">
+//             <label className="block text-sm font-medium text-foreground mb-2">
 //               {filters.dateType === "Day" ? "Date" : "Start Date"}
 //             </label>
 //             <input
 //               type="date"
-//               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
+//               className="w-full border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-foreground"
 //               value={filters.startDate}
 //               onChange={(e) => handleFilterChange("startDate", e.target.value)}
 //             />
@@ -157,12 +157,12 @@ export default function WhatsappCampaignReports() {
 
 //           {filters.dateType === "Range" && (
 //             <div>
-//               <label className="block text-sm font-medium text-gray-700 mb-2">
+//               <label className="block text-sm font-medium text-foreground mb-2">
 //                 End Date
 //               </label>
 //               <input
 //                 type="date"
-//                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
+//                 className="w-full border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-foreground"
 //                 value={filters.endDate}
 //                 onChange={(e) => handleFilterChange("endDate", e.target.value)}
 //               />
@@ -172,11 +172,11 @@ export default function WhatsappCampaignReports() {
 //       </div>
 
 //       {/* Search Bar */}
-//       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+//       <div className="bg-card rounded-xl shadow-sm border border-border p-6">
 //         <input
 //           type="text"
 //           placeholder="Search campaigns or templates..."
-//           className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
+//           className="w-full border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-foreground"
 //           value={searchTerm}
 //           onChange={(e) => {
 //             setSearchTerm(e.target.value);
@@ -187,90 +187,90 @@ export default function WhatsappCampaignReports() {
 
 //       {/* Summary Stats */}
 //       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-//         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+//         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
 //           <div className="text-center">
 //             <div className="text-2xl font-bold text-blue-600">
 //               {filteredCampaigns.length}
 //             </div>
-//             <div className="text-sm text-gray-600 mt-1">Total Campaigns</div>
+//             <div className="text-sm text-muted-foreground mt-1">Total Campaigns</div>
 //           </div>
 //         </div>
-//         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+//         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
 //           <div className="text-center">
 //             <div className="text-2xl font-bold text-green-600">
 //               {filteredCampaigns.filter((c) => c.status === "Completed").length}
 //             </div>
-//             <div className="text-sm text-gray-600 mt-1">Completed</div>
+//             <div className="text-sm text-muted-foreground mt-1">Completed</div>
 //           </div>
 //         </div>
-//         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+//         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
 //           <div className="text-center">
 //             <div className="text-2xl font-bold text-blue-600">
 //               {filteredCampaigns.filter((c) => c.status === "Scheduled").length}
 //             </div>
-//             <div className="text-sm text-gray-600 mt-1">Scheduled</div>
+//             <div className="text-sm text-muted-foreground mt-1">Scheduled</div>
 //           </div>
 //         </div>
-//         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+//         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
 //           <div className="text-center">
 //             <div className="text-2xl font-bold text-red-600">
 //               {filteredCampaigns.filter((c) => c.status === "Failed").length}
 //             </div>
-//             <div className="text-sm text-gray-600 mt-1">Failed</div>
+//             <div className="text-sm text-muted-foreground mt-1">Failed</div>
 //           </div>
 //         </div>
 //       </div>
 
 //       {/* Campaign Table */}
-//       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-//         <div className="px-6 py-4 border-b border-gray-200">
-//           <h2 className="text-lg font-semibold text-gray-900">
+//       <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
+//         <div className="px-6 py-4 border-b border-border">
+//           <h2 className="text-lg font-semibold text-foreground">
 //             Campaign Details
 //           </h2>
 //         </div>
 //         <div className="overflow-x-auto">
 //           <table className="min-w-full divide-y divide-gray-200">
-//             <thead className="bg-gray-50">
+//             <thead className="bg-muted/50">
 //               <tr>
-//                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
 //                   Campaign Name
 //                 </th>
-//                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
 //                   Template Name
 //                 </th>
-//                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
 //                   Scheduled Time
 //                 </th>
-//                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
 //                   Message Count
 //                 </th>
-//                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
 //                   Delivery Rate
 //                 </th>
-//                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
 //                   Read Rate
 //                 </th>
-//                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
 //                   Status
 //                 </th>
-//                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
 //                   Download
 //                 </th>
 //               </tr>
 //             </thead>
-//             <tbody className="bg-white divide-y divide-gray-200">
+//             <tbody className="bg-card divide-y divide-gray-200">
 //               {paginatedCampaigns.map((campaign) => (
-//                 <tr key={campaign.id} className="hover:bg-gray-50">
-//                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+//                 <tr key={campaign.id} className="hover:bg-muted/30">
+//                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
 //                     {campaign.campaignName}
 //                   </td>
-//                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+//                   <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
 //                     {campaign.templateName}
 //                   </td>
-//                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+//                   <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
 //                     {campaign.scheduledTime}
 //                   </td>
-//                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+//                   <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground font-medium">
 //                     {campaign.messageCount.toLocaleString()}
 //                   </td>
 //                   <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -283,7 +283,7 @@ export default function WhatsappCampaignReports() {
 //                         {campaign.deliveryRate}%
 //                       </span>
 //                     ) : (
-//                       <span className="text-gray-400">-</span>
+//                       <span className="text-muted-foreground">-</span>
 //                     )}
 //                   </td>
 //                   <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -296,7 +296,7 @@ export default function WhatsappCampaignReports() {
 //                         {campaign.readRate}%
 //                       </span>
 //                     ) : (
-//                       <span className="text-gray-400">-</span>
+//                       <span className="text-muted-foreground">-</span>
 //                     )}
 //                   </td>
 //                   <td className="px-6 py-4 whitespace-nowrap">
@@ -317,7 +317,7 @@ export default function WhatsappCampaignReports() {
 //                         campaign.status === "Scheduled" ||
 //                         campaign.status === "Failed"
 //                       }
-//                       className="text-blue-600 hover:text-blue-900 disabled:text-gray-400 disabled:cursor-not-allowed text-sm"
+//                       className="text-blue-600 hover:text-blue-900 disabled:text-muted-foreground disabled:cursor-not-allowed text-sm"
 //                     >
 //                       Download
 //                     </button>
@@ -330,14 +330,14 @@ export default function WhatsappCampaignReports() {
 
 //         {/* Pagination */}
 //         {totalPages > 1 && (
-//           <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200">
+//           <div className="bg-card px-4 py-3 flex items-center justify-between border-t border-border">
 //             <div className="flex-1 flex justify-between sm:hidden">
 //               <button
 //                 onClick={() =>
 //                   setCurrentPage(Math.max(currentPage - 1, 1))
 //                 }
 //                 disabled={currentPage === 1}
-//                 className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+//                 className="relative inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-foreground bg-card hover:bg-muted/30 disabled:opacity-50"
 //               >
 //                 Previous
 //               </button>
@@ -346,14 +346,14 @@ export default function WhatsappCampaignReports() {
 //                   setCurrentPage(Math.min(currentPage + 1, totalPages))
 //                 }
 //                 disabled={currentPage === totalPages}
-//                 className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+//                 className="ml-3 relative inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-foreground bg-card hover:bg-muted/30 disabled:opacity-50"
 //               >
 //                 Next
 //               </button>
 //             </div>
 //             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
 //               <div>
-//                 <p className="text-sm text-gray-700">
+//                 <p className="text-sm text-foreground">
 //                   Showing{" "}
 //                   <span className="font-medium">
 //                     {(currentPage - 1) * itemsPerPage + 1}
@@ -379,7 +379,7 @@ export default function WhatsappCampaignReports() {
 //                       setCurrentPage(Math.max(currentPage - 1, 1))
 //                     }
 //                     disabled={currentPage === 1}
-//                     className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+//                     className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted/30 disabled:opacity-50"
 //                   >
 //                     Previous
 //                   </button>
@@ -391,7 +391,7 @@ export default function WhatsappCampaignReports() {
 //                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
 //                           currentPage === page
 //                             ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
-//                             : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
+//                             : "bg-card border-border text-muted-foreground hover:bg-muted/30"
 //                         }`}
 //                       >
 //                         {page}
@@ -405,7 +405,7 @@ export default function WhatsappCampaignReports() {
 //                       )
 //                     }
 //                     disabled={currentPage === totalPages}
-//                     className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+//                     className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted/30 disabled:opacity-50"
 //                   >
 //                     Next
 //                   </button>
