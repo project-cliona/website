@@ -85,7 +85,7 @@ export default function Login() {
           {/* Logo */}
           <div className="text-center">
             <Link href="/">
-              <h1 className="text-3xl font-semibold">Cliona</h1>
+              <h1 className="text-3xl font-semibold">Squalto</h1>
             </Link>
             <p className="mt-2 text-muted-foreground">CPaaS Platform</p>
           </div>

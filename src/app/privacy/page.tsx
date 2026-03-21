@@ -7,7 +7,7 @@ export default function Privacy() {
       <nav className="px-6 py-4 border-b border-gray-100">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="text-2xl font-bold text-gray-900">
-            <Link href="/">Cliona</Link>
+            <Link href="/">Squalto</Link>
           </div>
           <div className="hidden md:flex space-x-8">
             <Link href="/#features" className="text-gray-600 hover:text-gray-900">Features</Link>
@@ -33,7 +33,7 @@ export default function Privacy() {
         <div className="prose max-w-none">
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">1. Introduction</h2>
           <p className="text-gray-600 mb-6">
-            At Cliona (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;), we are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI-first WhatsApp & RCS engagement platform.
+            At Squalto (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;), we are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI-first WhatsApp & RCS engagement platform.
           </p>
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">2. Information We Collect</h2>
@@ -127,8 +127,8 @@ export default function Privacy() {
             If you have questions about this Privacy Policy or our data practices, please contact us:
           </p>
           <div className="bg-gray-50 rounded-lg p-6 mb-8">
-            <p className="text-gray-700 mb-2"><strong>Email:</strong> privacy@cliona.ai</p>
-            <p className="text-gray-700 mb-2"><strong>Address:</strong> Data Protection Officer, Cliona Inc.</p>
+            <p className="text-gray-700 mb-2"><strong>Email:</strong> privacy@Squalto.ai</p>
+            <p className="text-gray-700 mb-2"><strong>Address:</strong> Data Protection Officer, Squalto Inc.</p>
             <p className="text-gray-700"><strong>Response Time:</strong> We will respond to privacy requests within 30 days</p>
           </div>
 
@@ -142,13 +142,13 @@ export default function Privacy() {
       {/* Footer */}
       <footer className="px-6 py-12 bg-gray-900">
         <div className="max-w-7xl mx-auto text-center">
-          <div className="text-2xl font-bold text-white mb-4">Cliona</div>
+          <div className="text-2xl font-bold text-white mb-4">Squalto</div>
           <p className="text-gray-400 mb-6">
             AI-first WhatsApp & RCS engagement platform
           </p>
           <div className="border-t border-gray-800 pt-8">
             <p className="text-gray-400">
-              © 2024 Cliona. All rights reserved. | 
+              © 2024 Squalto. All rights reserved. | 
               <a href="/privacy" className="text-blue-400 hover:text-blue-300 ml-2">Privacy Policy</a> | 
               <a href="/terms" className="text-blue-400 hover:text-blue-300 ml-2">Terms of Service</a>
             </p>

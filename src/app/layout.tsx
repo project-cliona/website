@@ -15,8 +15,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cliona - AI-First WhatsApp & RCS Engagement Platform",
+  title: "Squalto - AI-First WhatsApp & RCS Engagement Platform",
   description: "Automate conversations, grow sales, and support customers with AI across WhatsApp & RCS. Official WhatsApp Business API partner with enterprise-grade messaging capabilities.",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

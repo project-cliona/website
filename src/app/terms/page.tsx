@@ -7,7 +7,7 @@ export default function Terms() {
       <nav className="px-6 py-4 border-b border-gray-100">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="text-2xl font-bold text-gray-900">
-            <Link href="/">Cliona</Link>
+            <Link href="/">Squalto</Link>
           </div>
           <div className="hidden md:flex space-x-8">
             <Link href="/#features" className="text-gray-600 hover:text-gray-900">Features</Link>
@@ -33,12 +33,12 @@ export default function Terms() {
         <div className="prose max-w-none">
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">1. Agreement to Terms</h2>
           <p className="text-gray-600 mb-6">
-            By accessing and using Cliona&apos;s AI-first WhatsApp & RCS engagement platform (&quot;Service&quot;), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
+            By accessing and using Squalto&apos;s AI-first WhatsApp & RCS engagement platform (&quot;Service&quot;), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
           </p>
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">2. Service Description</h2>
           <p className="text-gray-600 mb-4">
-            Cliona provides an AI-powered conversational platform that enables businesses to:
+            Squalto provides an AI-powered conversational platform that enables businesses to:
           </p>
           <ul className="text-gray-600 mb-6 list-disc pl-6">
             <li>Send and receive messages via WhatsApp Business API</li>
@@ -107,7 +107,7 @@ export default function Terms() {
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">7. Intellectual Property</h2>
           <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">7.1 Our Rights</h3>
           <p className="text-gray-600 mb-4">
-            Cliona owns all rights to the platform, including software, algorithms, trademarks, and content. You may not copy, modify, or distribute our proprietary technology.
+            Squalto owns all rights to the platform, including software, algorithms, trademarks, and content. You may not copy, modify, or distribute our proprietary technology.
           </p>
 
           <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">7.2 Your Content</h3>
@@ -138,7 +138,7 @@ export default function Terms() {
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">10. Limitation of Liability</h2>
           <p className="text-gray-600 mb-6">
-            To the maximum extent permitted by law, Cliona shall not be liable for any indirect, incidental, special, or consequential damages. Our total liability for any claim shall not exceed the amount paid by you for the Service in the 12 months preceding the claim.
+            To the maximum extent permitted by law, Squalto shall not be liable for any indirect, incidental, special, or consequential damages. Our total liability for any claim shall not exceed the amount paid by you for the Service in the 12 months preceding the claim.
           </p>
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">11. Termination</h2>
@@ -164,9 +164,9 @@ export default function Terms() {
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">14. Contact Information</h2>
           <div className="bg-gray-50 rounded-lg p-6 mb-8">
-            <p className="text-gray-700 mb-2"><strong>Legal Department:</strong> legal@cliona.ai</p>
-            <p className="text-gray-700 mb-2"><strong>Support Team:</strong> support@cliona.ai</p>
-            <p className="text-gray-700 mb-2"><strong>Business Address:</strong> Cliona Inc., Delaware, USA</p>
+            <p className="text-gray-700 mb-2"><strong>Legal Department:</strong> legal@Squalto.ai</p>
+            <p className="text-gray-700 mb-2"><strong>Support Team:</strong> support@Squalto.ai</p>
+            <p className="text-gray-700 mb-2"><strong>Business Address:</strong> Squalto Inc., Delaware, USA</p>
             <p className="text-gray-700"><strong>Emergency Contact:</strong> Available 24/7 through platform</p>
           </div>
 
@@ -182,13 +182,13 @@ export default function Terms() {
       {/* Footer */}
       <footer className="px-6 py-12 bg-gray-900">
         <div className="max-w-7xl mx-auto text-center">
-          <div className="text-2xl font-bold text-white mb-4">Cliona</div>
+          <div className="text-2xl font-bold text-white mb-4">Squalto</div>
           <p className="text-gray-400 mb-6">
             AI-first WhatsApp & RCS engagement platform
           </p>
           <div className="border-t border-gray-800 pt-8">
             <p className="text-gray-400">
-              © 2024 Cliona. All rights reserved. | 
+              © 2024 Squalto. All rights reserved. | 
               <a href="/privacy" className="text-blue-400 hover:text-blue-300 ml-2">Privacy Policy</a> | 
               <a href="/terms" className="text-blue-400 hover:text-blue-300 ml-2">Terms of Service</a>
             </p>

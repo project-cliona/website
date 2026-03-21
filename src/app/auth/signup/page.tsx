@@ -76,7 +76,7 @@ export default function Signup() {
         {/* Logo */}
         <div className="text-center">
           <Link href="/">
-            <h1 className="text-3xl font-semibold tracking-tight">Cliona</h1>
+            <h1 className="text-3xl font-semibold tracking-tight">Squalto</h1>
           </Link>
           <p className="mt-2 text-sm text-muted-foreground">CPaaS Platform</p>
         </div>

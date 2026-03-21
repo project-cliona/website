@@ -9,6 +9,7 @@ import { usePathname } from "next/navigation";
 import { appLinks, rcsLinks, whatsappLinks } from "@/lib/sidebarLinks";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import LogoutButton from "@/components/auth/LogoutButton";
+import { LogOut } from "lucide-react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     const [open, setOpen] = useState(false);
@@ -22,7 +23,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <ProtectedRoute>
             <Sidebar open={open} setOpen={setOpen}>
-                <div className="flex">
+                <div className="md:flex">
                     <SidebarBody className="space-y-4 justify-between">
                         <div className="flex flex-col space-y-4">
                             <div>{open ? <Logo /> : <LogoIcon />}</div>
@@ -36,10 +37,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                             ))}
                         </div>
 
-                        <LogoutButton className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 hover:text-red-600 dark:hover:text-red-400 transition-colors py-2 cursor-pointer w-full" />
+                        {open ? <div className="flex gap-3 justify-center items-center"><LogOut/><LogoutButton className="flex items-center gap-2 text-sm font-medium dark:text-neutral-200 text-red-600 hover:text-red-400 transition-colors py-2 cursor-pointer w-full" /></div> : <LogOut/>}
                     </SidebarBody>
 
-                    <main className="flex-1 p-4">{children}</main>
+                    <main className="flex-1 w-full p-4">{children}</main>
                 </div>
             </Sidebar>
         </ProtectedRoute>
@@ -49,16 +50,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 export const Logo = () => {
     return (
         <Link
-            href="#"
+            href="/app"
             className=" space-x-2 items-center flex"
         >
-            <Image src="/220630895.png" alt="Logo" width={32} height={32} />
+            <Image src="/squalto.jpg" alt="Logo" width={32} height={32} />
             <motion.span
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="font-medium text-black dark:text-white whitespace-pre"
             >
-                Cliona
+                Squalto
             </motion.span>
         </Link>
     );
@@ -67,7 +68,7 @@ export const Logo = () => {
 export const LogoIcon = () => {
     return (
         <div>
-            <Image src="/220630895.png" alt="Logo" width={32} height={32} />
+            <Image src="/squalto.jpg" alt="Logo" width={32} height={32} />
         </div>
     );
 };

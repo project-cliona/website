@@ -36,14 +36,14 @@ function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/220630895.png"
-            alt="Cliona"
+            src="/squalto.jpg"
+            alt="Squalto"
             width={32}
             height={32}
             className="rounded-md"
           />
           <span className="text-xl font-semibold text-[#0F1117]">
-            Cliona
+            Squalto
           </span>
         </Link>
 
@@ -188,7 +188,7 @@ function Hero() {
                   <MessageSquare size={14} className="text-white" />
                 </div>
                 <div>
-                  <p className="text-white text-xs font-semibold">Cliona AI</p>
+                  <p className="text-white text-xs font-semibold">Squalto AI</p>
                   <p className="text-white/70 text-[10px]">Online</p>
                 </div>
               </div>
@@ -576,7 +576,7 @@ function Integrations() {
             Empowering Top Companies with Seamless Integrations
           </h2>
           <p className="text-sm text-gray-600 leading-relaxed max-w-sm">
-            Connect Cliona to the tools you already use. Our open API and pre-built connectors let you go live in hours, not weeks.
+            Connect Squalto to the tools you already use. Our open API and pre-built connectors let you go live in hours, not weeks.
           </p>
           <div>
             <a
@@ -639,7 +639,7 @@ const footerLinks = {
   Company: ["About", "Blog", "Careers", "Press"],
   Features: ["WhatsApp API", "RCS Messaging", "AI Chatbot", "Analytics"],
   Resources: ["Documentation", "API Reference", "Status", "Changelog"],
-  "Get in Touch": ["hello@cliona.in", "Support", "Sales", "Partners"],
+  "Get in Touch": ["info@Squalto.com", "Support", "Sales", "Partners"],
 };
 
 function Footer() {
@@ -654,13 +654,13 @@ function Footer() {
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-3">
               <Image
-                src="/220630895.png"
-                alt="Cliona"
+                src="/squalto.jpg"
+                alt="Squalto"
                 width={28}
                 height={28}
                 className="rounded-md"
               />
-              <span className="text-base font-semibold text-white">Cliona</span>
+              <span className="text-base font-semibold text-white">Squalto</span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed max-w-[180px]">
               AI-powered WhatsApp &amp; RCS messaging for modern businesses.
@@ -694,7 +694,7 @@ function Footer() {
           className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t text-xs text-gray-500"
           style={{ borderColor: C.darkBorder }}
         >
-          <p>&copy; {new Date().getFullYear()} Cliona. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Squalto. All rights reserved.</p>
           <div className="flex gap-4">
             <a href="#" className="hover:text-gray-300 transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-gray-300 transition-colors">Terms of Service</a>
