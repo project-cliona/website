@@ -10,7 +10,6 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchTemplates } from "@/lib/api/rcs/templates";
 import { VariantProps } from "class-variance-authority";
 import { RCSTemplate } from "@/lib/type";
-import { useUser } from "@/providers/userProvider";
 
 
 const multiColumnFilterFn: FilterFn<RCSTemplate> = (row, _columnId, value) => {
@@ -100,21 +99,19 @@ const columns: ColumnDef<RCSTemplate>[] = [
 /* ---------------- Component ---------------- */
 
 export default function UsersTable() {
-  const { user } = useUser();
-  const userId = user?.userId;
+  const userId = 2;
 
   const { data: templateData, isLoading } = useQuery({
     queryKey: ["templates", userId],
-    queryFn: () => fetchTemplates(userId!),
-    enabled: !!userId,
+    queryFn: () => fetchTemplates(userId),
   });
 
-  if (isLoading || !userId) {
+  if (isLoading) {
     return (
       <div className="space-y-8">
         <PageHeading
-          title="Templates"
-          subtitle="Overview and manage your RCS message templates"
+          title="Agents"
+          subtitle="Overview and manage all active and inactive agents in your dashboard"
         />
         <TableSkeleton rows={5} columns={7} />
       </div>
@@ -125,11 +122,9 @@ export default function UsersTable() {
     <div className="space-y-8">
       <PageHeading
         title="Templates"
-        subtitle="Overview and manage your RCS message templates"
+        subtitle="Overview and manage your templates"
       />
-      <div className="card-warm p-0 overflow-hidden">
-        <DataTable<RCSTemplate> incomingData={templateData ?? []} columns={columns} filterPlaceHolder="Filter with template name" buttonTitle="Add template" navigateTo="templates/create" rowNavigate="app/rcs/templates" />
-      </div>
+      <DataTable<RCSTemplate> incomingData={templateData ?? []} columns={columns} filterPlaceHolder="Filter with template name" buttonTitle="Add template" navigateTo="templates/create" rowNavigate="app/rcs/templates" />
     </div>
   );
 }

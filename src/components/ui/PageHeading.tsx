@@ -10,8 +10,8 @@ interface PageHeadingProps {
 export const PageHeading: React.FC<PageHeadingProps> = ({ title, subtitle, className }) => {
   return (
     <div className={cn("mb-6", className)}>
-      <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
-      {subtitle && <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>}
+      <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
+      {subtitle && <p className="text-xs text-gray-500">{subtitle}</p>}
     </div>
   );
 };

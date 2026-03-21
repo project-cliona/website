@@ -19,19 +19,16 @@ import { authenticatedApiClient } from '@/lib/axios'
 import { useSearchParams } from 'next/navigation'
 import { getTemplateById } from '@/lib/api/rcs/templates'
 import { Agent, RCSTemplate } from '@/lib/type'
-import { useUser } from '@/providers/userProvider'
 
 export default function CreateTemplate() {
-  const { user } = useUser()
-  const userId = user?.userId
+  const userId = 2
   const searchParams = useSearchParams()
   const isEdit = searchParams.get('edit') === 'true'
   const id = searchParams.get('id')
 
   const { data: agentData } = useQuery<Agent[]>({
     queryKey: ['agents', userId],
-    queryFn: () => fetchAgents(userId!),
-    enabled: !!userId,
+    queryFn: () => fetchAgents(userId),
   })
 
   const {
@@ -184,7 +181,7 @@ export default function CreateTemplate() {
         {/* Main Form */}
         <div className="lg:col-span-2 space-y-6">
           {/* Basic Information */}
-          <div className="bg-card rounded-xl border border-border p-6">
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
             <SubHeading title="Basic Information" Icon={Info} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Template Name */}
@@ -254,7 +251,7 @@ export default function CreateTemplate() {
                   name="agentCategory"
                   control={control}
                   render={({ field }) => (
-                    <Input {...field} disabled className="bg-muted" />
+                    <Input {...field} disabled className="bg-gray-100" />
                   )}
                 />
               </div>
@@ -262,7 +259,7 @@ export default function CreateTemplate() {
           </div>
 
           {/* Card Title */}
-          <div className="bg-card rounded-xl border border-border p-6">
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
             <SubHeading title="Card Content" Icon={Image} />
             <div>
               <Label htmlFor="cardTitle" className="mb-2 block">Card Title *</Label>
@@ -295,14 +292,14 @@ export default function CreateTemplate() {
           </div>
 
           {/* Media Upload */}
-          <div className="bg-card rounded-xl border border-border p-6">
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
             <SubHeading title="Media Content" Icon={Image} />
             <Controller
               name="mediaFile"
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Upload Media (Image/Video)
                   </label>
                   <input
@@ -316,7 +313,7 @@ export default function CreateTemplate() {
                         alert('Please upload an image or video file')
                       }
                     }}
-                    className="w-full border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-foreground"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
                   />
                   {field.value && (
                     <p className="text-sm text-green-600 mt-2">
@@ -329,7 +326,7 @@ export default function CreateTemplate() {
           </div>
 
           {/* Suggestions */}
-          <div className="bg-card rounded-xl border border-border p-6">
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
               <SubHeading title="Suggestions (Buttons)" Icon={Lightbulb} />
               <Button type="button" variant="default" size="sm" onClick={addSuggestion} disabled={suggestions.length >= 3}>
@@ -338,9 +335,9 @@ export default function CreateTemplate() {
             </div>
             <div className="space-y-4">
               {suggestions.map((suggestion, index) => (
-                <div key={suggestion.id} className="border border-border rounded-xl p-4">
+                <div key={suggestion.id} className="border border-gray-200 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium text-foreground">Button {index + 1}</h3>
+                    <h3 className="font-medium text-gray-900">Button {index + 1}</h3>
                     {suggestions.length > 1 && (
                       <Button type="button" variant="ghost" size="sm" onClick={() => removeSuggestionByIndex(index)} className="p-1">
                         <Trash2 className="w-4 h-4 text-red-400" />

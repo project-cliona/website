@@ -10,7 +10,6 @@ import { useQuery } from "@tanstack/react-query";
 import { TableSkeleton } from "@/components/ui/skeleton/table";
 import { VariantProps } from "class-variance-authority";
 import { Agent } from "@/lib/type";
-import { useUser } from "@/providers/userProvider";
 
 const multiColumnFilterFn: FilterFn<Agent> = (row, value) => {
   const search = value.toLowerCase();
@@ -102,16 +101,14 @@ const columns: ColumnDef<Agent>[] = [
 ];
 
 export default function UsersTable() {
-  const { user } = useUser();
-  const userId = user?.userId;
+  const userId = 2;
 
   const { data: agentData, isLoading } = useQuery<Agent[]>({
     queryKey: ["agents", userId],
-    queryFn: () => fetchAgents(userId!),
-    enabled: !!userId,
+    queryFn: () => fetchAgents(userId),
   });
 
-  if (isLoading || !userId) {
+  if (isLoading) {
     return (
       <div className="space-y-8">
         <PageHeading
@@ -129,9 +126,7 @@ export default function UsersTable() {
         title="Agents"
         subtitle="Overview and manage all active and inactive agents in your dashboard"
       />
-      <div className="card-warm p-0 overflow-hidden">
-        <DataTable<Agent> incomingData={agentData ?? []} columns={columns} buttonTitle={"Add agent"} navigateTo="agents/create" rowNavigate="app/rcs/agents"/>
-      </div>
+      <DataTable<Agent> incomingData={agentData ?? []} columns={columns} buttonTitle={"Add agent"} navigateTo="agents/create" rowNavigate="app/rcs/agents"/>
     </div>
   );
 }

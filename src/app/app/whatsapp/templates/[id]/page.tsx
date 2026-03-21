@@ -1,6 +1,6 @@
 export default function WhatsappTemplateDetail() {
   return (
-    <div className="p-6 text-muted-foreground">
+    <div className="p-6 text-gray-500">
       Template Detail — coming soon.
     </div>
   );
@@ -46,8 +46,8 @@ export default function WhatsappTemplateDetail() {
 //     return (
 //       <div className="space-y-8">
 //         <PageHeading title="Template Not Found" />
-//         <div className="bg-card rounded-xl border border-border p-8 text-center">
-//           <p className="text-muted-foreground mb-4">
+//         <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
+//           <p className="text-gray-500 mb-4">
 //             The template you are looking for does not exist or has been removed.
 //           </p>
 //           <Link
@@ -87,7 +87,7 @@ export default function WhatsappTemplateDetail() {
 //     <div className="space-y-6">
 //       <Link
 //         href="/app/whatsapp/templates"
-//         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+//         className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800"
 //       >
 //         <ArrowLeft className="w-4 h-4" />
 //         Back to Templates
@@ -97,37 +97,37 @@ export default function WhatsappTemplateDetail() {
 
 //       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 //         {/* Template Details */}
-//         <div className="bg-card rounded-xl border border-border p-6">
-//           <h3 className="text-lg font-semibold text-foreground mb-4">
+//         <div className="bg-white rounded-lg border border-gray-200 p-6">
+//           <h3 className="text-lg font-semibold text-gray-900 mb-4">
 //             Template Details
 //           </h3>
 //           <div className="space-y-3">
-//             <div className="flex justify-between py-2 border-b border-border">
-//               <span className="text-sm text-muted-foreground">Name</span>
-//               <span className="text-sm font-medium text-foreground">
+//             <div className="flex justify-between py-2 border-b border-gray-50">
+//               <span className="text-sm text-gray-500">Name</span>
+//               <span className="text-sm font-medium text-gray-900">
 //                 {template.name}
 //               </span>
 //             </div>
-//             <div className="flex justify-between py-2 border-b border-border">
-//               <span className="text-sm text-muted-foreground">Category</span>
+//             <div className="flex justify-between py-2 border-b border-gray-50">
+//               <span className="text-sm text-gray-500">Category</span>
 //               <Badge variant={categoryVariantMap[template.category] || "default"}>
 //                 {template.category}
 //               </Badge>
 //             </div>
-//             <div className="flex justify-between py-2 border-b border-border">
-//               <span className="text-sm text-muted-foreground">Language</span>
-//               <span className="text-sm font-medium text-foreground">
+//             <div className="flex justify-between py-2 border-b border-gray-50">
+//               <span className="text-sm text-gray-500">Language</span>
+//               <span className="text-sm font-medium text-gray-900">
 //                 {template.language}
 //               </span>
 //             </div>
-//             <div className="flex justify-between py-2 border-b border-border">
-//               <span className="text-sm text-muted-foreground">WABA ID</span>
-//               <span className="text-sm font-medium text-foreground">
+//             <div className="flex justify-between py-2 border-b border-gray-50">
+//               <span className="text-sm text-gray-500">WABA ID</span>
+//               <span className="text-sm font-medium text-gray-900">
 //                 {template.wabaId}
 //               </span>
 //             </div>
-//             <div className="flex justify-between py-2 border-b border-border">
-//               <span className="text-sm text-muted-foreground">Status</span>
+//             <div className="flex justify-between py-2 border-b border-gray-50">
+//               <span className="text-sm text-gray-500">Status</span>
 //               <Badge
 //                 variant={
 //                   statusVariantMap[template.status ?? ""] || "default"
@@ -136,17 +136,17 @@ export default function WhatsappTemplateDetail() {
 //                 {template.status || "N/A"}
 //               </Badge>
 //             </div>
-//             <div className="flex justify-between py-2 border-b border-border">
-//               <span className="text-sm text-muted-foreground">Created At</span>
-//               <span className="text-sm font-medium text-foreground">
+//             <div className="flex justify-between py-2 border-b border-gray-50">
+//               <span className="text-sm text-gray-500">Created At</span>
+//               <span className="text-sm font-medium text-gray-900">
 //                 {template.createdAt
 //                   ? new Date(template.createdAt).toLocaleString()
 //                   : "N/A"}
 //               </span>
 //             </div>
 //             <div className="flex justify-between py-2">
-//               <span className="text-sm text-muted-foreground">Updated At</span>
-//               <span className="text-sm font-medium text-foreground">
+//               <span className="text-sm text-gray-500">Updated At</span>
+//               <span className="text-sm font-medium text-gray-900">
 //                 {template.updatedAt
 //                   ? new Date(template.updatedAt).toLocaleString()
 //                   : "N/A"}
@@ -156,12 +156,12 @@ export default function WhatsappTemplateDetail() {
 //         </div>
 
 //         {/* Message Components */}
-//         <div className="bg-card rounded-xl border border-border p-6">
-//           <h3 className="text-lg font-semibold text-foreground mb-4">
+//         <div className="bg-white rounded-lg border border-gray-200 p-6">
+//           <h3 className="text-lg font-semibold text-gray-900 mb-4">
 //             Message Components
 //           </h3>
 //           {components.length === 0 ? (
-//             <p className="text-sm text-muted-foreground">
+//             <p className="text-sm text-gray-500">
 //               No components data available.
 //             </p>
 //           ) : (
@@ -169,18 +169,18 @@ export default function WhatsappTemplateDetail() {
 //               {components.map((comp: any, index: number) => (
 //                 <div
 //                   key={index}
-//                   className="border border-border rounded-xl p-4"
+//                   className="border border-gray-100 rounded-lg p-4"
 //                 >
 //                   <div className="flex items-center gap-2 mb-2">
 //                     <Badge variant="default">{comp.type}</Badge>
 //                     {comp.format && (
-//                       <span className="text-xs text-muted-foreground">
+//                       <span className="text-xs text-gray-500">
 //                         ({comp.format})
 //                       </span>
 //                     )}
 //                   </div>
 //                   {comp.text && (
-//                     <p className="text-sm text-foreground whitespace-pre-wrap">
+//                     <p className="text-sm text-gray-700 whitespace-pre-wrap">
 //                       {comp.text}
 //                     </p>
 //                   )}
@@ -189,9 +189,9 @@ export default function WhatsappTemplateDetail() {
 //                       {comp.buttons.map((btn: any, btnIdx: number) => (
 //                         <div
 //                           key={btnIdx}
-//                           className="flex items-center gap-2 text-sm text-muted-foreground"
+//                           className="flex items-center gap-2 text-sm text-gray-600"
 //                         >
-//                           <span className="text-xs bg-muted px-2 py-0.5 rounded">
+//                           <span className="text-xs bg-gray-100 px-2 py-0.5 rounded">
 //                             {btn.type}
 //                           </span>
 //                           <span>{btn.text}</span>

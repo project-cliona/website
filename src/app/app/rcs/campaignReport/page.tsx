@@ -142,7 +142,7 @@ export default function CampaignReports() {
       case 'Failed':
         return 'bg-red-100 text-red-700'
       default:
-        return 'bg-muted text-foreground'
+        return 'bg-gray-100 text-gray-700'
     }
   }
 
@@ -159,10 +159,10 @@ export default function CampaignReports() {
   return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-foreground">Campaign Reports</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Campaign Reports</h1>
           <button 
             onClick={exportAllReports}
-            className="bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700 transition-colors flex items-center"
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center"
           >
             <span className="mr-2">📊</span>
             Export All Reports
@@ -170,16 +170,16 @@ export default function CampaignReports() {
         </div>
 
         {/* Filters */}
-        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">Filters</h2>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 User Name
               </label>
               <select 
-                className="w-full border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-foreground"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
                 value={filters.userName}
                 onChange={(e) => handleFilterChange('userName', e.target.value)}
               >
@@ -192,11 +192,11 @@ export default function CampaignReports() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Date Type
               </label>
               <select 
-                className="w-full border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-foreground"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
                 value={filters.dateType}
                 onChange={(e) => handleFilterChange('dateType', e.target.value)}
               >
@@ -206,12 +206,12 @@ export default function CampaignReports() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 {filters.dateType === 'Day' ? 'Date' : 'Start Date'}
               </label>
               <input
                 type="date"
-                className="w-full border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-foreground"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
                 value={filters.startDate}
                 onChange={(e) => handleFilterChange('startDate', e.target.value)}
               />
@@ -219,12 +219,12 @@ export default function CampaignReports() {
 
             {filters.dateType === 'Range' && (
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   End Date
                 </label>
                 <input
                   type="date"
-                  className="w-full border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-foreground"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
                   value={filters.endDate}
                   onChange={(e) => handleFilterChange('endDate', e.target.value)}
                 />
@@ -234,11 +234,11 @@ export default function CampaignReports() {
         </div>
 
         {/* Search Bar */}
-        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <input
             type="text"
             placeholder="Search campaigns, agents, templates, or users..."
-            className="w-full border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-foreground"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -246,108 +246,108 @@ export default function CampaignReports() {
 
         {/* Campaign Summary Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">{filteredCampaigns.length}</div>
-              <div className="text-sm text-muted-foreground mt-1">Total Campaigns</div>
+              <div className="text-sm text-gray-600 mt-1">Total Campaigns</div>
             </div>
           </div>
 
-          <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">
                 {filteredCampaigns.filter(c => c.status === 'Completed').length}
               </div>
-              <div className="text-sm text-muted-foreground mt-1">Completed</div>
+              <div className="text-sm text-gray-600 mt-1">Completed</div>
             </div>
           </div>
 
-          <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-yellow-600">
                 {filteredCampaigns.filter(c => c.status === 'Scheduled').length}
               </div>
-              <div className="text-sm text-muted-foreground mt-1">Scheduled</div>
+              <div className="text-sm text-gray-600 mt-1">Scheduled</div>
             </div>
           </div>
 
-          <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-red-600">
                 {filteredCampaigns.filter(c => c.status === 'Failed').length}
               </div>
-              <div className="text-sm text-muted-foreground mt-1">Failed</div>
+              <div className="text-sm text-gray-600 mt-1">Failed</div>
             </div>
           </div>
         </div>
 
         {/* Campaign Reports Table */}
-        <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
-          <div className="px-6 py-4 border-b border-border">
-            <h2 className="text-lg font-semibold text-foreground">Campaign Details</h2>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900">Campaign Details</h2>
           </div>
           
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-muted/50">
+              <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Download
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Campaign Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Agent Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Template Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     User
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Scheduled Time
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Message Count
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Delivery Rate
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Read Rate
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-card divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-gray-200">
                 {paginatedCampaigns.map((campaign) => (
-                  <tr key={campaign.id} className="hover:bg-muted/30">
+                  <tr key={campaign.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
                         onClick={() => handleDownload(campaign.id, campaign.campaignName)}
                         disabled={campaign.status === 'Scheduled' || campaign.status === 'Failed'}
-                        className="text-blue-600 hover:text-blue-900 disabled:text-muted-foreground disabled:cursor-not-allowed"
+                        className="text-blue-600 hover:text-blue-900 disabled:text-gray-400 disabled:cursor-not-allowed"
                       >
                         ⬇️
                       </button>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {campaign.campaignName}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {campaign.agentName}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {campaign.templateName}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {campaign.userName}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <div>{campaign.scheduledTime}</div>
                       {campaign.actualSentTime !== 'Pending' && campaign.actualSentTime !== 'Failed' && (
                         <div className="text-xs text-green-600">
@@ -355,7 +355,7 @@ export default function CampaignReports() {
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
                       {campaign.messageCount.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -368,7 +368,7 @@ export default function CampaignReports() {
                           {campaign.deliveryRate}%
                         </span>
                       ) : (
-                        <span className="text-muted-foreground">-</span>
+                        <span className="text-gray-400">-</span>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -381,7 +381,7 @@ export default function CampaignReports() {
                           {campaign.readRate}%
                         </span>
                       ) : (
-                        <span className="text-muted-foreground">-</span>
+                        <span className="text-gray-400">-</span>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -397,26 +397,26 @@ export default function CampaignReports() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="bg-card px-4 py-3 flex items-center justify-between border-t border-border">
+            <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200">
               <div className="flex-1 flex justify-between sm:hidden">
                 <button
                   onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
                   disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-foreground bg-card hover:bg-muted/30 disabled:opacity-50"
+                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
                 >
                   Previous
                 </button>
                 <button
                   onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))}
                   disabled={currentPage === totalPages}
-                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-foreground bg-card hover:bg-muted/30 disabled:opacity-50"
+                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
                 >
                   Next
                 </button>
               </div>
               <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-sm text-foreground">
+                  <p className="text-sm text-gray-700">
                     Showing{' '}
                     <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span>
                     {' '}to{' '}
@@ -433,7 +433,7 @@ export default function CampaignReports() {
                     <button
                       onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
                       disabled={currentPage === 1}
-                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted/30 disabled:opacity-50"
+                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                     >
                       ←
                     </button>
@@ -444,7 +444,7 @@ export default function CampaignReports() {
                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                           currentPage === page
                             ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                            : 'bg-card border-border text-muted-foreground hover:bg-muted/30'
+                            : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
                         }`}
                       >
                         {page}
@@ -453,7 +453,7 @@ export default function CampaignReports() {
                     <button
                       onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))}
                       disabled={currentPage === totalPages}
-                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted/30 disabled:opacity-50"
+                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                     >
                       →
                     </button>

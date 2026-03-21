@@ -1,6 +1,6 @@
 export default function WhatsappContacts() {
   return (
-    <div className="p-6 text-muted-foreground">
+    <div className="p-6 text-gray-500">
       Contacts — coming soon.
     </div>
   );
@@ -81,8 +81,8 @@ export default function WhatsappContacts() {
 //       />
 
 //       {/* Add Contact Form */}
-//       <div className="bg-card rounded-xl border border-border p-6">
-//         <h3 className="text-lg font-semibold text-foreground mb-4">
+//       <div className="bg-white rounded-lg border border-gray-200 p-6">
+//         <h3 className="text-lg font-semibold text-gray-900 mb-4">
 //           Add Contact
 //         </h3>
 //         <form onSubmit={handleSubmit(onSubmit)}>
@@ -141,12 +141,12 @@ export default function WhatsappContacts() {
 //           </div>
 
 //           {submitError && (
-//             <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700 mb-4">
+//             <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700 mb-4">
 //               {submitError}
 //             </div>
 //           )}
 //           {submitSuccess && (
-//             <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-sm text-green-700 mb-4">
+//             <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700 mb-4">
 //               Contact added successfully!
 //             </div>
 //           )}
@@ -157,8 +157,8 @@ export default function WhatsappContacts() {
 //         </form>
 
 //         {/* CSV Upload Section */}
-//         <div className="border-t border-border pt-4 mt-4">
-//           <p className="text-sm font-medium text-foreground mb-3">
+//         <div className="border-t border-gray-200 pt-4 mt-4">
+//           <p className="text-sm font-medium text-gray-700 mb-3">
 //             OR Upload CSV
 //           </p>
 //           <FileUpload
@@ -170,9 +170,9 @@ export default function WhatsappContacts() {
 //       </div>
 
 //       {/* Contacts Table */}
-//       <div className="bg-card rounded-xl border border-border overflow-hidden">
-//         <div className="px-6 py-4 border-b border-border">
-//           <h3 className="text-lg font-semibold text-foreground">
+//       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+//         <div className="px-6 py-4 border-b border-gray-200">
+//           <h3 className="text-lg font-semibold text-gray-900">
 //             All Contacts
 //           </h3>
 //         </div>
@@ -183,42 +183,42 @@ export default function WhatsappContacts() {
 //           </div>
 //         ) : !contacts || contacts.length === 0 ? (
 //           <div className="p-8 text-center">
-//             <p className="text-muted-foreground">
+//             <p className="text-gray-500">
 //               No contacts yet. Add your first contact above.
 //             </p>
 //           </div>
 //         ) : (
 //           <div className="overflow-x-auto">
 //             <table className="min-w-full divide-y divide-gray-200">
-//               <thead className="bg-muted/50">
+//               <thead className="bg-gray-50">
 //                 <tr>
-//                   <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+//                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 //                     Name
 //                   </th>
-//                   <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+//                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 //                     Phone Number
 //                   </th>
-//                   <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+//                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 //                     Country Code
 //                   </th>
-//                   <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+//                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 //                     Added On
 //                   </th>
 //                 </tr>
 //               </thead>
-//               <tbody className="bg-card divide-y divide-gray-200">
+//               <tbody className="bg-white divide-y divide-gray-200">
 //                 {contacts.map((contact) => (
-//                   <tr key={contact.id} className="hover:bg-muted/30">
-//                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
+//                   <tr key={contact.id} className="hover:bg-gray-50">
+//                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
 //                       {contact.name}
 //                     </td>
-//                     <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+//                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
 //                       {contact.phoneNumber}
 //                     </td>
-//                     <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+//                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
 //                       {contact.countryCode}
 //                     </td>
-//                     <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+//                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
 //                       {new Date(contact.createdAt).toLocaleDateString()}
 //                     </td>
 //                   </tr>

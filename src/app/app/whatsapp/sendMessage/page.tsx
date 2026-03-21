@@ -128,7 +128,7 @@ export default function SendWhatsappMessage() {
   };
 
   return (
-    <div className="p-6 text-muted-foreground">
+    <div className="p-6 text-gray-500">
       Send Message — coming soon.
     </div>
   );
@@ -275,8 +275,8 @@ export default function SendWhatsappMessage() {
 //           {/* Main Form */}
 //           <div className="lg:col-span-2 space-y-6">
 //             {/* Campaign Settings */}
-//             <div className="bg-card border border-border rounded-xl p-6">
-//               <h2 className="text-lg font-semibold text-foreground mb-4">
+//             <div className="bg-white border border-gray-100 rounded-xl p-6">
+//               <h2 className="text-lg font-semibold text-gray-900 mb-4">
 //                 Campaign Settings
 //               </h2>
 //               <div className="space-y-4">
@@ -344,8 +344,8 @@ export default function SendWhatsappMessage() {
 //             </div>
 
 //             {/* Mobile Numbers */}
-//             <div className="bg-card border border-border rounded-xl p-6">
-//               <h2 className="text-lg font-semibold text-foreground mb-4">
+//             <div className="bg-white border border-gray-100 rounded-xl p-6">
+//               <h2 className="text-lg font-semibold text-gray-900 mb-4">
 //                 Mobile Numbers
 //               </h2>
 //               <div className="space-y-4">
@@ -354,7 +354,7 @@ export default function SendWhatsappMessage() {
 //                   control={control}
 //                   render={({ field }) => (
 //                     <div className="space-y-2">
-//                       <Label className="text-sm font-medium text-foreground">
+//                       <Label className="text-sm font-medium text-gray-700">
 //                         Enter Mobile Numbers
 //                       </Label>
 //                       <Textarea
@@ -367,8 +367,8 @@ export default function SendWhatsappMessage() {
 //                   )}
 //                 />
 
-//                 <div className="border-t border-border pt-4">
-//                   <p className="text-sm font-medium text-foreground mb-3">
+//                 <div className="border-t border-gray-200 pt-4">
+//                   <p className="text-sm font-medium text-gray-700 mb-3">
 //                     OR Upload File
 //                   </p>
 //                   <Controller
@@ -415,12 +415,12 @@ export default function SendWhatsappMessage() {
 
 //             {/* Error / Success Messages */}
 //             {submitError && (
-//               <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
+//               <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
 //                 {submitError}
 //               </div>
 //             )}
 //             {submitSuccess && (
-//               <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-sm text-green-700">
+//               <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-700">
 //                 Campaign sent successfully!
 //               </div>
 //             )}

@@ -7,8 +7,6 @@ export interface StatsCardProps {
   trend?: string
   trendUp?: boolean
   tooltip?: string
-  iconVariant?: 0 | 1 | 2 | 3
-  index?: number
 }
 
 export type Agent = {

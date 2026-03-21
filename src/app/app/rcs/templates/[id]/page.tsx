@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/Button'
 import Link from 'next/link'
 
 const ReadOnlyValue = ({ value }: { value?: string | null }) => (
-    <div className="mt-1 text-sm text-foreground break-all">
+    <div className="mt-1 text-sm text-gray-700 break-all">
         {value && value.trim() !== '' ? value : '—'}
     </div>
 )
@@ -39,13 +39,13 @@ export default function TemplateDetails() {
             />
 
             {/* Hero header (same feeling as agent page) */}
-            {/* <div className="rounded-xl border bg-card px-6 py-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            {/* <div className="rounded-xl border bg-white px-6 py-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 
         <div>
-          <div className="text-lg font-semibold text-foreground">
+          <div className="text-lg font-semibold text-gray-900">
             {data.templateName}
           </div>
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-gray-500">
             {data.templateTypeTxt}
           </div>
         </div>
@@ -82,7 +82,7 @@ export default function TemplateDetails() {
                 <div className="space-y-6 lg:col-span-2">
 
                     {/* Basic info */}
-                    <div className="rounded-xl border bg-card p-6">
+                    <div className="rounded-xl border bg-white p-6">
                         <SubHeading title="Template Information" Icon={Info} />
 
                         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -110,7 +110,7 @@ export default function TemplateDetails() {
                     </div>
 
                     {/* Cards */}
-                    <div className="rounded-xl border bg-card p-6">
+                    <div className="rounded-xl border bg-white p-6">
                         <SubHeading title="Template Cards" Icon={Layers} />
 
                         <div className="mt-4 space-y-5">
@@ -118,13 +118,13 @@ export default function TemplateDetails() {
                             {data.cards.map((card, index) => (
                                 <div
                                     key={card.id}
-                                    className="rounded-lg border p-4 bg-muted/50"
+                                    className="rounded-lg border p-4 bg-gray-50"
                                 >
                                     <div className="flex items-center justify-between mb-3">
-                                        <div className="font-medium text-foreground">
+                                        <div className="font-medium text-gray-900">
                                             Card {index + 1} – {card.cardTitle}
                                         </div>
-                                        <span className="text-xs text-muted-foreground">
+                                        <span className="text-xs text-gray-500">
                                             Order {card.cardOrder}
                                         </span>
                                     </div>
@@ -171,7 +171,7 @@ export default function TemplateDetails() {
                 <div className="space-y-6">
 
                     {/* Meta */}
-                    <div className="rounded-xl border bg-card p-6">
+                    <div className="rounded-xl border bg-white p-6">
                         <SubHeading title="Meta" Icon={Layout} />
                         <div className='flex justify-between'>
                             <div className="mt-4 space-y-4">
@@ -210,20 +210,20 @@ export default function TemplateDetails() {
                     </div>
 
                     {/* Suggestions summary */}
-                    <div className="rounded-xl border bg-card p-6">
+                    <div className="rounded-xl border bg-white p-6">
                         <SubHeading title="Suggestions / Actions" Icon={MessageSquare} />
 
-                        <div className="mt-4 space-y-4 text-sm text-foreground">
+                        <div className="mt-4 space-y-4 text-sm text-gray-700">
 
                             {data.cards.map((card, i) => (
                                 <div key={card.id} className="space-y-2">
 
-                                    <div className="font-medium text-foreground">
+                                    <div className="font-medium text-gray-900">
                                         Card {i + 1}
                                     </div>
 
                                     {card.suggestions.length === 0 && (
-                                        <div className="text-muted-foreground">
+                                        <div className="text-gray-400">
                                             No actions configured
                                         </div>
                                     )}
@@ -231,7 +231,7 @@ export default function TemplateDetails() {
                                     {card.suggestions.map((s, idx) => (
                                         <div
                                             key={idx}
-                                            className="rounded border bg-muted/50 p-2"
+                                            className="rounded border bg-gray-50 p-2"
                                         >
                                             <div>
                                                 <span className="font-medium">Type:</span>{' '}
