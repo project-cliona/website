@@ -51,27 +51,80 @@ export function loadFacebookSDK(): Promise<void> {
 }
 
 export type EmbeddedSignupResult =
-  | { status: "success"; code: string }
+  | { status: "success"; code: string; wabaId: string; phoneNumberId: string }
   | { status: "cancelled" }
   | { status: "error"; message: string };
 
 /**
  * Opens the Meta Embedded Signup popup. Returns a typed result indicating
- * success (with auth code), cancellation, or error.
+ * success (with auth code, wabaId, phoneNumberId), cancellation, or error.
  *
  * CRITICAL: `response_type: "code"` and `override_default_response_type: true`
  * are REQUIRED. Without them, `authResponse.code` will be undefined and the
  * flow will silently fail at the backend exchange step.
+ *
+ * The session info listener captures waba_id and phone_number_id from the
+ * Meta Embedded Signup message event, so the backend doesn't need to
+ * discover them via API (which requires the business_management permission).
  */
 export async function launchEmbeddedSignup(): Promise<EmbeddedSignupResult> {
   await loadFacebookSDK();
 
   return new Promise((resolve) => {
+    let sessionWabaId = "";
+    let sessionPhoneNumberId = "";
+
+    // Listen for session info from the Embedded Signup popup.
+    // Meta posts a message event with waba_id and phone_number_id
+    // when the user completes the signup flow.
+    const sessionInfoListener = (event: MessageEvent) => {
+      if (
+        typeof event.origin !== "string" ||
+        !event.origin.endsWith("facebook.com")
+      ) {
+        return;
+      }
+
+      try {
+        const data =
+          typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+
+        if (data.type === "WA_EMBEDDED_SIGNUP") {
+          if (data.event === "FINISH") {
+            sessionWabaId = data.data.waba_id ?? "";
+            sessionPhoneNumberId = data.data.phone_number_id ?? "";
+          } else if (data.event === "CANCEL") {
+            // User cancelled inside the popup — FB.login callback will handle this
+          }
+        }
+      } catch {
+        // Non-JSON message from Facebook iframe, ignore
+      }
+    };
+
+    window.addEventListener("message", sessionInfoListener);
+
     window.FB.login(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (response: any) => {
+        window.removeEventListener("message", sessionInfoListener);
+
         if (response.authResponse?.code) {
-          resolve({ status: "success", code: response.authResponse.code });
+          if (!sessionWabaId || !sessionPhoneNumberId) {
+            resolve({
+              status: "error",
+              message:
+                "WhatsApp signup completed but WABA or phone number info was not received. Please try again.",
+            });
+            return;
+          }
+
+          resolve({
+            status: "success",
+            code: response.authResponse.code,
+            wabaId: sessionWabaId,
+            phoneNumberId: sessionPhoneNumberId,
+          });
         } else if (
           response.status === "not_authorized" ||
           response.status === "unknown"

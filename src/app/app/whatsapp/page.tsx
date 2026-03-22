@@ -60,7 +60,11 @@ export default function WhatsappDashboard() {
     setConnectError(null);
     const result = await launchEmbeddedSignup();
     if (result.status === "success") {
-      exchangeMutation.mutate(result.code);
+      exchangeMutation.mutate({
+        code: result.code,
+        wabaId: result.wabaId,
+        phoneNumberId: result.phoneNumberId,
+      });
     } else if (result.status === "error") {
       setConnectError(result.message);
     }

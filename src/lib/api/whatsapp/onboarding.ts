@@ -1,10 +1,15 @@
 import { authenticatedApiClient } from "@/lib/axios";
 import type { WhatsappConnectionStatus } from "@/lib/type";
 
-export async function exchangeWhatsappCode(code: string): Promise<void> {
-  await authenticatedApiClient().post("/whatsApp/onboarding/exchange-token", {
-    code,
-  });
+export async function exchangeWhatsappCode(params: {
+  code: string;
+  wabaId: string;
+  phoneNumberId: string;
+}): Promise<void> {
+  await authenticatedApiClient().post(
+    "/whatsApp/onboarding/exchange-token",
+    params
+  );
 }
 
 export async function getWhatsappConnectionStatus(): Promise<WhatsappConnectionStatus> {
