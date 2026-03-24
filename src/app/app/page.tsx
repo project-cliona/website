@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 
 export default function Dashboard() {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [view, setView] = useState<"grid" | "list">("grid");
     const { profile } = useUser();
 
     const services = profile?.userService?.services || [];
@@ -53,10 +54,10 @@ export default function Dashboard() {
                 />
 
                 <div className="flex items-center gap-3">
-                    <Button variant="ghost" size="icon">
+                    <Button onClick={() => setView("grid")} className={view === "grid" ? "bg-gray-100" : ""} variant="ghost" size="icon">
                         <LayoutGrid className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon">
+                    <Button onClick={() => setView("list")} className={view === "list" ? "bg-gray-100" : ""} variant="ghost" size="icon">
                         <List className="h-4 w-4" />
                     </Button>
 
@@ -106,18 +107,32 @@ export default function Dashboard() {
                 </div>
             ) : (
                 /* ✅ Dynamic Grid */
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div
+                    className={
+                        view === "grid"
+                            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                            : "flex flex-col gap-4"
+                    }
+                >
                     {filteredServices.map((service) => {
                         const isSuspended = service.mappedStatus === "suspended";
 
                         const card = (
                             <div
                                 className={`border rounded-lg p-5 transition bg-white ${isSuspended
-                                    ? "opacity-60 cursor-not-allowed"
-                                    : "hover:shadow-md cursor-pointer"
+                                        ? "opacity-60 cursor-not-allowed"
+                                        : "hover:shadow-md cursor-pointer"
+                                    } ${view === "list" ? "flex items-center justify-between" : ""
                                     }`}
                             >
-                                <div className="flex items-start justify-between">
+                                {/* LEFT SIDE */}
+                                <div
+                                    className={
+                                        view === "list"
+                                            ? "flex items-center gap-4"
+                                            : "flex flex-col"
+                                    }
+                                >
                                     <div>
                                         <h3 className="font-medium text-gray-900 capitalize">
                                             {service.serviceName}
@@ -129,19 +144,25 @@ export default function Dashboard() {
                                                 : "Meta | Cloud API"}
                                         </p>
                                     </div>
+                                </div>
+
+                                {/* RIGHT SIDE */}
+                                <div
+                                    className={
+                                        view === "list"
+                                            ? "flex items-center gap-4"
+                                            : "mt-4 flex items-center justify-between"
+                                    }
+                                >
+                                    <Badge variant={getBadgeVariant(service.mappedStatus)}>
+                                        {service.mappedStatus.charAt(0).toUpperCase() +
+                                            service.mappedStatus.slice(1)}
+                                    </Badge>
 
                                     <ChevronRight className="h-5 w-5 text-gray-400" />
                                 </div>
-
-                                {/* ✅ Status Badge */}
-                                <div className="mt-4">
-                                    <Badge variant={getBadgeVariant(service.mappedStatus)}>
-                                        {service.mappedStatus.charAt(0).toUpperCase() + service.mappedStatus.slice(1)}
-                                    </Badge>
-                                </div>
                             </div>
                         );
-
                         // 🚫 If suspended → no navigation
                         return isSuspended ? (
                             <div key={service.serviceId}>{card}</div>
