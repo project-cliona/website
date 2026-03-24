@@ -93,24 +93,35 @@ export interface User {
 }
 
 export interface UserProfile {
-  userId: string;
-  profileId: string;
+  profileId: number;
+  userId: number;
   fullName: string;
-  mobile: string;
-  address: string;
-  city: string;
-  state: string;
-  companyName: string;
-  companyUrl: string;
-  parentId: string;
-  salesPersonId: string;
-  expiry: string;
+  mobile: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  companyName: string | null;
+  companyUrl: string | null;
+  parentId: number | null;
+  salesPersonId: number | null;
+  expiry: string | null;
   roleId: number;
   currency: string;
   profileStatus: string;
   createdAt: string;
+  updatedAt: string;
+  userService?: {
+    services: UserService[];
+  };
 }
 
+export type serviceStatus = "active" | "inactive" | "suspended" | "deleted";
+
+export interface UserService {
+  serviceId: number;
+  serviceName: string;
+  mappedStatus: serviceStatus;
+}
 // --- WhatsApp Types ---
 
 export interface WhatsappTemplate {

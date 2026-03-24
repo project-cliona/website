@@ -1,3 +1,5 @@
+"use client";
+
 import { PageHeading } from "@/components/ui/PageHeading";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -10,11 +12,39 @@ import {
     ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import { Modal } from "@/components/ui/Modal";
+import { ServiceModalContent } from "./addService";
+import { useUser } from "@/providers/userProvider";
+import { Badge } from "@/components/ui/badge";
 
 export default function Dashboard() {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const { profile } = useUser();
+
+    const services = profile?.userService?.services || [];
+
+    const filteredServices = services.filter(
+        (s) => s.mappedStatus !== "deleted"
+    );
+
+    const getBadgeVariant = (status: string) => {
+        switch (status) {
+            case "active":
+                return "active";
+            case "inactive":
+                return "inactive";
+            case "suspended":
+                return "pending";
+            case "deleted":
+                return "destructive";
+            default:
+                return "default";
+        }
+    };
+
     return (
         <div className="space-y-8">
-
             {/* Header */}
             <div className="flex items-center justify-between">
                 <PageHeading
@@ -30,10 +60,20 @@ export default function Dashboard() {
                         <List className="h-4 w-4" />
                     </Button>
 
-                    <Button className="bg-green-500 hover:bg-green-600 text-white">
+                    <Button
+                        onClick={() => setIsModalOpen(true)}
+                        className="bg-green-500 hover:bg-green-600 text-white"
+                    >
                         <Plus className="h-4 w-4 mr-1" />
-                        New project
+                        New Service
                     </Button>
+
+                    <Modal
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                    >
+                        <ServiceModalContent onClose={() => setIsModalOpen(false)} />
+                    </Modal>
                 </div>
             </div>
 
@@ -41,10 +81,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-3 max-w-md">
                 <div className="relative w-full">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input
-                        placeholder="Search for a project"
-                        className="pl-9"
-                    />
+                    <Input placeholder="Search for a service" className="pl-9" />
                 </div>
 
                 <Button variant="outline" size="icon">
@@ -52,56 +89,73 @@ export default function Dashboard() {
                 </Button>
             </div>
 
-            {/* Projects Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* ❗ Empty State */}
+            {filteredServices.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 border rounded-lg bg-gray-50">
+                    <p className="text-gray-600 mb-4">
+                        No services added yet
+                    </p>
 
-                {/* RCS Project Card */}
-                <Link href="/app/rcs" className="block">
-                    <div className="border rounded-lg p-5 hover:shadow-md transition cursor-pointer bg-white">
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <h3 className="font-medium text-gray-900">
-                                    RCS
-                                </h3>
-                                <p className="text-sm text-gray-500 mt-1">
-                                    AWS | ap-south-1
-                                </p>
+                    <Button
+                        onClick={() => setIsModalOpen(true)}
+                        className="bg-green-500 text-white"
+                    >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add Service
+                    </Button>
+                </div>
+            ) : (
+                /* ✅ Dynamic Grid */
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredServices.map((service) => {
+                        const isSuspended = service.mappedStatus === "suspended";
+
+                        const card = (
+                            <div
+                                className={`border rounded-lg p-5 transition bg-white ${isSuspended
+                                    ? "opacity-60 cursor-not-allowed"
+                                    : "hover:shadow-md cursor-pointer"
+                                    }`}
+                            >
+                                <div className="flex items-start justify-between">
+                                    <div>
+                                        <h3 className="font-medium text-gray-900 capitalize">
+                                            {service.serviceName}
+                                        </h3>
+
+                                        <p className="text-sm text-gray-500 mt-1">
+                                            {service.serviceName === "rcs"
+                                                ? "AWS | ap-south-1"
+                                                : "Meta | Cloud API"}
+                                        </p>
+                                    </div>
+
+                                    <ChevronRight className="h-5 w-5 text-gray-400" />
+                                </div>
+
+                                {/* ✅ Status Badge */}
+                                <div className="mt-4">
+                                    <Badge variant={getBadgeVariant(service.mappedStatus)}>
+                                        {service.mappedStatus.charAt(0).toUpperCase() + service.mappedStatus.slice(1)}
+                                    </Badge>
+                                </div>
                             </div>
-                            <ChevronRight className="h-5 w-5 text-gray-400" />
-                        </div>
+                        );
 
-                        <div className="mt-4">
-                            <span className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium text-gray-700">
-                                NANO
-                            </span>
-                        </div>
-                    </div>
-                </Link>
-
-                {/* WhatsApp Project Card */}
-                <Link href="/app/whatsapp" className="block">
-                    <div className="border rounded-lg p-5 hover:shadow-md transition cursor-pointer bg-white">
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <h3 className="font-medium text-gray-900">
-                                    WhatsApp
-                                </h3>
-                                <p className="text-sm text-gray-500 mt-1">
-                                    Meta | Cloud API
-                                </p>
-                            </div>
-                            <ChevronRight className="h-5 w-5 text-gray-400" />
-                        </div>
-
-                        <div className="mt-4">
-                            <span className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium text-gray-700">
-                                NANO
-                            </span>
-                        </div>
-                    </div>
-                </Link>
-
-            </div>
+                        // 🚫 If suspended → no navigation
+                        return isSuspended ? (
+                            <div key={service.serviceId}>{card}</div>
+                        ) : (
+                            <Link
+                                key={service.serviceId}
+                                href={`/app/${service.serviceName}`}
+                            >
+                                {card}
+                            </Link>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 }
