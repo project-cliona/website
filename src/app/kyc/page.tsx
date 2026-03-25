@@ -9,9 +9,11 @@ import { authenticatedApiClient } from "@/lib/axios";
 import { UserCheck, Home, Briefcase, ArrowRight } from "lucide-react";
 import { KycFormType, kycSchema } from "@/lib/schema/common.schema";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/providers/userProvider";
 
-export default function KycPage({ userId }: { userId: number }) {
+export default function KycPage() {
   const router = useRouter();
+  const {user} = useUser()
   const {
     control,
     handleSubmit,
@@ -33,7 +35,8 @@ export default function KycPage({ userId }: { userId: number }) {
 
   const onSubmit = async (data: KycFormType) => {
     try {
-      const res = await authenticatedApiClient().post(`/common/profile/${userId}`, data);
+      const payload = {...data, userId: user?.userId}
+      const res = await authenticatedApiClient().post(`/common/profile`, payload);
       console.log(res.data);
       reset();
     } catch (err) {
@@ -50,25 +53,29 @@ export default function KycPage({ userId }: { userId: number }) {
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto relative">
 
-        {/* Skip Button */}
-        <div className="absolute top-0 right-0">
-          <Button
-            variant="ghost"
-            className="text-gray-500 hover:text-gray-700"
-            onClick={handleSkip}
-          >
-            Skip for now <ArrowRight className="ml-1 h-4 w-4" />
-          </Button>
-        </div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
 
-        {/* Page Heading */}
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Complete Your KYC
-          </h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Please provide your personal and company information to complete your profile.
-          </p>
+          {/* Heading */}
+          <div className="text-center sm:text-left w-full">
+            <h1 className="text-3xl font-bold text-gray-900">
+              Complete Your KYC
+            </h1>
+            <p className="mt-2 text-sm text-gray-600">
+              Please provide your personal and company information to complete your profile.
+            </p>
+          </div>
+
+          {/* Skip Button */}
+          <div className="mt-4 sm:mt-0 sm:ml-4 flex justify-center sm:justify-end">
+            <Button
+              variant="ghost"
+              className="text-gray-500 hover:text-gray-700"
+              onClick={handleSkip}
+            >
+              Skip for now <ArrowRight className="ml-1 h-4 w-4" />
+            </Button>
+          </div>
+
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

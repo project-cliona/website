@@ -26,14 +26,13 @@ export const loginSchema = z.object({
 })
 
 export const kycSchema = z.object({
-    userId: z.number(),
     fullName: z.string().min(3, "Full Name is required"),
-    mobile: z.string().min(10, "Mobile number is required"),
+    mobile: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number"),
     address: z.string().min(3, "Address is required"),
     city: z.string().min(2, "City is required"),
     state: z.string().min(2, "State is required"),
     companyName: z.string().optional(),
-    companyUrl: z.string().url("Enter a valid URL").optional(),
+    companyUrl: z.string().url("Enter a valid URL").optional().or(z.literal("")),
 });
 
 
