@@ -37,10 +37,12 @@ export function ServiceModalContent({ onClose }: { onClose: () => void }) {
     });
 
     const handleSave = () => {
-        const payload = services.map((service) => ({
-            serviceId: service.serviceId,
-            status: enabled[service.id] ? 'active' : 'inactive',
-        }));
+        const payload = services
+            .filter((service) => enabled[service.id])
+            .map((service) => ({
+                serviceId: service.serviceId,
+                status: "active",
+            }));
 
         mutation.mutate(payload);
     };
