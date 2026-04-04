@@ -83,12 +83,19 @@ const columns: ColumnDef<WhatsappTemplate>[] = [
         string,
         VariantProps<typeof badgeVariants>["variant"]
       > = {
+        APPROVED: "active",
+        approved: "active",
         active: "active",
         Active: "active",
+        PENDING: "pending",
         pending: "pending",
         Pending: "pending",
+        REJECTED: "rejected",
         rejected: "rejected",
         Rejected: "rejected",
+        DISABLED: "rejected",
+        PAUSED: "pending",
+        IN_APPEAL: "pending",
       };
       return (
         <Badge variant={statusVariantMap[status] || "default"}>
