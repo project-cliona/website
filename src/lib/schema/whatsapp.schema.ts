@@ -118,7 +118,7 @@ export const defaultBuilderSchema = z.object({
   parameterFormat: z.enum(["POSITIONAL", "NAMED"]).default("POSITIONAL"),
   headerType: z.enum(["none", "text", "image", "video", "document"]).default("none"),
   headerText: z.string().max(60, "Header text must be 60 characters or fewer").optional(),
-  headerMediaUrl: z.string().url("Must be a valid URL").optional(),
+  headerMediaUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   body: z.string().min(1, "Body text is required").max(1024, "Body must be 1024 characters or fewer"),
   footer: z.string().max(60, "Footer must be 60 characters or fewer").optional(),
   buttons: z.array(buttonSchema).max(10, "Maximum 10 buttons allowed").optional(),
