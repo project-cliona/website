@@ -99,6 +99,18 @@ function countVariables(text: string): number {
   return matches ? matches.length : 0;
 }
 
+/** Replace {{1}}, {{name}} etc. in text with example values where available */
+function substituteExamples(
+  text: string,
+  examples: Record<string, string>
+): string {
+  if (!text) return text;
+  return text.replace(/\{\{([^}]+)\}\}/g, (full, key: string) => {
+    const val = examples[key];
+    return val ? val : full;
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -111,11 +123,13 @@ export default function TemplateDefaultBuilder({
   const router = useRouter();
   const { user } = useUser();
   const bodyRef = useRef<HTMLTextAreaElement | null>(null);
+  const headerInputRef = useRef<HTMLInputElement | null>(null);
 
   const [bodyExamples, setBodyExamples] = useState<Record<string, string>>({});
   const [headerExample, setHeaderExample] = useState("");
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [newVarName, setNewVarName] = useState("");
 
   // -----------------------------------------------------------------------
   // Form setup
@@ -206,29 +220,40 @@ export default function TemplateDefaultBuilder({
   }, [buttons]);
 
   // -----------------------------------------------------------------------
-  // Preview updates
+  // Preview updates (Issue 5: substitute example values)
   // -----------------------------------------------------------------------
 
   useEffect(() => {
+    // Build preview body with example values substituted
+    const previewBody = substituteExamples(bodyText, bodyExamples);
+
+    // Build preview header with example value substituted
+    let previewHeaderValue = "";
+    if (headerType === "text") {
+      const headerExMap: Record<string, string> = {};
+      if (headerVariables.length > 0 && headerExample) {
+        headerExMap[headerVariables[0]] = headerExample;
+      }
+      previewHeaderValue = substituteExamples(headerText, headerExMap);
+    } else if (headerType !== "none") {
+      previewHeaderValue = headerMediaUrl;
+    }
+
     onPreviewChange({
       headerType: (headerType ?? "none") as "none" | "text" | "image" | "video" | "document",
-      headerValue:
-        headerType === "text"
-          ? headerText
-          : headerType !== "none"
-            ? headerMediaUrl
-            : "",
-      body: bodyText,
+      headerValue: previewHeaderValue,
+      body: previewBody,
       footer: footerText,
       buttons: buttons.map((b) => ({ type: b.type, text: b.text })),
     });
-  }, [headerType, headerText, headerMediaUrl, bodyText, footerText, buttons, onPreviewChange]);
+  }, [headerType, headerText, headerMediaUrl, bodyText, footerText, buttons, onPreviewChange, bodyExamples, headerExample, headerVariables]);
 
   // -----------------------------------------------------------------------
   // Actions
   // -----------------------------------------------------------------------
 
-  const addVariable = () => {
+  /** Add variable to body text (Issue 3: inline input for named variables) */
+  const addBodyVariable = (varName?: string) => {
     const textarea = bodyRef.current;
     if (!textarea) return;
 
@@ -239,9 +264,8 @@ export default function TemplateDefaultBuilder({
         : 1;
       varStr = `{{${nextN}}}`;
     } else {
-      const name = prompt("Enter variable name (lowercase letters and underscores only):");
-      if (!name || !/^[a-z_]+$/.test(name)) return;
-      varStr = `{{${name}}}`;
+      if (!varName || !/^[a-z_]+$/.test(varName)) return;
+      varStr = `{{${varName}}}`;
     }
 
     const start = textarea.selectionStart ?? bodyText.length;
@@ -258,6 +282,34 @@ export default function TemplateDefaultBuilder({
     }, 0);
   };
 
+  /** Add variable to header text (Issue 2) */
+  const addHeaderVariable = () => {
+    const input = headerInputRef.current;
+    const currentText = headerText;
+
+    let varStr: string;
+    if (parameterFormat === "POSITIONAL") {
+      varStr = "{{1}}";
+    } else {
+      const name = newVarName.trim();
+      if (!name || !/^[a-z_]+$/.test(name)) return;
+      varStr = `{{${name}}}`;
+      setNewVarName("");
+    }
+
+    const start = input?.selectionStart ?? currentText.length;
+    const end = input?.selectionEnd ?? currentText.length;
+    const newText =
+      currentText.substring(0, start) + varStr + currentText.substring(end);
+    setValue("headerText", newText, { shouldValidate: true });
+
+    setTimeout(() => {
+      input?.focus();
+      const pos = start + varStr.length;
+      input?.setSelectionRange(pos, pos);
+    }, 0);
+  };
+
   const addButton = (type: ButtonType) => {
     if (buttons.length >= 10) return;
     if (buttonTypeCounts[type] >= BUTTON_LIMITS[type]) return;
@@ -265,7 +317,7 @@ export default function TemplateDefaultBuilder({
   };
 
   // -----------------------------------------------------------------------
-  // Payload builder
+  // Payload builder (Issue 1: category lowercase, Issue 6: Meta format)
   // -----------------------------------------------------------------------
 
   const buildPayload = (data: DefaultBuilderForm) => {
@@ -323,7 +375,7 @@ export default function TemplateDefaultBuilder({
       components.push({ type: "FOOTER", text: data.footer });
     }
 
-    // BUTTONS
+    // BUTTONS (Issue 6: COPY_CODE has no text field, just example)
     if (data.buttons && data.buttons.length > 0) {
       const nonQR = data.buttons.filter((b) => b.type !== "QUICK_REPLY");
       const qr = data.buttons.filter((b) => b.type === "QUICK_REPLY");
@@ -340,7 +392,7 @@ export default function TemplateDefaultBuilder({
               phone_number: b.phoneNumber ?? "",
             };
           case "COPY_CODE":
-            return { type: "COPY_CODE", text: b.text, example: b.example ?? "" };
+            return { type: "COPY_CODE", example: b.example ?? "" };
           case "QUICK_REPLY":
           default:
             return { type: "QUICK_REPLY", text: b.text };
@@ -350,10 +402,11 @@ export default function TemplateDefaultBuilder({
       components.push({ type: "BUTTONS", buttons: metaButtons });
     }
 
+    // Issue 1: send category as-is (lowercase) instead of .toUpperCase()
     const payload: Record<string, unknown> = {
       name: data.name,
       language: data.language,
-      category: category.toUpperCase(),
+      category,
       wabaId,
       components,
       modifiedBy: user?.userId,
@@ -503,7 +556,7 @@ export default function TemplateDefaultBuilder({
         </div>
       </section>
 
-      {/* ---- Section 2: Header ---- */}
+      {/* ---- Section 2: Header (Issue 2: Add Variable button) ---- */}
       <section className="space-y-4">
         <SubHeading title="Header" Icon={Type} />
 
@@ -537,12 +590,57 @@ export default function TemplateDefaultBuilder({
                 {headerText.length}/60
               </span>
             </div>
-            <Input
-              id="headerText"
-              placeholder="e.g. Hello {{1}}!"
-              maxLength={60}
-              {...register("headerText")}
+            <Controller
+              control={control}
+              name="headerText"
+              render={({ field }) => (
+                <Input
+                  id="headerText"
+                  placeholder="e.g. Hello {{1}}!"
+                  maxLength={60}
+                  {...field}
+                  ref={(el) => {
+                    field.ref(el);
+                    headerInputRef.current = el;
+                  }}
+                />
+              )}
             />
+            {/* Add Variable button for header */}
+            {parameterFormat === "POSITIONAL" ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addHeaderVariable}
+                disabled={countVariables(headerText) >= 1}
+                className="gap-1"
+              >
+                <Variable className="h-4 w-4" />
+                {countVariables(headerText) >= 1 ? "Variable Added" : "Add Variable"}
+              </Button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Input
+                  placeholder="Variable name (e.g. name)"
+                  value={newVarName}
+                  onChange={(e) => setNewVarName(e.target.value)}
+                  className="w-48 h-8 text-sm"
+                  disabled={countVariables(headerText) >= 1}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={addHeaderVariable}
+                  disabled={countVariables(headerText) >= 1 || !newVarName.trim()}
+                  className="gap-1"
+                >
+                  <Variable className="h-4 w-4" />
+                  Add
+                </Button>
+              </div>
+            )}
             {headerVarError && (
               <p className="text-xs text-red-500">{headerVarError}</p>
             )}
@@ -579,7 +677,7 @@ export default function TemplateDefaultBuilder({
         )}
       </section>
 
-      {/* ---- Section 3: Body ---- */}
+      {/* ---- Section 3: Body (Issue 3: inline input for named variables) ---- */}
       <section className="space-y-4">
         <SubHeading title="Body" Icon={MessageSquare} />
 
@@ -615,16 +713,46 @@ export default function TemplateDefaultBuilder({
           )}
         </div>
 
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={addVariable}
-          className="gap-1"
-        >
-          <Variable className="h-4 w-4" />
-          Add Variable
-        </Button>
+        {parameterFormat === "POSITIONAL" ? (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => addBodyVariable()}
+            className="gap-1"
+          >
+            <Variable className="h-4 w-4" />
+            Add Variable
+          </Button>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Input
+              placeholder="Variable name (e.g. order_id)"
+              value={newVarName}
+              onChange={(e) => setNewVarName(e.target.value)}
+              className="w-56 h-8 text-sm"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                addBodyVariable(newVarName.trim());
+                setNewVarName("");
+              }}
+              disabled={!newVarName.trim() || !/^[a-z_]+$/.test(newVarName.trim())}
+              className="gap-1"
+            >
+              <Variable className="h-4 w-4" />
+              Add
+            </Button>
+            {newVarName && !/^[a-z_]+$/.test(newVarName.trim()) && (
+              <span className="text-xs text-red-500">
+                Lowercase letters and underscores only
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Variable examples */}
         {(bodyVariables.length > 0 || headerVariables.length > 0) && (
@@ -697,7 +825,7 @@ export default function TemplateDefaultBuilder({
         </div>
       </section>
 
-      {/* ---- Section 5: Buttons ---- */}
+      {/* ---- Section 5: Buttons (Issue 4: Controller for live preview, Issue 6: COPY_CODE label) ---- */}
       <section className="space-y-4">
         <SubHeading title="Buttons" Icon={Zap} />
 
@@ -761,28 +889,55 @@ export default function TemplateDefaultBuilder({
                   </Button>
                 </div>
 
-                {/* Button text */}
-                <div className="space-y-1">
-                  <Label className="text-xs">Button Text</Label>
-                  <Input
-                    placeholder="Button label"
-                    maxLength={25}
-                    {...register(`buttons.${index}.text`)}
-                  />
-                  {errors.buttons?.[index]?.text && (
-                    <p className="text-xs text-red-500">
-                      {errors.buttons[index].text?.message}
-                    </p>
-                  )}
-                </div>
+                {/* Button text (Issue 4: use Controller for live preview) */}
+                {bType !== "COPY_CODE" && (
+                  <div className="space-y-1">
+                    <Label className="text-xs">Button Text</Label>
+                    <Controller
+                      control={control}
+                      name={`buttons.${index}.text`}
+                      render={({ field: f }) => (
+                        <Input
+                          placeholder="Button label"
+                          maxLength={25}
+                          value={f.value}
+                          onChange={f.onChange}
+                          onBlur={f.onBlur}
+                          ref={f.ref}
+                        />
+                      )}
+                    />
+                    {errors.buttons?.[index]?.text && (
+                      <p className="text-xs text-red-500">
+                        {errors.buttons[index].text?.message}
+                      </p>
+                    )}
+                  </div>
+                )}
 
-                {/* Type-specific fields */}
+                {/* COPY_CODE: fixed label, no text input (Issue 6) */}
+                {bType === "COPY_CODE" && (
+                  <p className="text-xs text-gray-500">
+                    Label: &quot;Copy offer code&quot; (fixed by Meta)
+                  </p>
+                )}
+
+                {/* Type-specific fields (Issue 4: use Controller) */}
                 {bType === "URL" && (
                   <div className="space-y-1">
                     <Label className="text-xs">URL</Label>
-                    <Input
-                      placeholder="https://example.com/{{1}}"
-                      {...register(`buttons.${index}.url`)}
+                    <Controller
+                      control={control}
+                      name={`buttons.${index}.url`}
+                      render={({ field: f }) => (
+                        <Input
+                          placeholder="https://example.com/{{1}}"
+                          value={f.value ?? ""}
+                          onChange={f.onChange}
+                          onBlur={f.onBlur}
+                          ref={f.ref}
+                        />
+                      )}
                     />
                   </div>
                 )}
@@ -790,9 +945,18 @@ export default function TemplateDefaultBuilder({
                 {bType === "PHONE_NUMBER" && (
                   <div className="space-y-1">
                     <Label className="text-xs">Phone Number</Label>
-                    <Input
-                      placeholder="+1234567890"
-                      {...register(`buttons.${index}.phoneNumber`)}
+                    <Controller
+                      control={control}
+                      name={`buttons.${index}.phoneNumber`}
+                      render={({ field: f }) => (
+                        <Input
+                          placeholder="+1234567890"
+                          value={f.value ?? ""}
+                          onChange={f.onChange}
+                          onBlur={f.onBlur}
+                          ref={f.ref}
+                        />
+                      )}
                     />
                   </div>
                 )}
@@ -800,9 +964,18 @@ export default function TemplateDefaultBuilder({
                 {bType === "COPY_CODE" && (
                   <div className="space-y-1">
                     <Label className="text-xs">Example Code</Label>
-                    <Input
-                      placeholder="e.g. SUMMER2024"
-                      {...register(`buttons.${index}.example`)}
+                    <Controller
+                      control={control}
+                      name={`buttons.${index}.example`}
+                      render={({ field: f }) => (
+                        <Input
+                          placeholder="e.g. SUMMER2024"
+                          value={f.value ?? ""}
+                          onChange={f.onChange}
+                          onBlur={f.onBlur}
+                          ref={f.ref}
+                        />
+                      )}
                     />
                   </div>
                 )}
