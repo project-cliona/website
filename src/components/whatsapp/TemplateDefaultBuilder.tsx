@@ -171,10 +171,10 @@ function extractInitialValues(template: WhatsappTemplate) {
         headerType = "location";
       } else if (["image", "video", "document"].includes(fmt)) {
         headerType = fmt as "image" | "video" | "document";
-        if (comp.example?.header_url?.[0]) {
+        if (comp.preview_url) {
+          headerMediaUrl = comp.preview_url as string;
+        } else if (comp.example?.header_url?.[0]) {
           headerMediaUrl = comp.example.header_url[0];
-        } else if (comp.example?.header_handle?.[0]) {
-          headerMediaUrl = comp.example.header_handle[0];
         }
       }
     }
@@ -212,6 +212,14 @@ function extractInitialValues(template: WhatsappTemplate) {
     }
   }
 
+  // For edit mode: the preview URL is stored in preview_url field of the header component
+  let mediaPreviewUrl: string | null = null;
+  for (const comp of components as Record<string, any>[]) {
+    if ((comp.type || "").toUpperCase() === "HEADER" && comp.preview_url) {
+      mediaPreviewUrl = comp.preview_url as string;
+    }
+  }
+
   return {
     formValues: {
       name: template.name,
@@ -226,6 +234,7 @@ function extractInitialValues(template: WhatsappTemplate) {
     } as DefaultBuilderForm,
     bodyExamples,
     headerExample,
+    headerPreviewUrl: mediaPreviewUrl || headerMediaUrl || null,
   };
 }
 
@@ -257,8 +266,9 @@ export default function TemplateDefaultBuilder({
   const [newVarName, setNewVarName] = useState("");
 
   // Media upload state
-  const [headerUploadMode, setHeaderUploadMode] = useState<"file" | "url">("file");
-  const [headerHandle, setHeaderHandle] = useState<string | null>(null);
+  const [mediaUrl, setMediaUrl] = useState<string | null>(
+    initialValues?.headerPreviewUrl ?? null
+  );
   const [uploading, setUploading] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -369,7 +379,7 @@ export default function TemplateDefaultBuilder({
       }
       previewHeaderValue = substituteExamples(headerText, headerExMap);
     } else if (headerType !== "none") {
-      previewHeaderValue = headerMediaUrl;
+      previewHeaderValue = mediaUrl || headerMediaUrl;
     }
 
     onPreviewChange({
@@ -379,7 +389,7 @@ export default function TemplateDefaultBuilder({
       footer: footerText,
       buttons: buttons.map((b) => ({ type: b.type, text: b.text })),
     });
-  }, [headerType, headerText, headerMediaUrl, bodyText, footerText, buttons, onPreviewChange, bodyExamples, headerExample, headerVariables]);
+  }, [headerType, headerText, headerMediaUrl, mediaUrl, bodyText, footerText, buttons, onPreviewChange, bodyExamples, headerExample, headerVariables]);
 
   // -----------------------------------------------------------------------
   // Actions
@@ -451,10 +461,9 @@ export default function TemplateDefaultBuilder({
 
   /** Reset media upload state when header type changes */
   useEffect(() => {
-    setHeaderHandle(null);
+    setMediaUrl(null);
     setUploadedFileName(null);
     setUploadError(null);
-    setHeaderUploadMode("file");
   }, [headerType]);
 
   /** Handle media file selection and upload */
@@ -485,8 +494,8 @@ export default function TemplateDefaultBuilder({
       const res = await authenticatedApiClient().post("/whatsApp/upload-media", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      const handle = res.data.result.handle;
-      setHeaderHandle(handle);
+      const { url } = res.data.result;
+      setMediaUrl(url);
       setUploadedFileName(file.name);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Upload failed. Please try again.";
@@ -497,7 +506,7 @@ export default function TemplateDefaultBuilder({
   };
 
   const clearUploadedFile = () => {
-    setHeaderHandle(null);
+    setMediaUrl(null);
     setUploadedFileName(null);
     setUploadError(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -539,10 +548,9 @@ export default function TemplateDefaultBuilder({
           type: "HEADER",
           format,
         };
-        if (headerHandle) {
-          headerComp.example = { header_handle: [headerHandle] };
-        } else if (data.headerMediaUrl) {
-          headerComp.example = { header_url: [data.headerMediaUrl] };
+        const url = mediaUrl || data.headerMediaUrl;
+        if (url) {
+          headerComp.example = { header_url: [url] };
         }
         components.push(headerComp);
       }
@@ -874,46 +882,18 @@ export default function TemplateDefaultBuilder({
           headerType === "video" ||
           headerType === "document") && (
           <div className="space-y-3">
-            {/* Toggle between file upload and URL */}
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => { setHeaderUploadMode("file"); clearUploadedFile(); }}
-                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                  headerUploadMode === "file"
-                    ? "bg-blue-100 text-blue-700"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-              >
-                <Upload className="h-3.5 w-3.5" />
-                Upload File
-              </button>
-              <button
-                type="button"
-                onClick={() => { setHeaderUploadMode("url"); clearUploadedFile(); }}
-                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                  headerUploadMode === "url"
-                    ? "bg-blue-100 text-blue-700"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-              >
-                <Link className="h-3.5 w-3.5" />
-                Use URL
-              </button>
-            </div>
 
-            {headerUploadMode === "file" ? (
-              <div className="space-y-2">
-                {/* Upload success state */}
-                {headerHandle && uploadedFileName ? (
+            <div className="space-y-2">
+              {/* Upload success state */}
+              {mediaUrl ? (
                   <div className="flex items-center gap-3 rounded-md border border-green-200 bg-green-50 p-3">
                     <CheckCircle2 className="h-5 w-5 shrink-0 text-green-600" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-green-800 truncate">
-                        {uploadedFileName}
+                        {uploadedFileName || "Existing media"}
                       </p>
-                      <p className="text-xs text-green-600">
-                        Uploaded successfully
+                      <p className="text-xs text-green-600 truncate">
+                        {uploadedFileName ? "Uploaded successfully" : mediaUrl}
                       </p>
                     </div>
                     <button
@@ -976,24 +956,7 @@ export default function TemplateDefaultBuilder({
                 )}
               </div>
             ) : (
-              /* URL input fallback */
-              <div className="space-y-1.5">
-                <Label htmlFor="headerMediaUrl">
-                  {headerType.charAt(0).toUpperCase() + headerType.slice(1)} URL
-                </Label>
-                <Input
-                  id="headerMediaUrl"
-                  placeholder={`https://example.com/sample.${headerType === "image" ? "jpg" : headerType === "video" ? "mp4" : "pdf"}`}
-                  {...register("headerMediaUrl")}
-                />
-                {errors.headerMediaUrl && (
-                  <p className="text-xs text-red-500">
-                    {errors.headerMediaUrl.message}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
+            </div>
         )}
 
         {headerType === "location" && (

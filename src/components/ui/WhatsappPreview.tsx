@@ -125,11 +125,24 @@ export function WhatsappPreview(props: WhatsappPreviewProps) {
                 {headerValue}
               </p>
             )}
-            {headerType !== "none" && headerType !== "text" && (
-              <div className="bg-gray-100 rounded h-20 flex items-center justify-center mb-2">
-                <span className="text-xs text-gray-400 uppercase">
-                  {headerType} placeholder
-                </span>
+            {headerType !== "none" && headerType !== "text" && headerType !== "location" && (
+              headerValue && (headerType === "image") && /^https?:\/\//.test(headerValue) ? (
+                <img
+                  src={headerValue}
+                  alt="Header"
+                  className="rounded h-24 w-full object-cover mb-2"
+                />
+              ) : (
+                <div className="bg-gray-100 rounded h-20 flex items-center justify-center mb-2">
+                  <span className="text-xs text-gray-400 uppercase">
+                    {headerType} {headerValue ? "preview" : "placeholder"}
+                  </span>
+                </div>
+              )
+            )}
+            {headerType === "location" && (
+              <div className="bg-green-50 rounded h-20 flex items-center justify-center mb-2">
+                <span className="text-xs text-green-600">📍 Location</span>
               </div>
             )}
 

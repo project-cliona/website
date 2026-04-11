@@ -87,7 +87,7 @@ export default function WhatsappTemplateDetail() {
     : [];
 
   let previewBody = "";
-  let previewHeaderType: "none" | "text" | "image" | "video" | "document" = "none";
+  let previewHeaderType: "none" | "text" | "image" | "video" | "document" | "location" = "none";
   let previewHeaderValue = "";
   let previewFooter = "";
   let previewButtons: { type: string; text: string }[] = [];
@@ -96,8 +96,13 @@ export default function WhatsappTemplateDetail() {
     const t = (comp.type || "").toUpperCase();
     if (t === "BODY") previewBody = comp.text || "";
     if (t === "HEADER") {
-      previewHeaderType = ((comp.format || "text").toLowerCase()) as typeof previewHeaderType;
-      previewHeaderValue = comp.text || "";
+      const fmt = ((comp.format || "text").toLowerCase());
+      previewHeaderType = fmt as typeof previewHeaderType;
+      if (fmt === "text") {
+        previewHeaderValue = comp.text || "";
+      } else {
+        previewHeaderValue = comp.preview_url || comp.example?.header_url?.[0] || "";
+      }
     }
     if (t === "FOOTER") previewFooter = comp.text || "";
     if (t === "BUTTONS" && Array.isArray(comp.buttons)) {
