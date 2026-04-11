@@ -333,7 +333,15 @@ export default function TemplateDefaultBuilder({
           text: data.headerText ?? "",
         };
         if (headerVariables.length > 0 && headerExample) {
-          headerComp.example = { header_text: [headerExample] };
+          if (parameterFormat === "NAMED") {
+            headerComp.example = {
+              header_text_named_params: [
+                { param_name: headerVariables[0], example: headerExample },
+              ],
+            };
+          } else {
+            headerComp.example = { header_text: [headerExample] };
+          }
         }
         components.push(headerComp);
       } else {
@@ -361,11 +369,12 @@ export default function TemplateDefaultBuilder({
           .map((v) => bodyExamples[v] ?? "");
         bodyComp.example = { body_text: [orderedValues] };
       } else {
-        const namedValues: Record<string, string> = {};
-        for (const v of bodyVariables) {
-          namedValues[v] = bodyExamples[v] ?? "";
-        }
-        bodyComp.example = { body_text: namedValues };
+        bodyComp.example = {
+          body_text_named_params: bodyVariables.map((v) => ({
+            param_name: v,
+            example: bodyExamples[v] ?? "",
+          })),
+        };
       }
     }
     components.push(bodyComp);
