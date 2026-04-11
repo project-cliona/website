@@ -2,7 +2,7 @@
 
 interface DefaultPreviewProps {
   body?: string;
-  headerType?: "none" | "text" | "image" | "video" | "document";
+  headerType?: "none" | "text" | "image" | "video" | "document" | "location";
   headerValue?: string;
   footer?: string;
   buttons?: { type: string; text: string }[];
@@ -100,7 +100,7 @@ export function WhatsappPreview(props: WhatsappPreviewProps) {
 
     const hasContent =
       body ||
-      (headerType !== "none" && headerValue) ||
+      (headerType !== "none" && (headerValue || headerType === "location")) ||
       footer ||
       buttons.length > 0;
 

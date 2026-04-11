@@ -12,6 +12,13 @@ import {
   Type,
   Zap,
   Variable,
+  Upload,
+  Link,
+  CheckCircle2,
+  MapPin,
+  FileIcon,
+  Loader2,
+  X,
 } from "lucide-react";
 
 import { Label } from "@/components/ui/Label";
@@ -34,7 +41,9 @@ import {
   WHATSAPP_LANGUAGES,
 } from "@/lib/schema/whatsapp.schema";
 import { authenticatedApiClient } from "@/lib/axios";
+import { updateWhatsappTemplate } from "@/lib/api/whatsapp/templates";
 import { useUser } from "@/providers/userProvider";
+import { WhatsappTemplate } from "@/lib/type";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -44,12 +53,13 @@ interface Props {
   category: "marketing" | "utility";
   wabaId: string;
   onPreviewChange: (data: {
-    headerType: "none" | "text" | "image" | "video" | "document";
+    headerType: "none" | "text" | "image" | "video" | "document" | "location";
     headerValue: string;
     body: string;
     footer: string;
     buttons: { type: string; text: string }[];
   }) => void;
+  initialData?: WhatsappTemplate;
 }
 
 type ButtonType = "QUICK_REPLY" | "URL" | "PHONE_NUMBER" | "COPY_CODE";
@@ -67,6 +77,18 @@ const BUTTON_LIMITS: Record<ButtonType, number> = {
   PHONE_NUMBER: 1,
   COPY_CODE: 1,
 };
+
+const MEDIA_CONFIG: Record<string, { accept: string; maxSize: number; label: string }> = {
+  image: { accept: ".jpg,.jpeg,.png", maxSize: 5 * 1024 * 1024, label: "Image (JPG, PNG) - max 5 MB" },
+  video: { accept: ".mp4", maxSize: 16 * 1024 * 1024, label: "Video (MP4) - max 16 MB" },
+  document: { accept: ".pdf", maxSize: 100 * 1024 * 1024, label: "Document (PDF) - max 100 MB" },
+};
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -115,21 +137,132 @@ function substituteExamples(
 // Component
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Helpers: extract initial form values from a WhatsappTemplate
+// ---------------------------------------------------------------------------
+
+function extractInitialValues(template: WhatsappTemplate) {
+  const components = Array.isArray(template.components) ? template.components : [];
+  let headerType: DefaultBuilderForm["headerType"] = "none";
+  let headerText = "";
+  let headerMediaUrl = "";
+  let body = "";
+  let footer = "";
+  let parameterFormat: "POSITIONAL" | "NAMED" = (template.parameterFormat === "NAMED" ? "NAMED" : "POSITIONAL");
+  const buttons: DefaultBuilderForm["buttons"] = [];
+  const bodyExamples: Record<string, string> = {};
+  let headerExample = "";
+
+  for (const comp of components as Record<string, any>[]) {
+    const t = (comp.type || "").toUpperCase();
+
+    if (t === "HEADER") {
+      const fmt = (comp.format || "").toLowerCase();
+      if (fmt === "text") {
+        headerType = "text";
+        headerText = comp.text || "";
+        // Extract header example
+        if (comp.example?.header_text?.[0]) {
+          headerExample = comp.example.header_text[0];
+        } else if (comp.example?.header_text_named_params?.[0]?.example) {
+          headerExample = comp.example.header_text_named_params[0].example;
+        }
+      } else if (fmt === "location") {
+        headerType = "location";
+      } else if (["image", "video", "document"].includes(fmt)) {
+        headerType = fmt as "image" | "video" | "document";
+        if (comp.example?.header_url?.[0]) {
+          headerMediaUrl = comp.example.header_url[0];
+        } else if (comp.example?.header_handle?.[0]) {
+          headerMediaUrl = comp.example.header_handle[0];
+        }
+      }
+    }
+
+    if (t === "BODY") {
+      body = comp.text || "";
+      // Extract body examples
+      if (comp.example?.body_text?.[0] && Array.isArray(comp.example.body_text[0])) {
+        const vars = extractVariables(body, parameterFormat);
+        comp.example.body_text[0].forEach((val: string, idx: number) => {
+          if (vars[idx]) bodyExamples[vars[idx]] = val;
+        });
+      } else if (comp.example?.body_text_named_params && Array.isArray(comp.example.body_text_named_params)) {
+        for (const p of comp.example.body_text_named_params) {
+          bodyExamples[p.param_name] = p.example;
+        }
+      }
+    }
+
+    if (t === "FOOTER") {
+      footer = comp.text || "";
+    }
+
+    if (t === "BUTTONS" && Array.isArray(comp.buttons)) {
+      for (const btn of comp.buttons as Record<string, any>[]) {
+        const bType = btn.type as ButtonType;
+        buttons.push({
+          type: bType,
+          text: btn.text || "",
+          url: btn.url || "",
+          phoneNumber: btn.phone_number || "",
+          example: btn.example || "",
+        });
+      }
+    }
+  }
+
+  return {
+    formValues: {
+      name: template.name,
+      language: template.language as DefaultBuilderForm["language"],
+      parameterFormat,
+      headerType,
+      headerText,
+      headerMediaUrl,
+      body,
+      footer,
+      buttons,
+    } as DefaultBuilderForm,
+    bodyExamples,
+    headerExample,
+  };
+}
+
 export default function TemplateDefaultBuilder({
   category,
   wabaId,
   onPreviewChange,
+  initialData,
 }: Props) {
   const router = useRouter();
   const { user } = useUser();
   const bodyRef = useRef<HTMLTextAreaElement | null>(null);
   const headerInputRef = useRef<HTMLInputElement | null>(null);
+  const isEditMode = !!initialData;
 
-  const [bodyExamples, setBodyExamples] = useState<Record<string, string>>({});
-  const [headerExample, setHeaderExample] = useState("");
+  const initialValues = useMemo(
+    () => (initialData ? extractInitialValues(initialData) : null),
+    [initialData]
+  );
+
+  const [bodyExamples, setBodyExamples] = useState<Record<string, string>>(
+    initialValues?.bodyExamples ?? {}
+  );
+  const [headerExample, setHeaderExample] = useState(
+    initialValues?.headerExample ?? ""
+  );
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [newVarName, setNewVarName] = useState("");
+
+  // Media upload state
+  const [headerUploadMode, setHeaderUploadMode] = useState<"file" | "url">("file");
+  const [headerHandle, setHeaderHandle] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // -----------------------------------------------------------------------
   // Form setup
@@ -144,7 +277,7 @@ export default function TemplateDefaultBuilder({
     formState: { errors },
   } = useForm<DefaultBuilderForm>({
     resolver: zodResolver(defaultBuilderSchema),
-    defaultValues: {
+    defaultValues: initialValues?.formValues ?? {
       name: "",
       language: "en",
       parameterFormat: "POSITIONAL",
@@ -240,7 +373,7 @@ export default function TemplateDefaultBuilder({
     }
 
     onPreviewChange({
-      headerType: (headerType ?? "none") as "none" | "text" | "image" | "video" | "document",
+      headerType: (headerType ?? "none") as "none" | "text" | "image" | "video" | "document" | "location",
       headerValue: previewHeaderValue,
       body: previewBody,
       footer: footerText,
@@ -316,6 +449,60 @@ export default function TemplateDefaultBuilder({
     append({ type, text: "", url: "", phoneNumber: "", example: "" });
   };
 
+  /** Reset media upload state when header type changes */
+  useEffect(() => {
+    setHeaderHandle(null);
+    setUploadedFileName(null);
+    setUploadError(null);
+    setHeaderUploadMode("file");
+  }, [headerType]);
+
+  /** Handle media file selection and upload */
+  const handleMediaFileSelect = async (file: File) => {
+    const config = MEDIA_CONFIG[headerType as string];
+    if (!config) return;
+
+    // Validate file size
+    if (file.size > config.maxSize) {
+      setUploadError(`File too large. Maximum size: ${formatFileSize(config.maxSize)}`);
+      return;
+    }
+
+    // Validate file extension
+    const ext = "." + (file.name.split(".").pop()?.toLowerCase() ?? "");
+    const allowed = config.accept.split(",");
+    if (!allowed.includes(ext)) {
+      setUploadError(`Invalid file type. Accepted: ${config.accept}`);
+      return;
+    }
+
+    setUploadError(null);
+    setUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await authenticatedApiClient().post("/whatsApp/upload-media", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      const handle = res.data.result.handle;
+      setHeaderHandle(handle);
+      setUploadedFileName(file.name);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Upload failed. Please try again.";
+      setUploadError(message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const clearUploadedFile = () => {
+    setHeaderHandle(null);
+    setUploadedFileName(null);
+    setUploadError(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   // -----------------------------------------------------------------------
   // Payload builder (Issue 1: category lowercase, Issue 6: Meta format)
   // -----------------------------------------------------------------------
@@ -344,13 +531,17 @@ export default function TemplateDefaultBuilder({
           }
         }
         components.push(headerComp);
+      } else if (hType === "location") {
+        components.push({ type: "HEADER", format: "LOCATION" });
       } else {
         const format = hType.toUpperCase();
         const headerComp: Record<string, unknown> = {
           type: "HEADER",
           format,
         };
-        if (data.headerMediaUrl) {
+        if (headerHandle) {
+          headerComp.example = { header_handle: [headerHandle] };
+        } else if (data.headerMediaUrl) {
           headerComp.example = { header_url: [data.headerMediaUrl] };
         }
         components.push(headerComp);
@@ -462,11 +653,15 @@ export default function TemplateDefaultBuilder({
     try {
       setSubmitting(true);
       const payload = buildPayload(data);
-      await authenticatedApiClient().post("/whatsApp/template", payload);
+      if (isEditMode && initialData) {
+        await updateWhatsappTemplate(initialData.id, payload);
+      } else {
+        await authenticatedApiClient().post("/whatsApp/template", payload);
+      }
       router.push("/app/whatsapp/templates");
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "Failed to create template.";
+        err instanceof Error ? err.message : isEditMode ? "Failed to update template." : "Failed to create template.";
       setSubmitError(message);
     } finally {
       setSubmitting(false);
@@ -490,6 +685,12 @@ export default function TemplateDefaultBuilder({
       <section className="space-y-4">
         <SubHeading title="Template Info" Icon={Info} />
 
+        {isEditMode && (
+          <div className="rounded-md border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700 col-span-full">
+            Template name and language cannot be changed after creation.
+          </div>
+        )}
+
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {/* Name */}
           <div className="space-y-1.5">
@@ -498,6 +699,8 @@ export default function TemplateDefaultBuilder({
               id="name"
               placeholder="e.g. order_confirmation"
               {...register("name")}
+              readOnly={isEditMode}
+              className={isEditMode ? "bg-gray-100 cursor-not-allowed" : ""}
             />
             {errors.name && (
               <p className="text-xs text-red-500">{errors.name.message}</p>
@@ -517,8 +720,9 @@ export default function TemplateDefaultBuilder({
                 <Select
                   value={field.value}
                   onValueChange={field.onChange}
+                  disabled={isEditMode}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className={isEditMode ? "bg-gray-100 cursor-not-allowed" : ""}>
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent>
@@ -585,6 +789,7 @@ export default function TemplateDefaultBuilder({
                   <SelectItem value="image">Image</SelectItem>
                   <SelectItem value="video">Video</SelectItem>
                   <SelectItem value="document">Document</SelectItem>
+                  <SelectItem value="location">Location</SelectItem>
                 </SelectContent>
               </Select>
             )}
@@ -668,20 +873,138 @@ export default function TemplateDefaultBuilder({
         {(headerType === "image" ||
           headerType === "video" ||
           headerType === "document") && (
-          <div className="space-y-1.5">
-            <Label htmlFor="headerMediaUrl">
-              {headerType.charAt(0).toUpperCase() + headerType.slice(1)} URL
-            </Label>
-            <Input
-              id="headerMediaUrl"
-              placeholder={`https://example.com/sample.${headerType === "image" ? "jpg" : headerType === "video" ? "mp4" : "pdf"}`}
-              {...register("headerMediaUrl")}
-            />
-            {errors.headerMediaUrl && (
-              <p className="text-xs text-red-500">
-                {errors.headerMediaUrl.message}
-              </p>
+          <div className="space-y-3">
+            {/* Toggle between file upload and URL */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => { setHeaderUploadMode("file"); clearUploadedFile(); }}
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                  headerUploadMode === "file"
+                    ? "bg-blue-100 text-blue-700"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                <Upload className="h-3.5 w-3.5" />
+                Upload File
+              </button>
+              <button
+                type="button"
+                onClick={() => { setHeaderUploadMode("url"); clearUploadedFile(); }}
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                  headerUploadMode === "url"
+                    ? "bg-blue-100 text-blue-700"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                <Link className="h-3.5 w-3.5" />
+                Use URL
+              </button>
+            </div>
+
+            {headerUploadMode === "file" ? (
+              <div className="space-y-2">
+                {/* Upload success state */}
+                {headerHandle && uploadedFileName ? (
+                  <div className="flex items-center gap-3 rounded-md border border-green-200 bg-green-50 p-3">
+                    <CheckCircle2 className="h-5 w-5 shrink-0 text-green-600" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-green-800 truncate">
+                        {uploadedFileName}
+                      </p>
+                      <p className="text-xs text-green-600">
+                        Uploaded successfully
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={clearUploadedFile}
+                      className="shrink-0 rounded p-1 text-green-600 hover:bg-green-100"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  /* Drag & drop upload area */
+                  <div
+                    className={`relative rounded-lg border-2 border-dashed p-6 text-center transition-colors ${
+                      uploading
+                        ? "border-blue-300 bg-blue-50"
+                        : "border-gray-300 hover:border-gray-400"
+                    }`}
+                    onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      const file = e.dataTransfer.files?.[0];
+                      if (file) handleMediaFileSelect(file);
+                    }}
+                  >
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                      accept={MEDIA_CONFIG[headerType]?.accept ?? ""}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleMediaFileSelect(file);
+                      }}
+                      disabled={uploading}
+                    />
+                    {uploading ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+                        <span className="text-sm text-gray-600">Uploading...</span>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <FileIcon className="mx-auto h-10 w-10 text-gray-400" />
+                        <p className="text-sm font-medium text-gray-700">
+                          Drop your file here, or{" "}
+                          <span className="text-blue-600 underline">browse</span>
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {MEDIA_CONFIG[headerType]?.label}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {uploadError && (
+                  <p className="text-xs text-red-500">{uploadError}</p>
+                )}
+              </div>
+            ) : (
+              /* URL input fallback */
+              <div className="space-y-1.5">
+                <Label htmlFor="headerMediaUrl">
+                  {headerType.charAt(0).toUpperCase() + headerType.slice(1)} URL
+                </Label>
+                <Input
+                  id="headerMediaUrl"
+                  placeholder={`https://example.com/sample.${headerType === "image" ? "jpg" : headerType === "video" ? "mp4" : "pdf"}`}
+                  {...register("headerMediaUrl")}
+                />
+                {errors.headerMediaUrl && (
+                  <p className="text-xs text-red-500">
+                    {errors.headerMediaUrl.message}
+                  </p>
+                )}
+              </div>
             )}
+          </div>
+        )}
+
+        {headerType === "location" && (
+          <div className="flex items-start gap-3 rounded-md border border-blue-200 bg-blue-50 p-4">
+            <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
+            <div>
+              <p className="text-sm font-medium text-blue-800">Location Header</p>
+              <p className="text-xs text-blue-600">
+                Location data will be provided at send time. No configuration needed here.
+              </p>
+            </div>
           </div>
         )}
       </section>
@@ -1004,8 +1327,10 @@ export default function TemplateDefaultBuilder({
           Back
         </Button>
         <Button type="submit" disabled={submitting} className="gap-1">
-          <Plus className="h-4 w-4" />
-          {submitting ? "Creating..." : "Create Template"}
+          {!isEditMode && <Plus className="h-4 w-4" />}
+          {submitting
+            ? (isEditMode ? "Updating..." : "Creating...")
+            : (isEditMode ? "Update Template" : "Create Template")}
         </Button>
       </div>
     </form>

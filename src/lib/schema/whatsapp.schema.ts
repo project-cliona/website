@@ -116,7 +116,7 @@ export const defaultBuilderSchema = z.object({
     .regex(/^[a-z0-9_]+$/, "Only lowercase letters, numbers, and underscores allowed"),
   language: z.enum(whatsappLanguageCodes),
   parameterFormat: z.enum(["POSITIONAL", "NAMED"]).default("POSITIONAL"),
-  headerType: z.enum(["none", "text", "image", "video", "document"]).default("none"),
+  headerType: z.enum(["none", "text", "image", "video", "document", "location"]).default("none"),
   headerText: z.string().max(60, "Header text must be 60 characters or fewer").optional(),
   headerMediaUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   body: z.string().min(1, "Body text is required").max(1024, "Body must be 1024 characters or fewer"),

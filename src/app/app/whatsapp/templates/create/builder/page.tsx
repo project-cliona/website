@@ -2,12 +2,15 @@
 
 import { Suspense, useState, useCallback } from "react";
 import { useSearchParams, redirect } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 
 import { PageHeading } from "@/components/ui/PageHeading";
 import { WhatsappPreview } from "@/components/ui/WhatsappPreview";
 import TemplateDefaultBuilder from "@/components/whatsapp/TemplateDefaultBuilder";
 import TemplateAuthBuilder from "@/components/whatsapp/TemplateAuthBuilder";
 import TemplateCarouselBuilder from "@/components/whatsapp/TemplateCarouselBuilder";
+import { getWhatsappTemplateById } from "@/lib/api/whatsapp/templates";
+import { WhatsappTemplate } from "@/lib/type";
 
 // ---------------------------------------------------------------------------
 // Inner component that reads search params (requires Suspense boundary)
@@ -27,15 +30,31 @@ function BuilderContent() {
     | "carousel"
     | null;
   const wabaId = searchParams.get("wabaId");
+  const editId = searchParams.get("edit");
 
   // Redirect back to step 1 when required params are missing
   if (!category || !type || !wabaId) {
     redirect("/app/whatsapp/templates/create");
   }
 
+  const isEditMode = !!editId;
+
+  // Fetch template data when editing
+  const { data: editTemplateResult, isLoading: editLoading } = useQuery({
+    queryKey: ["whatsapp-template", editId],
+    queryFn: () => getWhatsappTemplateById(editId!),
+    enabled: isEditMode,
+  });
+
+  const editTemplate: WhatsappTemplate | undefined = editTemplateResult
+    ? Array.isArray(editTemplateResult)
+      ? editTemplateResult[0]
+      : editTemplateResult
+    : undefined;
+
   // Preview state — default mode (marketing / utility)
   const [defaultPreview, setDefaultPreview] = useState({
-    headerType: "none" as "none" | "text" | "image" | "video" | "document",
+    headerType: "none" as "none" | "text" | "image" | "video" | "document" | "location",
     headerValue: "",
     body: "",
     footer: "",
@@ -53,7 +72,7 @@ function BuilderContent() {
   // Callbacks passed to builders
   const handleDefaultPreviewChange = useCallback(
     (data: {
-      headerType: "none" | "text" | "image" | "video" | "document";
+      headerType: "none" | "text" | "image" | "video" | "document" | "location";
       headerValue: string;
       body: string;
       footer: string;
@@ -82,10 +101,19 @@ function BuilderContent() {
   const categoryLabel =
     category.charAt(0).toUpperCase() + category.slice(1);
 
+  // Show loading while fetching template for edit
+  if (isEditMode && editLoading) {
+    return (
+      <div className="flex items-center justify-center py-24 text-sm text-gray-500">
+        Loading template...
+      </div>
+    );
+  }
+
   return (
     <>
       <PageHeading
-        title={`Create ${categoryLabel} Template`}
+        title={isEditMode ? `Edit ${categoryLabel} Template` : `Create ${categoryLabel} Template`}
         subtitle="Configure your template content and preview it live."
       />
 
@@ -98,12 +126,14 @@ function BuilderContent() {
             <TemplateAuthBuilder
               wabaId={wabaId}
               onPreviewChange={handleAuthPreviewChange}
+              initialData={isEditMode ? editTemplate : undefined}
             />
           ) : (
             <TemplateDefaultBuilder
               category={category as "marketing" | "utility"}
               wabaId={wabaId}
               onPreviewChange={handleDefaultPreviewChange}
+              initialData={isEditMode ? editTemplate : undefined}
             />
           )}
         </div>
