@@ -6,10 +6,11 @@ import { WhatsappPreview } from "@/components/ui/WhatsappPreview";
 import { TableSkeleton } from "@/components/ui/skeleton/table";
 import { useQuery } from "@tanstack/react-query";
 import { getWhatsappTemplateById } from "@/lib/api/whatsapp/templates";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { VariantProps } from "class-variance-authority";
-import { ArrowLeft, Copy } from "lucide-react";
+import { ArrowLeft, Copy, Pencil } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 const categoryVariantMap: Record<
   string,
@@ -35,8 +36,11 @@ const statusVariantMap: Record<
   IN_APPEAL: "pending",
 };
 
+const EDITABLE_STATUSES = ["APPROVED", "REJECTED", "PAUSED", "approved", "rejected", "paused"];
+
 export default function WhatsappTemplateDetail() {
   const params = useParams();
+  const router = useRouter();
   const id = params.id as string;
 
   const { data: templateResult, isLoading } = useQuery({
@@ -109,13 +113,28 @@ export default function WhatsappTemplateDetail() {
 
   return (
     <div className="space-y-6">
-      <Link
-        href="/app/whatsapp/templates"
-        className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back to Templates
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link
+          href="/app/whatsapp/templates"
+          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Templates
+        </Link>
+        {template.status && EDITABLE_STATUSES.includes(template.status) && (
+          <Button
+            variant="outline"
+            onClick={() =>
+              router.push(
+                `/app/whatsapp/templates/create/builder?category=${template.category}&type=default&wabaId=${template.wabaId}&edit=${template.id}`
+              )
+            }
+          >
+            <Pencil className="-ms-1 me-2 opacity-60" size={16} strokeWidth={2} aria-hidden="true" />
+            Edit Template
+          </Button>
+        )}
+      </div>
 
       <PageHeading title={template.name} />
 

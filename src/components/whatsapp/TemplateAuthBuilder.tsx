@@ -26,7 +26,9 @@ import {
   WHATSAPP_LANGUAGES,
 } from "@/lib/schema/whatsapp.schema";
 import { authenticatedApiClient } from "@/lib/axios";
+import { updateWhatsappTemplate } from "@/lib/api/whatsapp/templates";
 import { useUser } from "@/providers/userProvider";
+import { WhatsappTemplate } from "@/lib/type";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -40,15 +42,57 @@ interface Props {
     expirationMinutes: number | undefined;
     otpButtonText: string;
   }) => void;
+  initialData?: WhatsappTemplate;
 }
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
-export default function TemplateAuthBuilder({ wabaId, onPreviewChange }: Props) {
+// ---------------------------------------------------------------------------
+// Helpers: extract initial form values from a WhatsappTemplate for auth
+// ---------------------------------------------------------------------------
+
+function extractAuthInitialValues(template: WhatsappTemplate): AuthBuilderForm {
+  const components = Array.isArray(template.components) ? template.components : [];
+  let addSecurityRecommendation = true;
+  let codeExpirationMinutes: number | undefined = undefined;
+  let otpButtonText = "Copy Code";
+
+  for (const comp of components as Record<string, any>[]) {
+    const t = (comp.type || "").toUpperCase();
+    if (t === "BODY") {
+      if (comp.add_security_recommendation !== undefined) {
+        addSecurityRecommendation = !!comp.add_security_recommendation;
+      }
+    }
+    if (t === "FOOTER") {
+      if (comp.code_expiration_minutes != null) {
+        codeExpirationMinutes = comp.code_expiration_minutes;
+      }
+    }
+    if (t === "BUTTONS" && Array.isArray(comp.buttons)) {
+      for (const btn of comp.buttons as Record<string, any>[]) {
+        if (btn.type === "OTP" && btn.text) {
+          otpButtonText = btn.text;
+        }
+      }
+    }
+  }
+
+  return {
+    name: template.name,
+    language: template.language as AuthBuilderForm["language"],
+    addSecurityRecommendation,
+    codeExpirationMinutes,
+    otpButtonText,
+  };
+}
+
+export default function TemplateAuthBuilder({ wabaId, onPreviewChange, initialData }: Props) {
   const router = useRouter();
   const { user } = useUser();
+  const isEditMode = !!initialData;
 
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -56,6 +100,8 @@ export default function TemplateAuthBuilder({ wabaId, onPreviewChange }: Props) 
   // -------------------------------------------------------------------------
   // Form setup
   // -------------------------------------------------------------------------
+
+  const initialValues = initialData ? extractAuthInitialValues(initialData) : null;
 
   const {
     register,
@@ -65,7 +111,7 @@ export default function TemplateAuthBuilder({ wabaId, onPreviewChange }: Props) 
     formState: { errors },
   } = useForm<AuthBuilderForm>({
     resolver: zodResolver(authBuilderSchema),
-    defaultValues: {
+    defaultValues: initialValues ?? {
       name: "",
       language: "en",
       addSecurityRecommendation: true,
@@ -139,11 +185,15 @@ export default function TemplateAuthBuilder({ wabaId, onPreviewChange }: Props) 
         modifiedBy: user?.userId,
       };
 
-      await authenticatedApiClient().post("/whatsApp/template", payload);
+      if (isEditMode && initialData) {
+        await updateWhatsappTemplate(initialData.id, payload);
+      } else {
+        await authenticatedApiClient().post("/whatsApp/template", payload);
+      }
       router.push("/app/whatsapp/templates");
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "Failed to create template.";
+        err instanceof Error ? err.message : isEditMode ? "Failed to update template." : "Failed to create template.";
       setSubmitError(message);
     } finally {
       setSubmitting(false);
@@ -167,6 +217,12 @@ export default function TemplateAuthBuilder({ wabaId, onPreviewChange }: Props) 
       <section className="space-y-4">
         <SubHeading title="Template Info" Icon={Info} />
 
+        {isEditMode && (
+          <div className="rounded-md border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700">
+            Template name and language cannot be changed after creation.
+          </div>
+        )}
+
         <div className="grid gap-4 sm:grid-cols-2">
           {/* Name */}
           <div className="space-y-1.5">
@@ -175,6 +231,8 @@ export default function TemplateAuthBuilder({ wabaId, onPreviewChange }: Props) 
               id="name"
               placeholder="e.g. otp_verification"
               {...register("name")}
+              readOnly={isEditMode}
+              className={isEditMode ? "bg-gray-100 cursor-not-allowed" : ""}
             />
             {errors.name && (
               <p className="text-xs text-red-500">{errors.name.message}</p>
@@ -191,8 +249,8 @@ export default function TemplateAuthBuilder({ wabaId, onPreviewChange }: Props) 
               control={control}
               name="language"
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger>
+                <Select value={field.value} onValueChange={field.onChange} disabled={isEditMode}>
+                  <SelectTrigger className={isEditMode ? "bg-gray-100 cursor-not-allowed" : ""}>
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent>
@@ -353,7 +411,9 @@ export default function TemplateAuthBuilder({ wabaId, onPreviewChange }: Props) 
           Back
         </Button>
         <Button type="submit" disabled={submitting}>
-          {submitting ? "Creating..." : "Create Template"}
+          {submitting
+            ? (isEditMode ? "Updating..." : "Creating...")
+            : (isEditMode ? "Update Template" : "Create Template")}
         </Button>
       </div>
     </form>

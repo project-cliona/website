@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/Table";
 import { Badge, badgeVariants } from "@/components/ui/badge";
+import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PageHeading } from "@/components/ui/PageHeading";
 import { TableSkeleton } from "@/components/ui/skeleton/table";
@@ -10,6 +11,8 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchWhatsappTemplates } from "@/lib/api/whatsapp/templates";
 import { VariantProps } from "class-variance-authority";
 import { WhatsappTemplate } from "@/lib/type";
+import { Pencil } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const columns: ColumnDef<WhatsappTemplate>[] = [
   {
@@ -110,10 +113,26 @@ const columns: ColumnDef<WhatsappTemplate>[] = [
 ];
 
 export default function WhatsappTemplatesPage() {
+  const router = useRouter();
   const { data: templateData, isLoading } = useQuery({
     queryKey: ["whatsapp-templates"],
     queryFn: fetchWhatsappTemplates,
   });
+
+  const renderExtraActions = (selectedRows: WhatsappTemplate[]) => {
+    if (selectedRows.length !== 1) return null;
+    const template = selectedRows[0];
+    const editUrl = `/app/whatsapp/templates/create/builder?category=${template.category}&type=default&wabaId=${template.wabaId}&edit=${template.id}`;
+    return (
+      <Button
+        variant="outline"
+        onClick={() => router.push(editUrl)}
+      >
+        <Pencil className="-ms-1 me-2 opacity-60" size={16} strokeWidth={2} aria-hidden="true" />
+        Edit
+      </Button>
+    );
+  };
 
   if (isLoading) {
     return (
@@ -140,6 +159,7 @@ export default function WhatsappTemplatesPage() {
         buttonTitle="Add template"
         navigateTo="templates/create"
         rowNavigate="app/whatsapp/templates"
+        renderExtraActions={renderExtraActions}
       />
     </div>
   );
