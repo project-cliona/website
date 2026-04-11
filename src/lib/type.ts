@@ -130,8 +130,11 @@ export interface WhatsappTemplate {
   language: string;
   category: "utility" | "marketing" | "authentication";
   wabaId: string;
+  parameterFormat: string | null;
   status: string | null;
   components: Record<string, unknown>;
+  metaTemplateId: string | null;
+  rejectionReason: string | null;
   modifiedBy: number;
   createdAt: string;
   updatedAt: string;
