@@ -91,6 +91,7 @@ interface DataTableProps<TData> {
     buttonTitle?: string;
     navigateTo?: string;
     rowNavigate: string;
+    renderExtraActions?: (selectedRows: TData[]) => React.ReactNode;
 }
 
 export const DataTable = <TData extends { id: string | number },>({
@@ -99,7 +100,8 @@ export const DataTable = <TData extends { id: string | number },>({
     filterPlaceHolder,
     buttonTitle,
     navigateTo,
-    rowNavigate
+    rowNavigate,
+    renderExtraActions,
 
 }: DataTableProps<TData>) => {
     const id = useId();
@@ -369,6 +371,8 @@ export const DataTable = <TData extends { id: string | number },>({
                     </DropdownMenu>
                 </div>
                 <div className="flex items-center gap-3">
+                    {/* Extra actions from parent */}
+                    {renderExtraActions && renderExtraActions(table.getSelectedRowModel().rows.map((row) => row.original))}
                     {/* Delete button */}
                     {table.getSelectedRowModel().rows.length > 0 && (
                         <AlertDialog>

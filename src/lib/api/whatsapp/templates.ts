@@ -20,3 +20,8 @@ export const getWhatsappTemplateById = async (id: string) => {
     return null;
   }
 };
+
+export const updateWhatsappTemplate = async (id: number, data: Record<string, unknown>) => {
+  const res = await authenticatedApiClient().put(`/whatsApp/template/${id}`, data);
+  return res.data.result;
+};
