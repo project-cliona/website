@@ -13,6 +13,7 @@ import { VariantProps } from "class-variance-authority";
 import { WhatsappTemplate } from "@/lib/type";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/providers/userProvider";
 
 const columns: ColumnDef<WhatsappTemplate>[] = [
   {
@@ -87,15 +88,8 @@ const columns: ColumnDef<WhatsappTemplate>[] = [
         VariantProps<typeof badgeVariants>["variant"]
       > = {
         APPROVED: "active",
-        approved: "active",
-        active: "active",
-        Active: "active",
         PENDING: "pending",
-        pending: "pending",
-        Pending: "pending",
         REJECTED: "rejected",
-        rejected: "rejected",
-        Rejected: "rejected",
         DISABLED: "rejected",
         PAUSED: "pending",
         IN_APPEAL: "pending",
@@ -120,10 +114,12 @@ const columns: ColumnDef<WhatsappTemplate>[] = [
 ];
 
 export default function WhatsappTemplatesPage() {
+  const {user} = useUser()
   const router = useRouter();
   const { data: templateData, isLoading } = useQuery({
     queryKey: ["whatsapp-templates"],
-    queryFn: fetchWhatsappTemplates,
+    queryFn: () => fetchWhatsappTemplates(user!.userId),
+    enabled: !!user?.userId,
   });
 
   const renderExtraActions = (selectedRows: WhatsappTemplate[]) => {

@@ -1,9 +1,9 @@
 import { authenticatedApiClient } from "@/lib/axios";
 import { WhatsappTemplate } from "@/lib/type";
 
-export const fetchWhatsappTemplates = async (): Promise<WhatsappTemplate[]> => {
+export const fetchWhatsappTemplates = async (userId: number): Promise<WhatsappTemplate[]> => {
   try {
-    const res = await authenticatedApiClient().get("/whatsApp/templates");
+    const res = await authenticatedApiClient().get(`/whatsApp/template?userId=${userId}`);
     return res.data.result;
   } catch (error) {
     console.log("Error fetching WhatsApp templates:", error);
