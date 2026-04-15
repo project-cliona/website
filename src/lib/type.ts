@@ -130,8 +130,11 @@ export interface WhatsappTemplate {
   language: string;
   category: "utility" | "marketing" | "authentication";
   wabaId: string;
+  parameterFormat: string | null;
   status: string | null;
   components: Record<string, unknown>;
+  metaTemplateId: string | null;
+  rejectionReason: string | null;
   modifiedBy: number;
   createdAt: string;
   updatedAt: string;
@@ -198,4 +201,48 @@ export interface WhatsappBusinessAccount {
 export interface WhatsappConnectionStatus {
   connected: boolean;
   account: WhatsappBusinessAccount | null;
+}
+
+// --- WhatsApp Messaging & DLR Types ---
+
+export interface WhatsappMessage {
+  id: number;
+  userId: number;
+  wabaId: string;
+  wamid: string;
+  direction: "outbound" | "inbound";
+  recipientPhone: string;
+  type: string; // template | text | image | video | document | interactive
+  templateName: string | null;
+  templateLanguage: string | null;
+  content: Record<string, unknown> | null;
+  status: "accepted" | "sent" | "delivered" | "read" | "failed";
+  failureReason: string | null;
+  pricing: Record<string, unknown> | null;
+  sentAt: string | null;
+  deliveredAt: string | null;
+  readAt: string | null;
+  failedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WhatsappMessagesResponse {
+  messages: WhatsappMessage[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface WhatsappSendTemplatePayload {
+  to: string;
+  templateName: string;
+  language: string;
+  components?: Record<string, unknown>[];
+}
+
+export interface WhatsappSendTextPayload {
+  to: string;
+  text: string;
+  previewUrl?: boolean;
 }
