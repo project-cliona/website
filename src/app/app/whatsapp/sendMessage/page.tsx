@@ -30,6 +30,7 @@ import { useState, useMemo } from "react";
 
 export default function SendWhatsappMessage() {
   const { user } = useUser();
+  const userId = user?.userId;
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
@@ -54,8 +55,9 @@ export default function SendWhatsappMessage() {
   const selectedTemplateId = watch("templateId");
 
   const { data: templates } = useQuery<WhatsappTemplate[]>({
-    queryKey: ["whatsapp-templates"],
-    queryFn: fetchWhatsappTemplates,
+    queryKey: ["whatsapp-template", userId],
+    queryFn: () => fetchWhatsappTemplates(Number(userId)),
+    enabled: !!userId,
   });
 
   // Find the selected template and extract body/header/footer for preview
