@@ -26,17 +26,14 @@ const statusVariantMap: Record<
   VariantProps<typeof badgeVariants>["variant"]
 > = {
   APPROVED: "active",
-  approved: "active",
   PENDING: "pending",
-  pending: "pending",
   REJECTED: "rejected",
-  rejected: "rejected",
   DISABLED: "rejected",
   PAUSED: "pending",
   IN_APPEAL: "pending",
 };
 
-const EDITABLE_STATUSES = ["APPROVED", "REJECTED", "PAUSED", "approved", "rejected", "paused"];
+const EDITABLE_STATUSES = ["APPROVED", "REJECTED", "PAUSED"];
 
 export default function WhatsappTemplateDetail() {
   const params = useParams();
@@ -116,6 +113,65 @@ export default function WhatsappTemplateDetail() {
   const formatDate = (d: string) =>
     d ? new Date(d).toLocaleString() : "N/A";
 
+  const templateInfo = [
+    { label: "Name", value: template.name },
+    {
+      label: "Category",
+      value: (
+        <Badge variant={categoryVariantMap[template.category] || "default"}>
+          {template.category}
+        </Badge>
+      ),
+    },
+    { label: "Language", value: template.language },
+    {
+      label: "Parameter Format",
+      value: template.parameterFormat || "positional",
+    },
+    {
+      label: "WABA ID",
+      value: (
+        <span className="font-mono text-xs">{template.wabaId}</span>
+      ),
+    },
+    {
+      label: "Meta Template ID",
+      value: template.metaTemplateId ? (
+        <span className="font-mono text-xs flex items-center gap-1">
+          {template.metaTemplateId}
+          <button
+            type="button"
+            onClick={() => navigator.clipboard.writeText(template.metaTemplateId)}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <Copy className="w-3 h-3" />
+          </button>
+        </span>
+      ) : (
+        "N/A"
+      ),
+    },
+    {
+      label: "Status",
+      value: (
+        <Badge
+          variant={statusVariantMap[template.status ?? ""] || "default"}
+        >
+          {template.status || "N/A"}
+        </Badge>
+      ),
+    },
+    {
+      label: "Rejection Reason",
+      value:
+        template.rejectionReason && template.rejectionReason !== "NONE"
+          ? template.rejectionReason
+          : "—",
+    },
+    { label: "Created", value: formatDate(template.createdAt) },
+    { label: "Updated", value: formatDate(template.updatedAt) },
+  ]
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -152,64 +208,7 @@ export default function WhatsappTemplateDetail() {
               Template Details
             </h3>
             <div className="space-y-3">
-              {[
-                { label: "Name", value: template.name },
-                {
-                  label: "Category",
-                  value: (
-                    <Badge variant={categoryVariantMap[template.category] || "default"}>
-                      {template.category}
-                    </Badge>
-                  ),
-                },
-                { label: "Language", value: template.language },
-                {
-                  label: "Parameter Format",
-                  value: template.parameterFormat || "positional",
-                },
-                {
-                  label: "WABA ID",
-                  value: (
-                    <span className="font-mono text-xs">{template.wabaId}</span>
-                  ),
-                },
-                {
-                  label: "Meta Template ID",
-                  value: template.metaTemplateId ? (
-                    <span className="font-mono text-xs flex items-center gap-1">
-                      {template.metaTemplateId}
-                      <button
-                        type="button"
-                        onClick={() => navigator.clipboard.writeText(template.metaTemplateId)}
-                        className="text-gray-400 hover:text-gray-600"
-                      >
-                        <Copy className="w-3 h-3" />
-                      </button>
-                    </span>
-                  ) : (
-                    "N/A"
-                  ),
-                },
-                {
-                  label: "Status",
-                  value: (
-                    <Badge
-                      variant={statusVariantMap[template.status ?? ""] || "default"}
-                    >
-                      {template.status || "N/A"}
-                    </Badge>
-                  ),
-                },
-                {
-                  label: "Rejection Reason",
-                  value:
-                    template.rejectionReason && template.rejectionReason !== "NONE"
-                      ? template.rejectionReason
-                      : "—",
-                },
-                { label: "Created", value: formatDate(template.createdAt) },
-                { label: "Updated", value: formatDate(template.updatedAt) },
-              ].map(({ label, value }) => (
+              {templateInfo.map(({ label, value }) => (
                 <div
                   key={label}
                   className="flex justify-between py-2 border-b border-gray-50 last:border-b-0"
