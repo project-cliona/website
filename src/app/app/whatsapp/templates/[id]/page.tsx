@@ -101,7 +101,13 @@ export default function WhatsappTemplateDetail() {
       if (fmt === "text") {
         previewHeaderValue = comp.text || "";
       } else {
-        previewHeaderValue = comp.preview_url || comp.example?.header_url?.[0] || "";
+        // Prefer the persisted Supabase URL on the template row — Meta's
+        // header_handle is opaque and not fetchable client-side.
+        previewHeaderValue =
+          template.headerMediaUrl ||
+          comp.preview_url ||
+          comp.example?.header_url?.[0] ||
+          "";
       }
     }
     if (t === "FOOTER") previewFooter = comp.text || "";
