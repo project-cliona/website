@@ -40,6 +40,7 @@ import {
   type DefaultBuilderForm,
   WHATSAPP_LANGUAGES,
 } from "@/lib/schema/whatsapp.schema";
+import axios from "axios";
 import { authenticatedApiClient } from "@/lib/axios";
 import { updateWhatsappTemplate } from "@/lib/api/whatsapp/templates";
 import { useUser } from "@/providers/userProvider";
@@ -269,6 +270,7 @@ export default function TemplateDefaultBuilder({
   const [mediaUrl, setMediaUrl] = useState<string | null>(
     initialValues?.headerPreviewUrl ?? null
   );
+  const [mediaHandle, setMediaHandle] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -462,6 +464,7 @@ export default function TemplateDefaultBuilder({
   /** Reset media upload state when header type changes */
   useEffect(() => {
     setMediaUrl(null);
+    setMediaHandle(null);
     setUploadedFileName(null);
     setUploadError(null);
   }, [headerType]);
@@ -494,11 +497,14 @@ export default function TemplateDefaultBuilder({
       const res = await authenticatedApiClient().post("/common/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      const { url } = res.data.result;
+      const { url, handle } = res.data.result;
       setMediaUrl(url);
+      setMediaHandle(handle);
       setUploadedFileName(file.name);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Upload failed. Please try again.";
+      const backendMessage = axios.isAxiosError(err) ? err.response?.data?.message : undefined;
+      const message = backendMessage
+        ?? (err instanceof Error ? err.message : "Upload failed. Please try again.");
       setUploadError(message);
     } finally {
       setUploading(false);
@@ -507,6 +513,7 @@ export default function TemplateDefaultBuilder({
 
   const clearUploadedFile = () => {
     setMediaUrl(null);
+    setMediaHandle(null);
     setUploadedFileName(null);
     setUploadError(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -548,9 +555,11 @@ export default function TemplateDefaultBuilder({
           type: "HEADER",
           format,
         };
-        const url = mediaUrl || data.headerMediaUrl;
-        if (url) {
-          headerComp.example = { header_url: [url] };
+        // Meta's template API expects header_handle (from resumable upload),
+        // not header_url. The Supabase URL is stored separately on the template
+        // row via headerMediaUrl for later preview rendering.
+        if (mediaHandle) {
+          headerComp.example = { header_handle: [mediaHandle] };
         }
         components.push(headerComp);
       }
@@ -624,6 +633,13 @@ export default function TemplateDefaultBuilder({
       payload.parameterFormat = "NAMED";
     }
 
+    // Persist the Supabase URL on the template row so the preview can render
+    // later without the Meta handle (which isn't fetchable client-side).
+    const headerUrlToPersist = mediaUrl || data.headerMediaUrl;
+    if (headerUrlToPersist) {
+      payload.headerMediaUrl = headerUrlToPersist;
+    }
+
     return payload;
   };
 
@@ -668,8 +684,9 @@ export default function TemplateDefaultBuilder({
       }
       router.push("/app/whatsapp/templates");
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : isEditMode ? "Failed to update template." : "Failed to create template.";
+      const backendMessage = axios.isAxiosError(err) ? err.response?.data?.message : undefined;
+      const fallback = isEditMode ? "Failed to update template." : "Failed to create template.";
+      const message = backendMessage ?? (err instanceof Error ? err.message : fallback);
       setSubmitError(message);
     } finally {
       setSubmitting(false);

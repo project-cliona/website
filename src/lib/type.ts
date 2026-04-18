@@ -133,6 +133,7 @@ export interface WhatsappTemplate {
   parameterFormat: string | null;
   status: string | null;
   components: Record<string, unknown>;
+  headerMediaUrl: string | null;
   metaTemplateId: string | null;
   rejectionReason: string | null;
   modifiedBy: number;
