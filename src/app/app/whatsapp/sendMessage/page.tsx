@@ -70,6 +70,7 @@ export default function SendWhatsappMessage() {
   let previewHeaderValue = "";
   let previewFooter = "";
   let previewButtons: { type: string; text: string }[] = [];
+  const headerMediaUrl: string | null = selectedTemplate?.headerMediaUrl ?? null;
 
   if (selectedTemplate) {
     // components can be an array or wrapped in an object — normalize
@@ -110,6 +111,23 @@ export default function SendWhatsappMessage() {
 
   const buildSendComponents = () => {
     const components: Record<string, unknown>[] = [];
+
+    if (previewHeaderType !== "none" && previewHeaderType !== "text") {
+      if (!headerMediaUrl) {
+        throw new Error(
+          "This template has a media header but no stored media URL. Re-upload the header image to refresh the stored URL, then retry."
+        );
+      }
+      components.push({
+        type: "header",
+        parameters: [
+          {
+            type: previewHeaderType,
+            [previewHeaderType]: { link: headerMediaUrl },
+          },
+        ],
+      });
+    }
 
     if (bodyVariables.length > 0) {
       components.push({
