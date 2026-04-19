@@ -178,7 +178,7 @@ export default function TemplateAuthBuilder({ wabaId, onPreviewChange, initialDa
 
       const payload = {
         name: data.name,
-        category: "AUTHENTICATION",
+        category: "authentication",
         language: data.language,
         wabaId,
         components,
