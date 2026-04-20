@@ -494,7 +494,7 @@ export default function TemplateDefaultBuilder({
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const res = await authenticatedApiClient().post("/common/upload", formData, {
+      const res = await authenticatedApiClient().post("/whatsApp/upload-media", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       const { url, handle } = res.data.result;
