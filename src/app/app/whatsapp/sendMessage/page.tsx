@@ -202,7 +202,7 @@ export default function SendWhatsappMessage() {
   };
 
   const approvedTemplates = templates?.filter(
-    (t) => t.status === "APPROVED" || t.status === "approved"
+    (t) => (t.status ?? "").toUpperCase() === "APPROVED"
   );
 
   return (
