@@ -149,15 +149,90 @@ export interface WhatsappContact {
   createdAt: string;
 }
 
+export type WhatsappCampaignStatus =
+  | "draft"
+  | "queued"
+  | "in_progress"
+  | "completed"
+  | "cancelled"
+  | "failed";
+
 export interface WhatsappCampaign {
-  id: string;
+  id: number;
+  userId: number;
+  wabaId: string;
   campaignName: string;
   templateName: string;
-  scheduledTime: string;
-  messageCount: number;
-  deliveryRate: number;
-  readRate: number;
-  status: "Completed" | "Scheduled" | "Sending" | "Failed";
+  templateLanguage: string;
+  totalRecipients: number;
+  sent: number;
+  delivered: number;
+  read: number;
+  failed: number;
+  status: WhatsappCampaignStatus;
+  scheduledAt: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WhatsappCampaignCreateResult {
+  id: number;
+  totalRecipients: number;
+  skippedInvalid: number;
+  status: WhatsappCampaignStatus;
+  scheduledAt: string | null;
+}
+
+export interface WhatsappCampaignCancelResult {
+  cancelledPending: number;
+}
+
+export interface WhatsappCampaignListResponse {
+  campaigns: WhatsappCampaign[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+// whatsappMessages row scoped to a campaign. Per-recipient drill-down row.
+export interface WhatsappCampaignMessage {
+  id: number;
+  userId: number;
+  campaignId: number | null;
+  wabaId: string;
+  wamid: string | null;
+  direction: "outbound" | "inbound";
+  recipientPhone: string;
+  type: string;
+  templateName: string | null;
+  templateLanguage: string | null;
+  content: Record<string, unknown> | null;
+  variables: Record<string, string> | string[] | null;
+  status:
+    | "pending"
+    | "accepted"
+    | "sent"
+    | "delivered"
+    | "read"
+    | "failed"
+    | "cancelled";
+  failureReason: string | null;
+  pricing: Record<string, unknown> | null;
+  sentAt: string | null;
+  deliveredAt: string | null;
+  readAt: string | null;
+  failedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WhatsappCampaignMessagesResponse {
+  messages: WhatsappCampaignMessage[];
+  total: number;
+  page: number;
+  limit: number;
 }
 
 export interface WhatsappDeliveryRecord {

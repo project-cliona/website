@@ -5,7 +5,10 @@ import { FileUpload } from "@/components/ui/FileUpload";
 import { PageHeading } from "@/components/ui/PageHeading";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { fetchWhatsappTemplates } from "@/lib/api/whatsapp/templates";
-import { sendTemplateMessage } from "@/lib/api/whatsapp/messaging";
+import {
+  createCampaign,
+  type CreateCampaignRecipient,
+} from "@/lib/api/whatsapp/campaigns";
 import { Label } from "@/components/ui/Label";
 import { Input } from "@/components/ui/Input";
 import {
@@ -27,18 +30,20 @@ import { Button } from "@/components/ui/Button";
 import { WhatsappTemplate } from "@/lib/type";
 import { useUser } from "@/providers/userProvider";
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { ArrowRight, Users } from "lucide-react";
 
 export default function SendWhatsappMessage() {
   const { user } = useUser();
   const userId = user?.userId;
+  const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const {
     control,
     handleSubmit,
     watch,
-    reset,
     formState: { errors },
   } = useForm<SendWhatsappCampaignForm>({
     resolver: zodResolver(sendWhatsappCampaignSchema),
@@ -48,11 +53,13 @@ export default function SendWhatsappMessage() {
       mobileNumbers: "",
       uploadedFile: null,
       scheduledAt: "",
-      removeDuplicates: false,
+      removeDuplicates: true,
     },
   });
 
   const selectedTemplateId = watch("templateId");
+  const mobileNumbersRaw = watch("mobileNumbers") ?? "";
+  const removeDuplicates = watch("removeDuplicates");
 
   const { data: templates } = useQuery<WhatsappTemplate[]>({
     queryKey: ["whatsapp-template", userId],
@@ -60,7 +67,6 @@ export default function SendWhatsappMessage() {
     enabled: !!userId,
   });
 
-  // Find the selected template and extract body/header/footer for preview
   const selectedTemplate = templates?.find(
     (t) => t.id.toString() === selectedTemplateId
   );
@@ -73,29 +79,26 @@ export default function SendWhatsappMessage() {
   const headerMediaUrl: string | null = selectedTemplate?.headerMediaUrl ?? null;
 
   if (selectedTemplate) {
-    // components can be an array or wrapped in an object — normalize
     const comps = Array.isArray(selectedTemplate.components)
       ? selectedTemplate.components
       : [];
 
-    for (const comp of comps as Record<string, any>[]) {
-      const t = (comp.type || "").toUpperCase();
-      if (t === "BODY") previewBody = comp.text || "";
+    for (const comp of comps as Record<string, unknown>[]) {
+      const t = (String(comp.type ?? "")).toUpperCase();
+      if (t === "BODY") previewBody = String(comp.text ?? "");
       if (t === "HEADER") {
-        previewHeaderType = ((comp.format || "text").toLowerCase()) as typeof previewHeaderType;
-        previewHeaderValue = comp.text || "";
+        previewHeaderType = (String(comp.format ?? "text").toLowerCase()) as typeof previewHeaderType;
+        previewHeaderValue = String(comp.text ?? "");
       }
-      if (t === "FOOTER") previewFooter = comp.text || "";
+      if (t === "FOOTER") previewFooter = String(comp.text ?? "");
       if (t === "BUTTONS" && Array.isArray(comp.buttons)) {
-        previewButtons = comp.buttons.map((b: Record<string, string>) => ({
-          type: b.type,
-          text: b.text,
-        }));
+        previewButtons = (comp.buttons as Array<Record<string, string>>).map(
+          (b) => ({ type: b.type, text: b.text })
+        );
       }
     }
   }
 
-  // Extract variable placeholders from template body (e.g., {{1}}, {{2}} or {{name}})
   const bodyVariables = useMemo(() => {
     const matches = previewBody.match(/\{\{([^}]+)\}\}/g);
     if (!matches) return [];
@@ -104,14 +107,24 @@ export default function SendWhatsappMessage() {
 
   const [variableValues, setVariableValues] = useState<Record<string, string>>({});
 
-  // Build the components array for Meta API send-time format
-  // Named params require parameter_name field; positional params don't
-  const isNamedFormat = selectedTemplate?.parameterFormat === "named" ||
+  const isNamedFormat =
+    selectedTemplate?.parameterFormat === "named" ||
     selectedTemplate?.parameterFormat === "NAMED";
 
-  const buildSendComponents = () => {
-    const components: Record<string, unknown>[] = [];
+  // Parse numbers from the textarea for live preview of recipient count
+  const parsedPhones = useMemo(() => {
+    const raw = mobileNumbersRaw
+      .split(/[,\n]+/)
+      .map((n) => n.trim())
+      .filter(Boolean);
+    return removeDuplicates ? [...new Set(raw)] : raw;
+  }, [mobileNumbersRaw, removeDuplicates]);
 
+  // Build Meta-spec components for anything that's not per-recipient variables
+  // (e.g. media header). Body variables are packed per-recipient inside the
+  // recipients[] array instead of here — see mutation below.
+  const buildSharedComponents = (): Record<string, unknown>[] => {
+    const components: Record<string, unknown>[] = [];
     if (previewHeaderType !== "none" && previewHeaderType !== "text") {
       if (!headerMediaUrl) {
         throw new Error(
@@ -128,109 +141,88 @@ export default function SendWhatsappMessage() {
         ],
       });
     }
-
-    if (bodyVariables.length > 0) {
-      components.push({
-        type: "body",
-        parameters: bodyVariables.map((v) => {
-          const param: Record<string, string> = {
-            type: "text",
-            text: variableValues[v] || "",
-          };
-          if (isNamedFormat) {
-            param.parameter_name = v;
-          }
-          return param;
-        }),
-      });
-    }
-
     return components;
   };
 
   const mutation = useMutation({
     mutationFn: async (data: SendWhatsappCampaignForm) => {
-      let phoneNumbers = data.mobileNumbers
-        ? data.mobileNumbers
-            .split(/[,\n]+/)
-            .map((n) => n.trim())
-            .filter(Boolean)
-        : [];
-
-      if (data.removeDuplicates) {
-        phoneNumbers = [...new Set(phoneNumbers)];
-      }
-
       if (!selectedTemplate) {
         throw new Error("Please select a template");
       }
-
-      if (phoneNumbers.length === 0) {
+      if (parsedPhones.length === 0) {
         throw new Error("Please enter at least one phone number");
       }
 
-      const components = buildSendComponents();
+      const sharedComponents = buildSharedComponents();
 
-      // Send to each phone number via the real Meta API
-      const results = await Promise.allSettled(
-        phoneNumbers.map((phone) =>
-          sendTemplateMessage({
-            to: phone,
-            templateName: selectedTemplate.name,
-            language: selectedTemplate.language,
-            components: components.length > 0 ? components : undefined,
-          })
-        )
-      );
+      // For MVP, all recipients share the same body variable values. The
+      // backend accepts per-recipient `variables` though, so when we ship CSV
+      // upload with per-row variables the UI can swap in different values here
+      // without an API change.
+      const variablesForAll: Record<string, string> | string[] | undefined =
+        bodyVariables.length === 0
+          ? undefined
+          : isNamedFormat
+            ? bodyVariables.reduce<Record<string, string>>((acc, v) => {
+                acc[v] = variableValues[v] ?? "";
+                return acc;
+              }, {})
+            : bodyVariables.map((v) => variableValues[v] ?? "");
 
-      const failed = results.filter((r) => r.status === "rejected");
-      if (failed.length > 0 && failed.length === results.length) {
-        throw new Error(`All ${failed.length} messages failed to send`);
-      }
-      if (failed.length > 0) {
-        throw new Error(`${failed.length} of ${results.length} messages failed`);
-      }
+      const recipients: CreateCampaignRecipient[] = parsedPhones.map((phone) => ({
+        phone,
+        variables: variablesForAll,
+      }));
 
-      return { sent: results.length };
+      return await createCampaign({
+        campaignName: data.campaignName,
+        templateName: selectedTemplate.name,
+        templateLanguage: selectedTemplate.language,
+        recipients,
+        components: sharedComponents.length > 0 ? sharedComponents : undefined,
+      });
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       setSubmitError(null);
-      setSubmitSuccess(true);
-      reset();
-      setTimeout(() => setSubmitSuccess(false), 5000);
+      // Navigate straight to the campaign detail page — progress is tracked there.
+      router.push(`/app/whatsapp/campaignReport/${result.id}`);
     },
     onError: (error: Error & { response?: { data?: { message?: string } } }) => {
       const msg =
         error?.response?.data?.message ||
         error?.message ||
-        "Failed to send campaign";
+        "Failed to create campaign";
       setSubmitError(msg);
     },
   });
 
   const onSubmit = (data: SendWhatsappCampaignForm) => {
     setSubmitError(null);
-    setSubmitSuccess(false);
     mutation.mutate(data);
   };
 
-  // Only show approved templates in the selector (per Meta docs, only approved templates can be sent)
   const approvedTemplates = templates?.filter(
     (t) => t.status === "APPROVED" || t.status === "approved"
   );
 
   return (
     <div className="space-y-8">
-      <PageHeading
-        title="Send WhatsApp Campaign"
-        subtitle="Create and send WhatsApp campaigns to your audience"
-      />
+      <div className="flex items-center justify-between">
+        <PageHeading
+          title="Send WhatsApp Campaign"
+          subtitle="Create and send WhatsApp campaigns to your audience"
+        />
+        <Link
+          href="/app/whatsapp/campaignReport"
+          className="text-sm text-gray-600 hover:text-gray-900 inline-flex items-center gap-1"
+        >
+          View all campaigns <ArrowRight className="w-4 h-4" />
+        </Link>
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Form */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Campaign Settings */}
             <div className="bg-white border border-gray-100 rounded-xl p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Campaign Settings
@@ -245,7 +237,7 @@ export default function SendWhatsappMessage() {
                       <>
                         <Input
                           {...field}
-                          placeholder="Enter campaign name"
+                          placeholder="e.g. Flash Sale — April Weekend"
                         />
                         {fieldState.error && (
                           <p className="text-sm text-red-500 mt-1">
@@ -299,14 +291,14 @@ export default function SendWhatsappMessage() {
               </div>
             </div>
 
-            {/* Variable Values */}
             {bodyVariables.length > 0 && (
               <div className="bg-white border border-gray-100 rounded-xl p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 mb-1">
                   Template Variables
                 </h2>
                 <p className="text-sm text-gray-500 mb-4">
-                  Fill in the values for each variable in your template.
+                  These values are used for every recipient in this campaign.
+                  Per-recipient personalization is coming soon.
                 </p>
                 <div className="space-y-3">
                   {bodyVariables.map((variable) => (
@@ -330,11 +322,18 @@ export default function SendWhatsappMessage() {
               </div>
             )}
 
-            {/* Mobile Numbers */}
             <div className="bg-white border border-gray-100 rounded-xl p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Mobile Numbers
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Recipients
+                </h2>
+                {parsedPhones.length > 0 && (
+                  <span className="inline-flex items-center gap-1 text-sm text-gray-600">
+                    <Users className="w-4 h-4" />
+                    {parsedPhones.length.toLocaleString()} unique numbers
+                  </span>
+                )}
+              </div>
               <div className="space-y-4">
                 <Controller
                   name="mobileNumbers"
@@ -350,6 +349,9 @@ export default function SendWhatsappMessage() {
                         placeholder="Enter numbers separated by commas or new lines (e.g. 919876543210)"
                         className="mt-2"
                       />
+                      <p className="text-xs text-gray-500">
+                        Numbers are normalized to digits-only E.164 server-side (country code required, no +).
+                      </p>
                     </div>
                   )}
                 />
@@ -379,50 +381,33 @@ export default function SendWhatsappMessage() {
                         }
                       />
                       <Label className="cursor-pointer">
-                        Remove duplicate numbers
+                        Remove duplicate numbers (backend also dedupes)
                       </Label>
                     </div>
                   )}
                 />
-
-                <div>
-                  <Label className="mb-2 block">
-                    Schedule (optional)
-                  </Label>
-                  <Controller
-                    name="scheduledAt"
-                    control={control}
-                    render={({ field }) => (
-                      <Input type="datetime-local" {...field} />
-                    )}
-                  />
-                </div>
               </div>
             </div>
 
-            {/* Error / Success Messages */}
             {submitError && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
                 {submitError}
               </div>
             )}
-            {submitSuccess && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-700">
-                Campaign sent successfully!
-              </div>
-            )}
 
-            {/* Submit */}
             <Button
               type="submit"
               className="w-full"
               disabled={mutation.isPending}
             >
-              {mutation.isPending ? "Sending..." : "Send Campaign"}
+              {mutation.isPending
+                ? "Creating campaign…"
+                : parsedPhones.length > 0
+                  ? `Launch campaign to ${parsedPhones.length.toLocaleString()} recipient${parsedPhones.length === 1 ? "" : "s"}`
+                  : "Launch campaign"}
             </Button>
           </div>
 
-          {/* Preview */}
           <div className="lg:col-span-1">
             <WhatsappPreview
               headerType={previewHeaderType}
