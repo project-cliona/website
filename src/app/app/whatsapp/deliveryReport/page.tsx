@@ -8,6 +8,12 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchMessages } from "@/lib/api/whatsapp/dlr";
 import type { WhatsappMessage } from "@/lib/type";
 import { VariantProps } from "class-variance-authority";
+import { Label } from "@/components/ui/Label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
+import { DatePicker } from "@/components/ui/DatePicker";
+import { exportToCSV } from "@/lib/utils";
+import { Button } from "@/components/ui/Button";
+import { DownloadIcon } from "lucide-react";
 
 const statusVariantMap: Record<
   string,
@@ -33,7 +39,7 @@ export default function WhatsappDeliveryReports() {
     queryKey: ["whatsapp-dlr", filters],
     queryFn: () =>
       fetchMessages({
-        status: filters.status || undefined,
+        status: filters.status === "all" ? undefined : filters.status,
         from: filters.startDate,
         to: filters.dateType === "Range" ? filters.endDate : filters.startDate,
         page: filters.page,
@@ -76,6 +82,42 @@ export default function WhatsappDeliveryReports() {
     return new Date(dateStr).toLocaleString();
   };
 
+  const formatDateLocal = (date: Date) => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, "0")
+    const day = String(date.getDate()).padStart(2, "0")
+    return `${year}-${month}-${day}`
+  }
+
+  const handleDownload = () => {
+    exportToCSV({
+      data: messages,
+      filename: `dlr-${filters.startDate}-to-${filters.endDate}.csv`,
+      columns: [
+        { header: "ID", accessor: "id" },
+        { header: "Recipient", accessor: "recipientPhone" },
+        { header: "Template", accessor: (row) => row.templateName || row.type },
+        { header: "Status", accessor: "status" },
+        {
+          header: "Sent At",
+          accessor: (row) =>
+            row.sentAt ? new Date(row.sentAt).toLocaleString() : "",
+        },
+        {
+          header: "Delivered At",
+          accessor: (row) =>
+            row.deliveredAt ? new Date(row.deliveredAt).toLocaleString() : "",
+        },
+        {
+          header: "Read At",
+          accessor: (row) =>
+            row.readAt ? new Date(row.readAt).toLocaleString() : "",
+        },
+        { header: "Failure Reason", accessor: "failureReason" },
+      ],
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -100,61 +142,77 @@ export default function WhatsappDeliveryReports() {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <Label className="block text-sm font-medium text-gray-700 mb-2">
               Date Type
-            </label>
-            <select
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
+            </Label>
+            <Select
               value={filters.dateType}
-              onChange={(e) => handleFilterChange("dateType", e.target.value)}
+              onValueChange={(value) => handleFilterChange("dateType", value)}
             >
-              <option value="Day">Day</option>
-              <option value="Range">Date Range</option>
-            </select>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Date Type" />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem value="Day">Day</SelectItem>
+                <SelectItem value="Range">Date Range</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <Label className="block text-sm font-medium text-gray-700 mb-2">
               {filters.dateType === "Day" ? "Date" : "Start Date"}
-            </label>
-            <input
-              type="date"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
-              value={filters.startDate}
-              onChange={(e) => handleFilterChange("startDate", e.target.value)}
+            </Label>
+            <DatePicker
+              value={filters.startDate ? new Date(filters.startDate) : undefined}
+              onChange={(date) =>
+                handleFilterChange(
+                  "startDate",
+                  date ? formatDateLocal(date) : ""
+                )
+              }
             />
           </div>
 
           {filters.dateType === "Range" && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <Label className="block text-sm font-medium text-gray-700 mb-2">
                 End Date
-              </label>
-              <input
-                type="date"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
-                value={filters.endDate}
-                onChange={(e) => handleFilterChange("endDate", e.target.value)}
+              </Label>
+              <DatePicker
+                value={filters.endDate ? new Date(filters.endDate) : undefined}
+                onChange={(date) =>
+                  handleFilterChange(
+                    "endDate",
+                    date ? formatDateLocal(date) : ""
+                  )
+                }
               />
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <Label className="block text-sm font-medium text-gray-700 mb-2">
               Status
-            </label>
-            <select
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
+            </Label>
+            <Select
               value={filters.status}
-              onChange={(e) => handleFilterChange("status", e.target.value)}
+              onValueChange={(value) => handleFilterChange("status", value)}
             >
-              <option value="">All Statuses</option>
-              <option value="accepted">Accepted</option>
-              <option value="sent">Sent</option>
-              <option value="delivered">Delivered</option>
-              <option value="read">Read</option>
-              <option value="failed">Failed</option>
-            </select>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="All Statuses" />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="accepted">Accepted</SelectItem>
+                <SelectItem value="sent">Sent</SelectItem>
+                <SelectItem value="delivered">Delivered</SelectItem>
+                <SelectItem value="read">Read</SelectItem>
+                <SelectItem value="failed">Failed</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
@@ -223,11 +281,10 @@ export default function WhatsappDeliveryReports() {
                 <div
                   className={`${item.color} h-4 rounded-full`}
                   style={{
-                    width: `${
-                      summary.totalSubmitted > 0
-                        ? (item.value / summary.totalSubmitted) * 100
-                        : 0
-                    }%`,
+                    width: `${summary.totalSubmitted > 0
+                      ? (item.value / summary.totalSubmitted) * 100
+                      : 0
+                      }%`,
                   }}
                 />
               </div>
@@ -241,10 +298,16 @@ export default function WhatsappDeliveryReports() {
 
       {/* Detailed Reports Table */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
           <h2 className="text-lg font-semibold text-gray-900">
             Message Details
           </h2>
+
+          <Button
+            onClick={handleDownload}
+          >
+            <span className="flex gap-2 items-center"><DownloadIcon /> Download CSV</span>
+          </Button>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">

@@ -18,7 +18,7 @@ export const apiClient = (headers?: AxiosHeaders) => {
 
 export const authenticatedApiClient = () => {
   const axiosInstance = apiClient();
-  axiosInstance.interceptors.request.use(async (config) => {
+  axiosInstance.interceptors.request.use(async (config: any) => {
     const access_token = localStorage.getItem("accessToken");
     console.log({'this is from the axios utlis': access_token})
     if (!access_token) {

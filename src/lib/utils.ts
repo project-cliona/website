@@ -70,3 +70,67 @@ export const categoryConfig: Record<
     ],
   },
 };
+
+type CSVOptions<T> = {
+  data: T[];
+  filename?: string;
+  columns?: {
+    header: string;
+    accessor: keyof T | ((row: T) => any);
+  }[];
+};
+
+export function exportToCSV<T>({
+  data,
+  filename = "data.csv",
+  columns,
+}: CSVOptions<T>) {
+  if (!data || data.length === 0) {
+    console.warn("No data to export");
+    return;
+  }
+
+  // 🔥 If no columns provided → auto-generate
+  const finalColumns =
+    columns ||
+    Object.keys(data[0]).map((key) => ({
+      header: key,
+      accessor: key as keyof T,
+    }));
+
+  // Headers
+  const headers = finalColumns.map((col) => col.header);
+
+  // Rows
+  const rows = data.map((row) =>
+    finalColumns.map((col) => {
+      let value =
+        typeof col.accessor === "function"
+          ? col.accessor(row)
+          : row[col.accessor];
+
+      if (value === null || value === undefined) return "";
+
+      // escape quotes
+      return `"${String(value).replace(/"/g, '""')}"`;
+    })
+  );
+
+  const csvContent =
+    [headers, ...rows.map((r) => r.join(","))].join("\n");
+
+  // Download
+  const blob = new Blob([csvContent], {
+    type: "text/csv;charset=utf-8;",
+  });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.setAttribute("download", filename);
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
