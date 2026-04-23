@@ -1,7 +1,6 @@
 "use client";
 
 import { WhatsappPreview } from "@/components/ui/WhatsappPreview";
-import { FileUpload } from "@/components/ui/FileUpload";
 import { PageHeading } from "@/components/ui/PageHeading";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { fetchWhatsappTemplates } from "@/lib/api/whatsapp/templates";
@@ -9,6 +8,7 @@ import {
   createCampaign,
   type CreateCampaignRecipient,
 } from "@/lib/api/whatsapp/campaigns";
+import { previewAudience } from "@/lib/api/whatsapp/audience";
 import { Label } from "@/components/ui/Label";
 import { Input } from "@/components/ui/Input";
 import {
@@ -24,15 +24,17 @@ import {
   sendWhatsappCampaignSchema,
 } from "@/lib/schema/whatsapp.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Textarea } from "@/components/ui/Textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/Button";
-import { WhatsappTemplate } from "@/lib/type";
+import { WhatsappTemplate, AudiencePreview } from "@/lib/type";
+import {
+  RecipientPicker,
+  type RecipientSelection,
+} from "@/components/whatsapp/RecipientPicker";
 import { useUser } from "@/providers/userProvider";
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, Users } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export default function SendWhatsappMessage() {
   const { user } = useUser();
@@ -50,16 +52,13 @@ export default function SendWhatsappMessage() {
     defaultValues: {
       campaignName: "",
       templateId: "",
-      mobileNumbers: "",
-      uploadedFile: null,
-      scheduledAt: "",
-      removeDuplicates: true,
     },
   });
 
   const selectedTemplateId = watch("templateId");
-  const mobileNumbersRaw = watch("mobileNumbers") ?? "";
-  const removeDuplicates = watch("removeDuplicates");
+
+  const [selection, setSelection] = useState<RecipientSelection | null>(null);
+  const [preview, setPreview] = useState<AudiencePreview | null>(null);
 
   const { data: templates } = useQuery<WhatsappTemplate[]>({
     queryKey: ["whatsapp-template", userId],
@@ -111,15 +110,6 @@ export default function SendWhatsappMessage() {
     selectedTemplate?.parameterFormat === "named" ||
     selectedTemplate?.parameterFormat === "NAMED";
 
-  // Parse numbers from the textarea for live preview of recipient count
-  const parsedPhones = useMemo(() => {
-    const raw = mobileNumbersRaw
-      .split(/[,\n]+/)
-      .map((n) => n.trim())
-      .filter(Boolean);
-    return removeDuplicates ? [...new Set(raw)] : raw;
-  }, [mobileNumbersRaw, removeDuplicates]);
-
   // Build Meta-spec components for anything that's not per-recipient variables
   // (e.g. media header). Body variables are packed per-recipient inside the
   // recipients[] array instead of here — see mutation below.
@@ -149,16 +139,35 @@ export default function SendWhatsappMessage() {
       if (!selectedTemplate) {
         throw new Error("Please select a template");
       }
-      if (parsedPhones.length === 0) {
-        throw new Error("Please enter at least one phone number");
+      if (!selection) {
+        throw new Error(
+          "Choose a list, tag filter, or paste numbers to send to"
+        );
       }
 
       const sharedComponents = buildSharedComponents();
 
-      // For MVP, all recipients share the same body variable values. The
-      // backend accepts per-recipient `variables` though, so when we ship CSV
-      // upload with per-row variables the UI can swap in different values here
-      // without an API change.
+      // Resolve the selection to a concrete phone list on the client. For
+      // Phase 1 this goes through the mocked audience-preview endpoint,
+      // which returns up to 50 sample recipients — so list/tag mode is
+      // capped at 50 contacts in Phase 1. Phase 2 moves the resolver
+      // server-side and drops the cap.
+      let phones: string[];
+      if (selection.mode === "list" || selection.mode === "tags") {
+        const p = await previewAudience({
+          mode: selection.mode,
+          listId: selection.mode === "list" ? selection.listId : undefined,
+          tags: selection.mode === "tags" ? selection.tags : undefined,
+        });
+        phones = p.sampleRecipients.map((r) => r.phone);
+      } else {
+        phones = selection.phones;
+      }
+
+      if (phones.length === 0) {
+        throw new Error("No recipients in the selected audience");
+      }
+
       const variablesForAll: Record<string, string> | string[] | undefined =
         bodyVariables.length === 0
           ? undefined
@@ -169,7 +178,7 @@ export default function SendWhatsappMessage() {
               }, {})
             : bodyVariables.map((v) => variableValues[v] ?? "");
 
-      const recipients: CreateCampaignRecipient[] = parsedPhones.map((phone) => ({
+      const recipients: CreateCampaignRecipient[] = phones.map((phone) => ({
         phone,
         variables: variablesForAll,
       }));
@@ -322,72 +331,12 @@ export default function SendWhatsappMessage() {
               </div>
             )}
 
-            <div className="bg-white border border-gray-100 rounded-xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Recipients
-                </h2>
-                {parsedPhones.length > 0 && (
-                  <span className="inline-flex items-center gap-1 text-sm text-gray-600">
-                    <Users className="w-4 h-4" />
-                    {parsedPhones.length.toLocaleString()} unique numbers
-                  </span>
-                )}
-              </div>
-              <div className="space-y-4">
-                <Controller
-                  name="mobileNumbers"
-                  control={control}
-                  render={({ field }) => (
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium text-gray-700">
-                        Enter Mobile Numbers
-                      </Label>
-                      <Textarea
-                        {...field}
-                        rows={6}
-                        placeholder="Enter numbers separated by commas or new lines (e.g. 919876543210)"
-                        className="mt-2"
-                      />
-                      <p className="text-xs text-gray-500">
-                        Numbers are normalized to digits-only E.164 server-side (country code required, no +).
-                      </p>
-                    </div>
-                  )}
-                />
-
-                <div className="border-t border-gray-200 pt-4">
-                  <p className="text-sm font-medium text-gray-700 mb-3">
-                    OR Upload File
-                  </p>
-                  <Controller
-                    name="uploadedFile"
-                    control={control}
-                    render={({ field }) => (
-                      <FileUpload onFileUpload={field.onChange} />
-                    )}
-                  />
-                </div>
-
-                <Controller
-                  name="removeDuplicates"
-                  control={control}
-                  render={({ field }) => (
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) =>
-                          field.onChange(checked === true)
-                        }
-                      />
-                      <Label className="cursor-pointer">
-                        Remove duplicate numbers (backend also dedupes)
-                      </Label>
-                    </div>
-                  )}
-                />
-              </div>
-            </div>
+            <RecipientPicker
+              onChange={(s, p) => {
+                setSelection(s);
+                setPreview(p);
+              }}
+            />
 
             {submitError && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
@@ -398,12 +347,16 @@ export default function SendWhatsappMessage() {
             <Button
               type="submit"
               className="w-full"
-              disabled={mutation.isPending}
+              disabled={
+                mutation.isPending ||
+                !selection ||
+                (preview?.matched ?? 0) === 0
+              }
             >
               {mutation.isPending
                 ? "Creating campaign…"
-                : parsedPhones.length > 0
-                  ? `Launch campaign to ${parsedPhones.length.toLocaleString()} recipient${parsedPhones.length === 1 ? "" : "s"}`
+                : preview && preview.matched > 0
+                  ? `Launch campaign to ${preview.matched.toLocaleString()} recipient${preview.matched === 1 ? "" : "s"}`
                   : "Launch campaign"}
             </Button>
           </div>
