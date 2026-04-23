@@ -18,17 +18,15 @@ export const contactFormSchema = z.object({
   countryCode: z
     .string()
     .trim()
-    .regex(/^\d{1,4}$/, "Country code must be 1–4 digits")
-    .default("91"),
+    .regex(/^\d{1,4}$/, "Country code must be 1–4 digits"),
   phoneNumber: phoneRule,
-  name: z.string().trim().max(256).optional().or(z.literal("")),
+  name: z.string().trim().max(256).or(z.literal("")),
   email: z
     .string()
     .trim()
     .email("Not a valid email")
-    .optional()
     .or(z.literal("")),
-  tags: z.array(tagRule).max(20, "Maximum 20 tags per contact").default([]),
+  tags: z.array(tagRule).max(20, "Maximum 20 tags per contact"),
 });
 export type ContactFormValues = z.infer<typeof contactFormSchema>;
 
@@ -37,7 +35,6 @@ export const csvImportOptionsSchema = z.object({
     .string()
     .trim()
     .max(100, "List name must be 100 characters or fewer")
-    .optional()
     .or(z.literal("")),
 });
 export type CsvImportOptions = z.infer<typeof csvImportOptionsSchema>;
