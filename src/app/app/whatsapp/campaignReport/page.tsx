@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { DownloadIcon, Plus, Search } from "lucide-react";
-
+import { DownloadIcon, Plus, Search, Layers, CheckCircle, Loader, XCircle } from "lucide-react";
 import { PageHeading } from "@/components/ui/PageHeading";
 import { TableSkeleton } from "@/components/ui/skeleton/table";
 import { Badge, badgeVariants } from "@/components/ui/badge";
@@ -24,6 +23,7 @@ import type { VariantProps } from "class-variance-authority";
 import { fetchCampaigns } from "@/lib/api/whatsapp/campaigns";
 import type { WhatsappCampaign, WhatsappCampaignStatus } from "@/lib/type";
 import { exportToCSV } from "@/lib/utils";
+import { StatsCard } from "@/components/ui/StatsCard";
 
 const PAGE_SIZE = 20;
 
@@ -155,18 +155,10 @@ export default function WhatsappCampaignReports() {
         </Link>
       </div>
 
-      {/* Summary cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <SummaryCard label="Total Campaigns" value={summary.total} color="text-gray-900" />
-        <SummaryCard label="Completed" value={summary.completed} color="text-green-600" />
-        <SummaryCard label="In Flight" value={summary.inFlight} color="text-yellow-600" />
-        <SummaryCard label="Failed" value={summary.failed} color="text-red-600" />
-      </div>
-
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-xl border border-gray-100 p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           <div>
             <Label className="block text-sm font-medium text-gray-700 mb-2">
               Status
@@ -178,7 +170,7 @@ export default function WhatsappCampaignReports() {
                 setPage(1);
               }}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-[220px]">
                 <SelectValue placeholder="All statuses" />
               </SelectTrigger>
               <SelectContent>
@@ -203,7 +195,7 @@ export default function WhatsappCampaignReports() {
                 setPage(1);
               }}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-[220px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -215,32 +207,34 @@ export default function WhatsappCampaignReports() {
           </div>
 
           {dateType !== "All" && (
-            <div>
-              <Label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="flex flex-col">
+              <Label className="mb-2">
                 {dateType === "Day" ? "Date" : "Start date"}
               </Label>
-              <DatePicker
-                value={startDate ? new Date(startDate) : undefined}
-                onChange={(d) => {
-                  setStartDate(d ? formatDateLocal(d) : "");
-                  setPage(1);
-                }}
-              />
+              <div className="w-[220px]">
+                <DatePicker
+                  value={startDate ? new Date(startDate) : undefined}
+                  onChange={(d) => {
+                    setStartDate(d ? formatDateLocal(d) : "");
+                    setPage(1);
+                  }}
+                />
+              </div>
             </div>
           )}
 
           {dateType === "Range" && (
-            <div>
-              <Label className="block text-sm font-medium text-gray-700 mb-2">
-                End date
-              </Label>
-              <DatePicker
-                value={endDate ? new Date(endDate) : undefined}
-                onChange={(d) => {
-                  setEndDate(d ? formatDateLocal(d) : "");
-                  setPage(1);
-                }}
-              />
+            <div className="flex flex-col">
+              <Label className="mb-2">End date</Label>
+              <div className="w-[220px]">
+                <DatePicker
+                  value={endDate ? new Date(endDate) : undefined}
+                  onChange={(d) => {
+                    setEndDate(d ? formatDateLocal(d) : "");
+                    setPage(1);
+                  }}
+                />
+              </div>
             </div>
           )}
 
@@ -248,7 +242,7 @@ export default function WhatsappCampaignReports() {
             <Label className="block text-sm font-medium text-gray-700 mb-2">
               Search
             </Label>
-            <div className="relative">
+            <div className="relative w-[220px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Input
                 value={search}
@@ -264,9 +258,40 @@ export default function WhatsappCampaignReports() {
         </div>
       </div>
 
+      {/* Summary cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatsCard
+          title="Total Campaigns"
+          value={summary.total.toLocaleString()}
+          icon={<Layers className="text-gray-700 w-5 h-5" />}
+          tooltip="Total number of campaigns"
+        />
+
+        <StatsCard
+          title="Completed"
+          value={summary.completed.toLocaleString()}
+          icon={<CheckCircle className="text-green-600 w-5 h-5" />}
+          tooltip="Campaigns that completed successfully"
+        />
+
+        <StatsCard
+          title="In Flight"
+          value={summary.inFlight.toLocaleString()}
+          icon={<Loader className="text-yellow-600 w-5 h-5" />}
+          tooltip="Campaigns currently running"
+        />
+
+        <StatsCard
+          title="Failed"
+          value={summary.failed.toLocaleString()}
+          icon={<XCircle className="text-red-600 w-5 h-5" />}
+          tooltip="Campaigns that failed"
+        />
+      </div>
+
       {/* Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">All campaigns</h2>
           <Button onClick={handleExport} disabled={campaigns.length === 0} variant="outline">
             <span className="inline-flex items-center gap-2">
@@ -281,7 +306,7 @@ export default function WhatsappCampaignReports() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className="min-w-full divide-y divide-gray-100">
               <thead className="bg-gray-50">
                 <tr>
                   <Th>Campaign</Th>
@@ -294,7 +319,7 @@ export default function WhatsappCampaignReports() {
                   <Th>Created</Th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-gray-100">
                 {campaigns.length === 0 ? (
                   <tr>
                     <td
@@ -396,25 +421,6 @@ export default function WhatsappCampaignReports() {
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-function SummaryCard({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: number;
-  color: string;
-}) {
-  return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
-      <div className={`text-2xl font-bold ${color}`}>
-        {value.toLocaleString()}
-      </div>
-      <div className="text-sm text-gray-600 mt-1">{label}</div>
     </div>
   );
 }
