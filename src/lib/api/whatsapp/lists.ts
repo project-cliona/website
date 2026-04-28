@@ -1,33 +1,53 @@
-import { mockListsStore } from "@/lib/mocks/whatsappLists";
+import { authenticatedApiClient } from "@/lib/axios";
 import type { WhatsappContactList } from "@/lib/type";
 
-const simulate = <T>(fn: () => T): Promise<T> =>
-  new Promise((resolve, reject) =>
-    setTimeout(() => {
-      try {
-        resolve(fn());
-      } catch (e) {
-        reject(e);
-      }
-    }, 60)
-  );
+export const fetchLists = async (): Promise<WhatsappContactList[]> => {
+  const res = await authenticatedApiClient().get("/whatsApp/lists");
+  return res.data.result;
+};
 
-export const fetchLists = () =>
-  simulate((): WhatsappContactList[] => mockListsStore.all());
+export const createList = async (
+  name: string,
+  description?: string | null
+): Promise<WhatsappContactList> => {
+  const res = await authenticatedApiClient().post("/whatsApp/lists", {
+    name,
+    description: description ?? null,
+  });
+  return res.data.result;
+};
 
-export const createList = (name: string, description?: string | null) =>
-  simulate(() => mockListsStore.create(name, description ?? null));
-
-export const updateList = (
+export const updateList = async (
   id: number,
   patch: { name?: string; description?: string | null }
-) => simulate(() => mockListsStore.update(id, patch));
+): Promise<WhatsappContactList> => {
+  const res = await authenticatedApiClient().put(`/whatsApp/lists/${id}`, patch);
+  return res.data.result;
+};
 
-export const deleteList = (id: number) =>
-  simulate(() => mockListsStore.delete(id));
+export const deleteList = async (id: number): Promise<boolean> => {
+  await authenticatedApiClient().delete(`/whatsApp/lists/${id}`);
+  return true;
+};
 
-export const addContactsToList = (listId: number, contactIds: number[]) =>
-  simulate(() => mockListsStore.addMembers(listId, contactIds));
+export const addContactsToList = async (
+  listId: number,
+  contactIds: number[]
+): Promise<{ added: number; alreadyInList: number; skippedInvalid?: number }> => {
+  const res = await authenticatedApiClient().post(
+    "/whatsApp/contacts/bulk/add-to-list",
+    { listId, contactIds }
+  );
+  return res.data.result;
+};
 
-export const removeContactsFromList = (listId: number, contactIds: number[]) =>
-  simulate(() => mockListsStore.removeMembers(listId, contactIds));
+export const removeContactsFromList = async (
+  listId: number,
+  contactIds: number[]
+): Promise<{ removed: number }> => {
+  const res = await authenticatedApiClient().post(
+    "/whatsApp/contacts/bulk/remove-from-list",
+    { listId, contactIds }
+  );
+  return res.data.result;
+};
