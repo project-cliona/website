@@ -141,14 +141,6 @@ export interface WhatsappTemplate {
   updatedAt: string;
 }
 
-export interface WhatsappContact {
-  id: number;
-  name: string;
-  phoneNumber: string;
-  countryCode: string;
-  createdAt: string;
-}
-
 export type WhatsappCampaignStatus =
   | "draft"
   | "queued"
@@ -321,4 +313,52 @@ export interface WhatsappSendTextPayload {
   to: string;
   text: string;
   previewUrl?: boolean;
+}
+
+// Phonebook v1 types — see CLAUDE.md § Phonebook for scope.
+// Opt-in / opted_out UI is deferred; shapes here carry only the fields v1 reads.
+
+export interface WhatsappContact {
+  id: number;
+  userId: number;
+  phone: string;
+  name: string | null;
+  email: string | null;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WhatsappContactList {
+  id: number;
+  userId: number;
+  name: string;
+  description: string | null;
+  memberCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WhatsappContactTag {
+  tag: string;
+  contactCount: number;
+}
+
+export type AudienceMode = "list" | "tags" | "paste";
+
+export interface AudiencePreview {
+  matched: number;
+  sampleRecipients: Array<{
+    phone: string;
+    name: string | null;
+  }>;
+}
+
+export interface CsvImportResult {
+  added: number;
+  updated: number;
+  skipped: number;
+  columnsIgnored: string[];
+  errors: Array<{ row: number; phone: string | null; reason: string }>;
+  listId: number | null;
 }
