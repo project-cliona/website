@@ -13,8 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DatePicker } from "@/components/ui/DatePicker";
 import { exportToCSV } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
-import { DownloadIcon } from "lucide-react";
-
+import { Mail, Send, CheckCircle, Eye, XCircle, DownloadIcon } from "lucide-react";
+import { StatsCard } from "@/components/ui/StatsCard";
 const statusVariantMap: Record<
   string,
   VariantProps<typeof badgeVariants>["variant"]
@@ -53,26 +53,17 @@ export default function WhatsappDeliveryReports() {
   // Compute summary stats from messages
   const summary = {
     totalSubmitted: total,
-    sent: messages.filter((m) =>
-      ["sent", "delivered", "read"].includes(m.status)
-    ).length,
-    delivered: messages.filter((m) =>
-      ["delivered", "read"].includes(m.status)
-    ).length,
+
+    sent: messages.filter((m) => m.status === "sent").length,
+    delivered: messages.filter((m) => m.status === "delivered").length,
     read: messages.filter((m) => m.status === "read").length,
     failed: messages.filter((m) => m.status === "failed").length,
   };
 
-  const getDeliveryRate = () => {
-    if (summary.sent === 0) return "0";
-    return ((summary.delivered / summary.sent) * 100).toFixed(1);
+  const getRate = (count: number) => {
+    if (summary.totalSubmitted === 0) return "0";
+    return ((count / summary.totalSubmitted) * 100).toFixed(1);
   };
-
-  const getReadRate = () => {
-    if (summary.delivered === 0) return "0";
-    return ((summary.read / summary.delivered) * 100).toFixed(1);
-  };
-
   const handleFilterChange = (field: string, value: string) => {
     setFilters((prev) => ({ ...prev, [field]: value, page: 1 }));
   };
@@ -138,9 +129,9 @@ export default function WhatsappDeliveryReports() {
       />
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white border border-gray-100 rounded-xl p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           <div>
             <Label className="block text-sm font-medium text-gray-700 mb-2">
               Date Type
@@ -149,7 +140,7 @@ export default function WhatsappDeliveryReports() {
               value={filters.dateType}
               onValueChange={(value) => handleFilterChange("dateType", value)}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-[220px]">
                 <SelectValue placeholder="Select Date Type" />
               </SelectTrigger>
 
@@ -164,15 +155,17 @@ export default function WhatsappDeliveryReports() {
             <Label className="block text-sm font-medium text-gray-700 mb-2">
               {filters.dateType === "Day" ? "Date" : "Start Date"}
             </Label>
-            <DatePicker
-              value={filters.startDate ? new Date(filters.startDate) : undefined}
-              onChange={(date) =>
-                handleFilterChange(
-                  "startDate",
-                  date ? formatDateLocal(date) : ""
-                )
-              }
-            />
+            <div className="w-[220px]">
+              <DatePicker
+                value={filters.startDate ? new Date(filters.startDate) : undefined}
+                onChange={(date) =>
+                  handleFilterChange(
+                    "startDate",
+                    date ? formatDateLocal(date) : ""
+                  )
+                }
+              />
+            </div>
           </div>
 
           {filters.dateType === "Range" && (
@@ -180,15 +173,17 @@ export default function WhatsappDeliveryReports() {
               <Label className="block text-sm font-medium text-gray-700 mb-2">
                 End Date
               </Label>
-              <DatePicker
-                value={filters.endDate ? new Date(filters.endDate) : undefined}
-                onChange={(date) =>
-                  handleFilterChange(
-                    "endDate",
-                    date ? formatDateLocal(date) : ""
-                  )
-                }
-              />
+              <div className="w-[220px]">
+                <DatePicker
+                  value={filters.endDate ? new Date(filters.endDate) : undefined}
+                  onChange={(date) =>
+                    handleFilterChange(
+                      "endDate",
+                      date ? formatDateLocal(date) : ""
+                    )
+                  }
+                />
+              </div>
             </div>
           )}
 
@@ -200,7 +195,7 @@ export default function WhatsappDeliveryReports() {
               value={filters.status}
               onValueChange={(value) => handleFilterChange("status", value)}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-[220px]">
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
 
@@ -217,54 +212,63 @@ export default function WhatsappDeliveryReports() {
         </div>
       </div>
 
-      {/* Metrics Overview */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">
-              {summary.totalSubmitted.toLocaleString()}
-            </div>
-            <div className="text-sm text-gray-600 mt-1">Total Messages</div>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">
-              {summary.sent.toLocaleString()}
-            </div>
-            <div className="text-sm text-gray-600 mt-1">Sent</div>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">
-              {summary.delivered.toLocaleString()}
-            </div>
-            <div className="text-sm text-gray-600 mt-1">Delivered</div>
-            <div className="text-xs text-blue-500">{getDeliveryRate()}%</div>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-purple-600">
-              {summary.read.toLocaleString()}
-            </div>
-            <div className="text-sm text-gray-600 mt-1">Read</div>
-            <div className="text-xs text-purple-500">{getReadRate()}%</div>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-red-600">
-              {summary.failed.toLocaleString()}
-            </div>
-            <div className="text-sm text-gray-600 mt-1">Failed</div>
-          </div>
-        </div>
+        <StatsCard
+          title="Total Messages"
+          value={summary.totalSubmitted.toLocaleString()}
+          icon={<Mail className="text-blue-600 w-5 h-5" />}
+          tooltip="Total number of messages submitted"
+        />
+
+        <StatsCard
+          title="Sent"
+          value={summary.sent.toLocaleString()}
+          icon={<Send className="text-green-600 w-5 h-5" />}
+          trend={summary.sent > 0
+            ? `${getRate(summary.sent)}%`
+            : undefined}
+          trendUp={true}
+          tooltip="Messages successfully sent"
+        />
+
+        <StatsCard
+          title="Delivered"
+          value={summary.delivered.toLocaleString()}
+          icon={<CheckCircle className="text-blue-600 w-5 h-5" />}
+          trend={summary.delivered > 0
+            ? `${getRate(summary.delivered)}%`
+            : undefined}
+          trendUp={true}
+          tooltip="Messages delivered to recipients"
+        />
+
+        <StatsCard
+          title="Read"
+          value={summary.read.toLocaleString()}
+          icon={<Eye className="text-purple-600 w-5 h-5" />}
+          trend={summary.read > 0
+            ? `${getRate(summary.read)}%`
+            : undefined}
+          trendUp={true}
+          tooltip="Messages read by users"
+        />
+
+        <StatsCard
+          title="Failed"
+          value={summary.failed.toLocaleString()}
+          icon={<XCircle className="text-red-600 w-5 h-5" />}
+          trend={
+            summary.failed > 0
+              ? `${getRate(summary.failed)}%`
+              : undefined
+          }
+          trendUp={false}
+          tooltip="Messages that failed to send"
+        />
       </div>
 
       {/* Delivery Funnel */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-xl border border-gray-100 p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
           Delivery Funnel
         </h2>
@@ -297,8 +301,8 @@ export default function WhatsappDeliveryReports() {
       </div>
 
       {/* Detailed Reports Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
           <h2 className="text-lg font-semibold text-gray-900">
             Message Details
           </h2>
@@ -310,7 +314,7 @@ export default function WhatsappDeliveryReports() {
           </Button>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-full divide-y divide-gray-100">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -336,7 +340,7 @@ export default function WhatsappDeliveryReports() {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-100">
               {messages.length === 0 ? (
                 <tr>
                   <td

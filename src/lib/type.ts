@@ -141,23 +141,90 @@ export interface WhatsappTemplate {
   updatedAt: string;
 }
 
-export interface WhatsappContact {
-  id: number;
-  name: string;
-  phoneNumber: string;
-  countryCode: string;
-  createdAt: string;
-}
+export type WhatsappCampaignStatus =
+  | "draft"
+  | "queued"
+  | "in_progress"
+  | "completed"
+  | "cancelled"
+  | "failed";
 
 export interface WhatsappCampaign {
-  id: string;
+  id: number;
+  userId: number;
+  wabaId: string;
   campaignName: string;
   templateName: string;
-  scheduledTime: string;
-  messageCount: number;
-  deliveryRate: number;
-  readRate: number;
-  status: "Completed" | "Scheduled" | "Sending" | "Failed";
+  templateLanguage: string;
+  totalRecipients: number;
+  sent: number;
+  delivered: number;
+  read: number;
+  failed: number;
+  status: WhatsappCampaignStatus;
+  scheduledAt: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WhatsappCampaignCreateResult {
+  id: number;
+  totalRecipients: number;
+  skippedInvalid: number;
+  status: WhatsappCampaignStatus;
+  scheduledAt: string | null;
+}
+
+export interface WhatsappCampaignCancelResult {
+  cancelledPending: number;
+}
+
+export interface WhatsappCampaignListResponse {
+  campaigns: WhatsappCampaign[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+// whatsappMessages row scoped to a campaign. Per-recipient drill-down row.
+export interface WhatsappCampaignMessage {
+  id: number;
+  userId: number;
+  campaignId: number | null;
+  wabaId: string;
+  wamid: string | null;
+  direction: "outbound" | "inbound";
+  recipientPhone: string;
+  type: string;
+  templateName: string | null;
+  templateLanguage: string | null;
+  content: Record<string, unknown> | null;
+  variables: Record<string, string> | string[] | null;
+  status:
+    | "pending"
+    | "accepted"
+    | "sent"
+    | "delivered"
+    | "read"
+    | "failed"
+    | "cancelled";
+  failureReason: string | null;
+  pricing: Record<string, unknown> | null;
+  sentAt: string | null;
+  deliveredAt: string | null;
+  readAt: string | null;
+  failedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WhatsappCampaignMessagesResponse {
+  messages: WhatsappCampaignMessage[];
+  total: number;
+  page: number;
+  limit: number;
 }
 
 export interface WhatsappDeliveryRecord {
@@ -246,4 +313,52 @@ export interface WhatsappSendTextPayload {
   to: string;
   text: string;
   previewUrl?: boolean;
+}
+
+// Phonebook v1 types — see CLAUDE.md § Phonebook for scope.
+// Opt-in / opted_out UI is deferred; shapes here carry only the fields v1 reads.
+
+export interface WhatsappContact {
+  id: number;
+  userId: number;
+  phone: string;
+  name: string | null;
+  email: string | null;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WhatsappContactList {
+  id: number;
+  userId: number;
+  name: string;
+  description: string | null;
+  memberCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WhatsappContactTag {
+  tag: string;
+  contactCount: number;
+}
+
+export type AudienceMode = "list" | "tags" | "paste";
+
+export interface AudiencePreview {
+  matched: number;
+  sampleRecipients: Array<{
+    phone: string;
+    name: string | null;
+  }>;
+}
+
+export interface CsvImportResult {
+  added: number;
+  updated: number;
+  skipped: number;
+  columnsIgnored: string[];
+  errors: Array<{ row: number; phone: string | null; reason: string }>;
+  listId: number | null;
 }
