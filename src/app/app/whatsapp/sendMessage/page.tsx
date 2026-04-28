@@ -6,9 +6,9 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { fetchWhatsappTemplates } from "@/lib/api/whatsapp/templates";
 import {
   createCampaign,
+  type CampaignAudience,
   type CreateCampaignRecipient,
 } from "@/lib/api/whatsapp/campaigns";
-import { previewAudience } from "@/lib/api/whatsapp/audience";
 import { Label } from "@/components/ui/Label";
 import { Input } from "@/components/ui/Input";
 import {
@@ -147,27 +147,6 @@ export default function SendWhatsappMessage() {
 
       const sharedComponents = buildSharedComponents();
 
-      // Resolve the selection to a concrete phone list on the client. For
-      // Phase 1 this goes through the mocked audience-preview endpoint,
-      // which returns up to 50 sample recipients — so list/tag mode is
-      // capped at 50 contacts in Phase 1. Phase 2 moves the resolver
-      // server-side and drops the cap.
-      let phones: string[];
-      if (selection.mode === "list" || selection.mode === "tags") {
-        const p = await previewAudience({
-          mode: selection.mode,
-          listId: selection.mode === "list" ? selection.listId : undefined,
-          tags: selection.mode === "tags" ? selection.tags : undefined,
-        });
-        phones = p.sampleRecipients.map((r) => r.phone);
-      } else {
-        phones = selection.phones;
-      }
-
-      if (phones.length === 0) {
-        throw new Error("No recipients in the selected audience");
-      }
-
       const variablesForAll: Record<string, string> | string[] | undefined =
         bodyVariables.length === 0
           ? undefined
@@ -178,10 +157,33 @@ export default function SendWhatsappMessage() {
               }, {})
             : bodyVariables.map((v) => variableValues[v] ?? "");
 
-      const recipients: CreateCampaignRecipient[] = phones.map((phone) => ({
-        phone,
-        variables: variablesForAll,
-      }));
+      // List/tag mode sends the audience union — the server resolves to phones
+      // from the phonebook, so there's no client-side cap. Paste mode keeps
+      // the explicit recipients[] path so each phone can carry its own
+      // variables if we later add per-row personalization.
+      if (selection.mode === "list" || selection.mode === "tags") {
+        const audience: CampaignAudience =
+          selection.mode === "list"
+            ? { source: "list", listId: selection.listId }
+            : { source: "tags", tags: selection.tags };
+
+        return await createCampaign({
+          campaignName: data.campaignName,
+          templateName: selectedTemplate.name,
+          templateLanguage: selectedTemplate.language,
+          audience,
+          variables: variablesForAll,
+          components: sharedComponents.length > 0 ? sharedComponents : undefined,
+        });
+      }
+
+      // Paste mode.
+      if (selection.phones.length === 0) {
+        throw new Error("No recipients in the selected audience");
+      }
+      const recipients: CreateCampaignRecipient[] = selection.phones.map(
+        (phone) => ({ phone, variables: variablesForAll })
+      );
 
       return await createCampaign({
         campaignName: data.campaignName,

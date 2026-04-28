@@ -12,11 +12,22 @@ export interface CreateCampaignRecipient {
   variables?: string[] | Record<string, string>;
 }
 
+export type CampaignAudience =
+  | { source: "list"; listId: number }
+  | { source: "tags"; tags: string[] }
+  | { source: "paste"; phones: string[] };
+
 export interface CreateCampaignPayload {
   campaignName: string;
   templateName: string;
   templateLanguage: string;
-  recipients: CreateCampaignRecipient[];
+  // Either explicit recipients[] (with optional per-recipient variables) or
+  // an audience union the server resolves to phones from the phonebook.
+  recipients?: CreateCampaignRecipient[];
+  audience?: CampaignAudience;
+  // Shared variables applied to every audience-resolved recipient. Ignored
+  // when `recipients[]` is given (each recipient carries its own variables).
+  variables?: string[] | Record<string, string>;
   components?: Record<string, unknown>[];
   scheduledAt?: string | null;
 }
