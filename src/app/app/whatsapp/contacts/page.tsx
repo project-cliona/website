@@ -132,15 +132,13 @@ export default function WhatsappContactsPage() {
         </div>
 
         <div className="px-6 py-3 border-b flex items-center gap-3 flex-wrap">
-          <div className="relative flex-1 min-w-64">
-            <Search className="w-4 h-4 text-gray-400 absolute left-2 top-1/2 -translate-y-1/2" />
-            <Input
-              placeholder="Search phone, name, email"
-              className="pl-8"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-            />
-          </div>
+          <Input
+            leadingIcon={Search}
+            placeholder="Search phone, name, email"
+            className="flex-1 min-w-64"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+          />
 
           <Select
             value={tagFilter[0] ?? "all"}

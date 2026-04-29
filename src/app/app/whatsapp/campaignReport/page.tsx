@@ -242,16 +242,15 @@ export default function WhatsappCampaignReports() {
             <Label className="block text-sm font-medium text-gray-700 mb-2">
               Search
             </Label>
-            <div className="relative w-[220px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <div className="w-[220px]">
               <Input
+                leadingIcon={Search}
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
                 placeholder="Search campaign name…"
-                className="pl-9"
               />
             </div>
           </div>

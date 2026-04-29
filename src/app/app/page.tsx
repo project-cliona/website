@@ -77,10 +77,7 @@ export default function Dashboard() {
 
             {/* Search & Filter */}
             <div className="flex items-center gap-3 max-w-md">
-                <div className="relative w-full">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input placeholder="Search for a service" className="pl-9" />
-                </div>
+                <Input leadingIcon={Search} placeholder="Search for a service" />
 
                 <Button variant="outline" size="icon">
                     <Filter className="h-4 w-4 text-gray-500" />
