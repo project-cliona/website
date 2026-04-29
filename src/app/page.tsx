@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { PhoneFrame } from "@/components/ui/PhoneFrame";
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const C = {
@@ -163,18 +164,7 @@ function Hero() {
         {/* Right — WhatsApp chat mockup */}
         <div className="flex justify-center md:justify-end">
           <div className="relative">
-            {/* Phone frame */}
-            <div className="w-64 bg-[#0F1117] rounded-3xl p-3 shadow-2xl ring-1 ring-white/10">
-              {/* Status bar */}
-              <div className="flex items-center justify-between px-2 py-1 mb-1">
-                <span className="text-white text-xs font-medium">9:41</span>
-                <div className="flex gap-1">
-                  <div className="w-3 h-1.5 bg-white/60 rounded-sm" />
-                  <div className="w-3 h-1.5 bg-white/60 rounded-sm" />
-                  <div className="w-3 h-1.5 bg-white/60 rounded-sm" />
-                </div>
-              </div>
-
+            <PhoneFrame>
               {/* Chat header */}
               <div
                 className="flex items-center gap-2 px-3 py-2 rounded-t-xl"
@@ -221,7 +211,7 @@ function Hero() {
                   <p className="text-[9px] text-gray-400 text-right mt-1">10:03</p>
                 </div>
               </div>
-            </div>
+            </PhoneFrame>
 
             {/* Floating stat card */}
             <div className="absolute -bottom-4 -right-6 bg-white border border-gray-100 shadow-lg rounded-xl px-4 py-3 flex items-center gap-3">
