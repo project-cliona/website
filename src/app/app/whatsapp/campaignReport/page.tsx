@@ -24,6 +24,7 @@ import { fetchCampaigns } from "@/lib/api/whatsapp/campaigns";
 import type { WhatsappCampaign, WhatsappCampaignStatus } from "@/lib/type";
 import { exportToCSV } from "@/lib/utils";
 import { StatsCard } from "@/components/ui/StatsCard";
+import { Card } from "@/components/ui/Card";
 
 const PAGE_SIZE = 20;
 
@@ -156,7 +157,7 @@ export default function WhatsappCampaignReports() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl border border-gray-100 p-6">
+      <Card className="p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
         <div className="flex flex-wrap items-center gap-4">
           <div>
@@ -255,7 +256,7 @@ export default function WhatsappCampaignReports() {
             </div>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -289,7 +290,7 @@ export default function WhatsappCampaignReports() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <Card className="overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">All campaigns</h2>
           <Button onClick={handleExport} disabled={campaigns.length === 0} variant="outline">
@@ -419,7 +420,7 @@ export default function WhatsappCampaignReports() {
             </div>
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

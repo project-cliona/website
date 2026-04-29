@@ -1,6 +1,7 @@
 "use client";
 
 import { PageHeading } from "@/components/ui/PageHeading";
+import { Card } from "@/components/ui/Card";
 import { StatsCard } from "@/components/ui/StatsCard";
 import { TableSkeleton } from "@/components/ui/skeleton/table";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -105,7 +106,7 @@ export default function WhatsappDashboard() {
 
       {/* Connection Status Banner */}
       {connectionStatus?.connected === false && (
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
+        <Card className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             Connect Your WhatsApp Business Account
           </h3>
@@ -125,11 +126,11 @@ export default function WhatsappDashboard() {
               {connectError}
             </div>
           )}
-        </div>
+        </Card>
       )}
 
       {connectionStatus?.connected === true && connectionStatus.account && (
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
+        <Card className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-500" />
@@ -155,7 +156,7 @@ export default function WhatsappDashboard() {
               </p>
             )}
           </div>
-        </div>
+        </Card>
       )}
 
       {/* Stats Row */}
@@ -199,7 +200,7 @@ export default function WhatsappDashboard() {
       {/* Two Column Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Campaigns */}
-        <div className="bg-white border border-gray-100 rounded-xl p-6">
+        <Card className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-6">
             Recent Campaigns
           </h3>
@@ -245,10 +246,10 @@ export default function WhatsappDashboard() {
               )
             )}
           </div>
-        </div>
+        </Card>
 
         {/* Quick Actions */}
-        <div className="bg-white border border-gray-100 rounded-xl p-6">
+        <Card className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-6">
             Quick Actions
           </h3>
@@ -269,7 +270,7 @@ export default function WhatsappDashboard() {
               </button>
             </Link>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );

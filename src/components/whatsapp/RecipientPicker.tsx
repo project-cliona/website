@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/Select";
 import { Users } from "lucide-react";
+import { Card } from "@/components/ui/Card";
 import type { AudiencePreview } from "@/lib/type";
 
 export type RecipientSelection =
@@ -95,7 +96,7 @@ export function RecipientPicker({ onChange }: Props) {
   }, [tab, contactsMode, listId, tags, pastedPhones, previewQuery.data]);
 
   return (
-    <div className="bg-white border border-gray-100 rounded-xl p-6">
+    <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Recipients</h2>
         {previewQuery.data && (
@@ -219,6 +220,6 @@ export function RecipientPicker({ onChange }: Props) {
           )}
         </div>
       )}
-    </div>
+    </Card>
   );
 }

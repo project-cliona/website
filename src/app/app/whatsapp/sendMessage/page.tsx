@@ -25,6 +25,7 @@ import {
 } from "@/lib/schema/whatsapp.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { WhatsappTemplate, AudiencePreview } from "@/lib/type";
 import {
   RecipientPicker,
@@ -234,7 +235,7 @@ export default function SendWhatsappMessage() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white border border-gray-100 rounded-xl p-6">
+            <Card className="p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Campaign Settings
               </h2>
@@ -300,10 +301,10 @@ export default function SendWhatsappMessage() {
                   )}
                 </div>
               </div>
-            </div>
+            </Card>
 
             {bodyVariables.length > 0 && (
-              <div className="bg-white border border-gray-100 rounded-xl p-6">
+              <Card className="p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-1">
                   Template Variables
                 </h2>
@@ -330,7 +331,7 @@ export default function SendWhatsappMessage() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </Card>
             )}
 
             <RecipientPicker

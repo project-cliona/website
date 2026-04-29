@@ -1,4 +1,5 @@
 import { PageHeading } from "@/components/ui/PageHeading";
+import { Card } from "@/components/ui/Card";
 import { StatsCard } from "../../../components/ui/StatsCard";
 import { BarChart, Send, CheckCircle, Users, LucideProps } from 'lucide-react';
 
@@ -62,7 +63,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white border border-gray-100 rounded-xl p-6">
+        <Card className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-6">
             Recent Campaigns
           </h3>
@@ -112,9 +113,9 @@ export default function Dashboard() {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
 
-        <div className="bg-white border border-gray-100 rounded-xl p-6">
+        <Card className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-6">
             Quick Actions
           </h3>
@@ -132,7 +133,7 @@ export default function Dashboard() {
               Add New Agent
             </button>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );

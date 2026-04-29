@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DatePicker } from "@/components/ui/DatePicker";
 import { exportToCSV } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { Mail, Send, CheckCircle, Eye, XCircle, DownloadIcon } from "lucide-react";
 import { StatsCard } from "@/components/ui/StatsCard";
 const statusVariantMap: Record<
@@ -129,7 +130,7 @@ export default function WhatsappDeliveryReports() {
       />
 
       {/* Filters */}
-      <div className="bg-white border border-gray-100 rounded-xl p-6">
+      <Card className="p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
         <div className="flex flex-wrap items-center gap-4">
           <div>
@@ -210,7 +211,7 @@ export default function WhatsappDeliveryReports() {
             </Select>
           </div>
         </div>
-      </div>
+      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <StatsCard
@@ -268,7 +269,7 @@ export default function WhatsappDeliveryReports() {
       </div>
 
       {/* Delivery Funnel */}
-      <div className="bg-white rounded-xl border border-gray-100 p-6">
+      <Card className="p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
           Delivery Funnel
         </h2>
@@ -298,10 +299,10 @@ export default function WhatsappDeliveryReports() {
             </div>
           ))}
         </div>
-      </div>
+      </Card>
 
       {/* Detailed Reports Table */}
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <Card className="overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
           <h2 className="text-lg font-semibold text-gray-900">
             Message Details
@@ -412,7 +413,7 @@ export default function WhatsappDeliveryReports() {
             </div>
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }
