@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 
 export default function DeliveryReports() {
   const [filters, setFilters] = useState({
@@ -96,13 +97,10 @@ export default function DeliveryReports() {
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">Delivery Reports</h1>
           <div className="flex gap-2">
-            <button 
-              onClick={exportToExcel}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center"
-            >
+            <Button onClick={exportToExcel}>
               <span className="mr-2">📊</span>
               Export to Excel
-            </button>
+            </Button>
             <button 
               onClick={downloadReport}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"

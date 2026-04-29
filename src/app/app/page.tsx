@@ -61,10 +61,7 @@ export default function Dashboard() {
                         <List className="h-4 w-4" />
                     </Button>
 
-                    <Button
-                        onClick={() => setIsModalOpen(true)}
-                        className="bg-green-500 hover:bg-green-600 text-white"
-                    >
+                    <Button onClick={() => setIsModalOpen(true)}>
                         <Plus className="h-4 w-4 mr-1" />
                         New Service
                     </Button>
@@ -97,10 +94,7 @@ export default function Dashboard() {
                         No services added yet
                     </p>
 
-                    <Button
-                        onClick={() => setIsModalOpen(true)}
-                        className="bg-green-500 text-white"
-                    >
+                    <Button onClick={() => setIsModalOpen(true)}>
                         <Plus className="h-4 w-4 mr-1" />
                         Add Service
                     </Button>

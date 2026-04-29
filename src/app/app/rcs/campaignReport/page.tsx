@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 
 export default function CampaignReports() {
   const [filters, setFilters] = useState({
@@ -160,13 +161,10 @@ export default function CampaignReports() {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">Campaign Reports</h1>
-          <button 
-            onClick={exportAllReports}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center"
-          >
+          <Button onClick={exportAllReports}>
             <span className="mr-2">📊</span>
             Export All Reports
-          </button>
+          </Button>
         </div>
 
         {/* Filters */}
