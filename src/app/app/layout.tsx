@@ -1,7 +1,6 @@
 "use client";
 
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
@@ -53,14 +52,7 @@ export const Logo = () => {
             href="/app"
             className=" space-x-2 items-center flex"
         >
-            <Image src="/squalto.jpg" alt="Logo" width={32} height={32} />
-            <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="font-medium text-black dark:text-white whitespace-pre"
-            >
-                Squalto
-            </motion.span>
+            <Image src="/logo-wordmark.svg" alt="Squalto" width={120} height={28} />
         </Link>
     );
 };
@@ -68,7 +60,7 @@ export const Logo = () => {
 export const LogoIcon = () => {
     return (
         <div>
-            <Image src="/squalto.jpg" alt="Logo" width={32} height={32} />
+            <Image src="/logo-mark.svg" alt="Squalto" width={32} height={32} />
         </div>
     );
 };

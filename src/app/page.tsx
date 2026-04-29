@@ -36,15 +36,11 @@ function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/squalto.jpg"
+            src="/logo-wordmark.svg"
             alt="Squalto"
-            width={32}
-            height={32}
-            className="rounded-md"
+            width={120}
+            height={28}
           />
-          <span className="text-xl font-semibold text-[#0F1117]">
-            Squalto
-          </span>
         </Link>
 
         {/* Desktop nav */}
@@ -654,13 +650,11 @@ function Footer() {
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-3">
               <Image
-                src="/squalto.jpg"
+                src="/logo-wordmark.svg"
                 alt="Squalto"
-                width={28}
+                width={120}
                 height={28}
-                className="rounded-md"
               />
-              <span className="text-base font-semibold text-white">Squalto</span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed max-w-[180px]">
               AI-powered WhatsApp &amp; RCS messaging for modern businesses.
