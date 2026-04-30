@@ -8,7 +8,7 @@ export function Switch({ enabled, onChange }: SwitchProps) {
     <button
       onClick={() => onChange(!enabled)}
       className={`w-10 h-5 flex items-center rounded-full p-1 transition ${
-        enabled ? 'bg-green-500' : 'bg-gray-300'
+        enabled ? 'bg-primary-600' : 'bg-gray-300'
       }`}
     >
       <div

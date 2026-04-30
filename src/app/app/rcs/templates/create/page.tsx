@@ -316,7 +316,7 @@ export default function CreateTemplate() {
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
                   />
                   {field.value && (
-                    <p className="text-sm text-green-600 mt-2">
+                    <p className="text-sm text-success mt-2">
                       File uploaded: {(field.value as File).name}
                     </p>
                   )}

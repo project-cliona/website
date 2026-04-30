@@ -133,8 +133,8 @@ export default function WhatsappDashboard() {
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-500" />
-              <span className="text-sm font-medium text-green-700">
+              <span className="inline-block w-2.5 h-2.5 rounded-full bg-success" />
+              <span className="text-sm font-medium text-success">
                 Connected
               </span>
             </div>
@@ -236,7 +236,7 @@ export default function WhatsappDashboard() {
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-medium ${
                       campaign.status === "Completed"
-                        ? "bg-green-50 text-green-700"
+                        ? "bg-success/15 text-success"
                         : campaign.status === "Sending"
                         ? "bg-blue-50 text-blue-700"
                         : campaign.status === "Scheduled"

@@ -273,7 +273,7 @@ export default function WhatsappDeliveryReports() {
         <div className="space-y-3">
           {[
             { label: "Submitted", value: summary.totalSubmitted, color: "bg-blue-500" },
-            { label: "Sent", value: summary.sent, color: "bg-green-500" },
+            { label: "Sent", value: summary.sent, color: "bg-success" },
             { label: "Delivered", value: summary.delivered, color: "bg-blue-500" },
             { label: "Read", value: summary.read, color: "bg-purple-500" },
           ].map((item) => (

@@ -92,7 +92,7 @@ export default function Dashboard() {
                 </div>
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-medium ${campaign.status === "Delivered"
-                      ? "bg-green-50 text-green-700"
+                      ? "bg-success/15 text-success"
                       : campaign.status === "Sending"
                         ? "bg-blue-50 text-blue-700"
                         : "bg-gray-50 text-gray-700"
