@@ -32,16 +32,31 @@ import {
   type RecipientSelection,
 } from "@/components/whatsapp/RecipientPicker";
 import { useUser } from "@/providers/userProvider";
+import { usePageSearch } from "@/providers/searchProvider";
 import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Send, CheckCircle2 } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 
 export default function SendWhatsappMessage() {
   const { user } = useUser();
   const userId = user?.userId;
-  const router = useRouter();
+  const reduceMotion = useReducedMotion();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [sentResult, setSentResult] = useState<{
+    count: number;
+    campaignId: number;
+  } | null>(null);
+
+  // Wires the TopBar search prompt for this page. RecipientPicker doesn't
+  // accept an external search filter today, so we just register the
+  // placeholder — the actual filter still lives inside the picker UI.
+  usePageSearch({
+    placeholder: "Search recipients",
+    onChange: () => {
+      /* no-op: RecipientPicker filters internally */
+    },
+  });
 
   const {
     control,
@@ -135,6 +150,8 @@ export default function SendWhatsappMessage() {
     return components;
   };
 
+  const recipientCount = preview?.matched ?? 0;
+
   const mutation = useMutation({
     mutationFn: async (data: SendWhatsappCampaignForm) => {
       if (!selectedTemplate) {
@@ -196,8 +213,12 @@ export default function SendWhatsappMessage() {
     },
     onSuccess: (result) => {
       setSubmitError(null);
-      // Navigate straight to the campaign detail page — progress is tracked there.
-      router.push(`/app/whatsapp/campaignReport/${result.id}`);
+      // Replace the previous router.push with a celebration overlay — the
+      // user clicks through to the live report from the modal CTA.
+      setSentResult({
+        campaignId: result.id,
+        count: result.totalRecipients ?? recipientCount,
+      });
     },
     onError: (error: Error & { response?: { data?: { message?: string } } }) => {
       const msg =
@@ -217,26 +238,29 @@ export default function SendWhatsappMessage() {
     (t) => (t.status ?? "").toUpperCase() === "APPROVED"
   );
 
+  const sendDisabled =
+    mutation.isPending || !selection || recipientCount === 0;
+
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <PageHeading
-          title="Send WhatsApp Campaign"
-          subtitle="Create and send WhatsApp campaigns to your audience"
-        />
-        <Link
-          href="/app/whatsapp/campaignReport"
-          className="text-sm text-gray-600 hover:text-gray-900 inline-flex items-center gap-1"
-        >
-          View all campaigns <ArrowRight className="w-4 h-4" />
-        </Link>
-      </div>
+      <PageHeading
+        title="Send Message"
+        subtitle="Reach your audience with WhatsApp messaging"
+        actions={
+          <Link
+            href="/app/whatsapp/campaignReport"
+            className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+          >
+            View all campaigns <ArrowRight className="w-4 h-4" />
+          </Link>
+        }
+      />
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             <Card className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <h2 className="text-lg font-semibold text-foreground mb-4">
                 Campaign Settings
               </h2>
               <div className="space-y-4">
@@ -252,7 +276,7 @@ export default function SendWhatsappMessage() {
                           placeholder="e.g. Flash Sale — April Weekend"
                         />
                         {fieldState.error && (
-                          <p className="text-sm text-red-500 mt-1">
+                          <p className="text-sm text-destructive mt-1">
                             {fieldState.error.message}
                           </p>
                         )}
@@ -295,7 +319,7 @@ export default function SendWhatsappMessage() {
                     )}
                   />
                   {errors.templateId && (
-                    <p className="text-sm text-red-500 mt-1">
+                    <p className="text-sm text-destructive mt-1">
                       {errors.templateId.message}
                     </p>
                   )}
@@ -305,10 +329,10 @@ export default function SendWhatsappMessage() {
 
             {bodyVariables.length > 0 && (
               <Card className="p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                <h2 className="text-lg font-semibold text-foreground mb-1">
                   Template Variables
                 </h2>
-                <p className="text-sm text-gray-500 mb-4">
+                <p className="text-sm text-muted-foreground mb-4">
                   These values are used for every recipient in this campaign.
                   Per-recipient personalization is coming soon.
                 </p>
@@ -342,39 +366,95 @@ export default function SendWhatsappMessage() {
             />
 
             {submitError && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
+              <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4 text-sm text-destructive">
                 {submitError}
               </div>
             )}
-
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={
-                mutation.isPending ||
-                !selection ||
-                (preview?.matched ?? 0) === 0
-              }
-            >
-              {mutation.isPending
-                ? "Creating campaign…"
-                : preview && preview.matched > 0
-                  ? `Launch campaign to ${preview.matched.toLocaleString()} recipient${preview.matched === 1 ? "" : "s"}`
-                  : "Launch campaign"}
-            </Button>
           </div>
 
           <div className="lg:col-span-1">
-            <WhatsappPreview
-              headerType={previewHeaderType}
-              headerValue={previewHeaderValue}
-              body={previewBody}
-              footer={previewFooter}
-              buttons={previewButtons}
-            />
+            <Card variant="highlight" className="p-6">
+              <div className="text-caption text-muted-foreground mb-3">
+                Live preview
+              </div>
+              <WhatsappPreview
+                headerType={previewHeaderType}
+                headerValue={previewHeaderValue}
+                body={previewBody}
+                footer={previewFooter}
+                buttons={previewButtons}
+              />
+            </Card>
           </div>
         </div>
+
+        <div className="sticky bottom-0 -mx-4 md:-mx-6 mt-6 px-4 md:px-6 py-3 border-t border-border bg-card/90 backdrop-blur-sm flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center rounded-full bg-primary-100 text-primary-800 px-2.5 py-0.5 text-xs font-medium">
+              {recipientCount.toLocaleString()} recipients
+            </span>
+          </div>
+          <Button
+            type="submit"
+            size="lg"
+            loading={mutation.isPending}
+            disabled={sendDisabled}
+            className="shadow-primary-glow"
+          >
+            <Send className="h-4 w-4" />
+            Send Campaign
+          </Button>
+        </div>
       </form>
+
+      {sentResult && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-40 flex items-center justify-center bg-background/80 backdrop-blur-sm"
+        >
+          <motion.div
+            initial={{ scale: reduceMotion ? 1 : 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={
+              reduceMotion
+                ? { duration: 0.12 }
+                : { type: "spring", stiffness: 400, damping: 24 }
+            }
+            className="rounded-xl bg-card border border-border shadow-e4 p-10 text-center max-w-sm"
+          >
+            <motion.div
+              initial={{ scale: reduceMotion ? 1 : 0 }}
+              animate={{ scale: reduceMotion ? 1 : [0, 1.1, 1] }}
+              transition={{
+                duration: reduceMotion ? 0 : 0.4,
+                times: [0, 0.6, 1],
+              }}
+              className="mx-auto w-16 h-16 rounded-full bg-success/15 flex items-center justify-center mb-4"
+            >
+              <CheckCircle2 className="w-8 h-8 text-success" />
+            </motion.div>
+            <h2 className="text-h1">
+              Sent to {sentResult.count.toLocaleString()} recipients
+            </h2>
+            <p className="text-small text-muted-foreground mt-2">
+              Track delivery in real time on the campaign report.
+            </p>
+            <div className="mt-6 flex items-center justify-center gap-2">
+              <Button asChild>
+                <Link
+                  href={`/app/whatsapp/campaignReport/${sentResult.campaignId}`}
+                >
+                  View live report
+                </Link>
+              </Button>
+              <Button variant="outline" onClick={() => setSentResult(null)}>
+                Send another
+              </Button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 }
