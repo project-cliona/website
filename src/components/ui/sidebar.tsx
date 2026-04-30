@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronsLeft, Menu, X } from "lucide-react";
+import { ChevronsLeft, ChevronsRight, Menu, X } from "lucide-react";
 
 interface SidebarLinkType {
   label: string;
@@ -135,25 +135,36 @@ export function SidebarBrand({
   collapsed: boolean;
   onToggleCollapse: () => void;
 }) {
-  return (
-    <div className="flex items-center justify-between mb-4 h-8">
-      <Link href="/app" className="flex items-center gap-2">
-        {collapsed ? (
+  if (collapsed) {
+    return (
+      <div className="flex flex-col items-center gap-2 mb-4">
+        <Link href="/app" className="flex items-center justify-center">
           <img src="/logo-mark.svg" alt="Squalto" width={28} height={28} />
-        ) : (
-          <img src="/logo-wordmark.svg" alt="Squalto" width={120} height={28} />
-        )}
-      </Link>
-      {!collapsed && (
+        </Link>
         <button
           type="button"
           onClick={onToggleCollapse}
           className="h-8 w-8 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary focus-ring"
-          aria-label="Collapse sidebar"
+          aria-label="Expand sidebar"
         >
-          <ChevronsLeft className="h-4 w-4" />
+          <ChevronsRight className="h-4 w-4" />
         </button>
-      )}
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-center justify-between mb-4 h-8">
+      <Link href="/app" className="flex items-center gap-2">
+        <img src="/logo-wordmark.svg" alt="Squalto" width={120} height={28} />
+      </Link>
+      <button
+        type="button"
+        onClick={onToggleCollapse}
+        className="h-8 w-8 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary focus-ring"
+        aria-label="Collapse sidebar"
+      >
+        <ChevronsLeft className="h-4 w-4" />
+      </button>
     </div>
   );
 }
