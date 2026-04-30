@@ -9,6 +9,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
+import { Toaster } from "sonner";
 import { appLinks, rcsLinks, whatsappLinks } from "@/lib/sidebarLinks";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { UserDock } from "@/components/ui/UserDock";
@@ -53,6 +54,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </Sidebar>
+        <Toaster
+          position="top-right"
+          duration={4000}
+          toastOptions={{
+            className:
+              "rounded-lg border border-border bg-card text-foreground shadow-e3",
+          }}
+        />
       </SearchProvider>
     </ProtectedRoute>
   );
