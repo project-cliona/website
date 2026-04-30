@@ -1,66 +1,59 @@
 "use client";
 
-import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
-import Link from "next/link";
-import Image from "next/image";
-import { useState } from "react";
+import {
+  Sidebar,
+  SidebarBody,
+  SidebarBrand,
+  SidebarLink,
+  SidebarSection,
+  useSidebar,
+} from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import { appLinks, rcsLinks, whatsappLinks } from "@/lib/sidebarLinks";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import LogoutButton from "@/components/auth/LogoutButton";
-import { LogOut } from "lucide-react";
+import { UserDock } from "@/components/ui/UserDock";
+import { TopBar } from "@/components/ui/TopBar";
+import { SearchProvider } from "@/providers/searchProvider";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-    const [open, setOpen] = useState(false);
-    const pathname = usePathname();
+function SidebarInner() {
+  const { collapsed, setCollapsed } = useSidebar();
+  const pathname = usePathname();
+  const isRcsRoute = pathname.startsWith("/app/rcs");
+  const isWhatsappRoute = pathname.startsWith("/app/whatsapp");
+  const links = isRcsRoute ? rcsLinks : isWhatsappRoute ? whatsappLinks : appLinks;
 
-    const isRcsRoute = pathname.startsWith("/app/rcs");
-    const isWhatsappRoute = pathname.startsWith("/app/whatsapp");
-
-    const links = isRcsRoute ? rcsLinks : isWhatsappRoute ? whatsappLinks : appLinks;
-
-    return (
-        <ProtectedRoute>
-            <Sidebar open={open} setOpen={setOpen}>
-                <div className="md:flex">
-                    <SidebarBody className="space-y-4 justify-between">
-                        <div className="flex flex-col space-y-4">
-                            <div>{open ? <Logo /> : <LogoIcon />}</div>
-
-                            {links.map((link) => (
-                                <SidebarLink
-                                    key={link.href}
-                                    link={link}
-                                    className="font-medium"
-                                />
-                            ))}
-                        </div>
-
-                        {open ? <div className="flex gap-3 justify-center items-center"><LogOut/><LogoutButton className="flex items-center gap-2 text-sm font-medium dark:text-neutral-200 text-red-600 hover:text-red-400 transition-colors py-2 cursor-pointer w-full" /></div> : <LogOut/>}
-                    </SidebarBody>
-
-                    <main className="flex-1 w-full p-4">{children}</main>
-                </div>
-            </Sidebar>
-        </ProtectedRoute>
-    );
+  return (
+    <div className="flex flex-col h-full">
+      <SidebarBrand collapsed={collapsed} onToggleCollapse={() => setCollapsed(!collapsed)} />
+      <SidebarSection>
+        {links.map((link) => (
+          <SidebarLink key={link.href} link={link} />
+        ))}
+      </SidebarSection>
+      <div className="flex-1" />
+      <div className="pt-3 border-t border-border mt-3">
+        <UserDock collapsed={collapsed} />
+      </div>
+    </div>
+  );
 }
 
-export const Logo = () => {
-    return (
-        <Link
-            href="/app"
-            className=" space-x-2 items-center flex"
-        >
-            <Image src="/logo-wordmark.svg" alt="Squalto" width={120} height={28} />
-        </Link>
-    );
-};
-
-export const LogoIcon = () => {
-    return (
-        <div>
-            <Image src="/logo-mark.svg" alt="Squalto" width={32} height={32} />
-        </div>
-    );
-};
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <ProtectedRoute>
+      <SearchProvider>
+        <Sidebar>
+          <div className="md:flex">
+            <SidebarBody>
+              <SidebarInner />
+            </SidebarBody>
+            <div className="flex-1 min-w-0 flex flex-col">
+              <TopBar />
+              <main className="flex-1 w-full px-6 py-6">{children}</main>
+            </div>
+          </div>
+        </Sidebar>
+      </SearchProvider>
+    </ProtectedRoute>
+  );
+}
