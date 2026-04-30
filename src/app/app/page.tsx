@@ -1,173 +1,103 @@
 "use client";
 
+import { Mail, Users, BarChart3, DollarSign, Plus } from "lucide-react";
+import Link from "next/link";
 import { PageHeading } from "@/components/ui/PageHeading";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import {
-    Search,
-    Filter,
-    LayoutGrid,
-    List,
-    Plus,
-    ChevronRight,
-} from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
-import { Modal } from "@/components/ui/Modal";
-import { ServiceModalContent } from "./addService";
+import { StatsCard } from "@/components/ui/StatsCard";
+import { LineChart, DonutChart } from "@/components/ui/chart";
 import { useUser } from "@/providers/userProvider";
-import { Badge } from "@/components/ui/badge";
 
 export default function Dashboard() {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [view, setView] = useState<"grid" | "list">("grid");
-    const { profile } = useUser();
+  const { profile } = useUser();
+  const firstName = profile?.fullName?.split(" ")[0] ?? "there";
 
-    const services = profile?.userService?.services || [];
+  // Stub data — real metrics get wired in a follow-up.
+  const performanceData = [
+    { day: "Mar 1", opens: 1200, clicks: 600, conversions: 200 },
+    { day: "Mar 5", opens: 1800, clicks: 900, conversions: 400 },
+    { day: "Mar 10", opens: 2400, clicks: 1100, conversions: 700 },
+    { day: "Mar 15", opens: 2600, clicks: 1200, conversions: 800 },
+    { day: "Mar 20", opens: 1900, clicks: 950, conversions: 500 },
+    { day: "Mar 25", opens: 1700, clicks: 850, conversions: 450 },
+    { day: "Mar 31", opens: 1500, clicks: 700, conversions: 350 },
+  ];
 
-    const filteredServices = services.filter(
-        (s) => s.mappedStatus !== "deleted"
-    );
+  const typesData = [
+    { name: "Newsletter", value: 35, color: "#4F46E5" },
+    { name: "Promotional", value: 28, color: "#A5B4FC" },
+    { name: "Transactional", value: 22, color: "#C7D2FE" },
+    { name: "Other", value: 15, color: "#E2E8F0" },
+  ];
 
-    const getBadgeVariant = (status: string) => {
-        switch (status) {
-            case "active":
-                return "active";
-            case "inactive":
-                return "inactive";
-            case "suspended":
-                return "pending";
-            case "deleted":
-                return "destructive";
-            default:
-                return "default";
+  return (
+    <div className="space-y-6">
+      <PageHeading
+        title={`Welcome back, ${firstName}!`}
+        subtitle="Welcome back! Here's what's happening today."
+        actions={
+          <>
+            <Button variant="outline" asChild>
+              <Link href="/app/whatsapp/sendMessage">
+                <Plus className="h-4 w-4" />
+                New Campaign
+              </Link>
+            </Button>
+            <Button asChild className="bg-ai-gradient text-white shadow-e2 hover:shadow-e3">
+              <Link href="/app/whatsapp">Create Automation</Link>
+            </Button>
+          </>
         }
-    };
+      />
 
-    return (
-        <div className="space-y-8">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <PageHeading
-                    title="Services"
-                    subtitle="Select a service to view or manage your assigned resources."
-                />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatsCard
+          icon={<Mail className="h-4 w-4" />}
+          label="Total Campaigns"
+          value="24"
+          trend={{ value: "+12%", positive: true }}
+        />
+        <StatsCard
+          icon={<Users className="h-4 w-4" />}
+          label="Active Contacts"
+          value="8,429"
+          trend={{ value: "+23%", positive: true }}
+        />
+        <StatsCard
+          icon={<BarChart3 className="h-4 w-4" />}
+          label="Avg. Open Rate"
+          value="42.8%"
+          trend={{ value: "+5.2%", positive: true }}
+        />
+        <StatsCard
+          icon={<DollarSign className="h-4 w-4" />}
+          label="Revenue (MTD)"
+          value="$12,450"
+          trend={{ value: "-2.4%", positive: false }}
+          accent
+        />
+      </div>
 
-                <div className="flex items-center gap-3">
-                    <Button onClick={() => setView("grid")} className={view === "grid" ? "bg-gray-100" : ""} variant="ghost" size="icon">
-                        <LayoutGrid className="h-4 w-4" />
-                    </Button>
-                    <Button onClick={() => setView("list")} className={view === "list" ? "bg-gray-100" : ""} variant="ghost" size="icon">
-                        <List className="h-4 w-4" />
-                    </Button>
-
-                    <Button onClick={() => setIsModalOpen(true)}>
-                        <Plus className="h-4 w-4 mr-1" />
-                        New Service
-                    </Button>
-
-                    <Modal
-                        isOpen={isModalOpen}
-                        onClose={() => setIsModalOpen(false)}
-                    >
-                        <ServiceModalContent onClose={() => setIsModalOpen(false)} />
-                    </Modal>
-                </div>
-            </div>
-
-            {/* Search & Filter */}
-            <div className="flex items-center gap-3 max-w-md">
-                <Input leadingIcon={Search} placeholder="Search for a service" />
-
-                <Button variant="outline" size="icon">
-                    <Filter className="h-4 w-4 text-gray-500" />
-                </Button>
-            </div>
-
-            {/* ❗ Empty State */}
-            {filteredServices.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 border rounded-lg bg-gray-50">
-                    <p className="text-gray-600 mb-4">
-                        No services added yet
-                    </p>
-
-                    <Button onClick={() => setIsModalOpen(true)}>
-                        <Plus className="h-4 w-4 mr-1" />
-                        Add Service
-                    </Button>
-                </div>
-            ) : (
-                /* ✅ Dynamic Grid */
-                <div
-                    className={
-                        view === "grid"
-                            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-                            : "flex flex-col gap-4"
-                    }
-                >
-                    {filteredServices.map((service) => {
-                        const isSuspended = service.mappedStatus === "suspended";
-
-                        const card = (
-                            <div
-                                className={`border rounded-lg p-5 transition bg-white ${isSuspended
-                                        ? "opacity-60 cursor-not-allowed"
-                                        : "hover:shadow-md cursor-pointer"
-                                    } ${view === "list" ? "flex items-center justify-between" : ""
-                                    }`}
-                            >
-                                {/* LEFT SIDE */}
-                                <div
-                                    className={
-                                        view === "list"
-                                            ? "flex items-center gap-4"
-                                            : "flex flex-col"
-                                    }
-                                >
-                                    <div>
-                                        <h3 className="font-medium text-gray-900 capitalize">
-                                            {service.serviceName}
-                                        </h3>
-
-                                        <p className="text-sm text-gray-500 mt-1">
-                                            {service.serviceName === "rcs"
-                                                ? "AWS | ap-south-1"
-                                                : "Meta | Cloud API"}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* RIGHT SIDE */}
-                                <div
-                                    className={
-                                        view === "list"
-                                            ? "flex items-center gap-4"
-                                            : "mt-4 flex items-center justify-between"
-                                    }
-                                >
-                                    <Badge variant={getBadgeVariant(service.mappedStatus)}>
-                                        {service.mappedStatus.charAt(0).toUpperCase() +
-                                            service.mappedStatus.slice(1)}
-                                    </Badge>
-
-                                    <ChevronRight className="h-5 w-5 text-gray-400" />
-                                </div>
-                            </div>
-                        );
-                        // 🚫 If suspended → no navigation
-                        return isSuspended ? (
-                            <div key={service.serviceId}>{card}</div>
-                        ) : (
-                            <Link
-                                key={service.serviceId}
-                                href={`/app/${service.serviceName}`}
-                            >
-                                {card}
-                            </Link>
-                        );
-                    })}
-                </div>
-            )}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2 rounded-lg border border-border bg-card p-5 shadow-e1">
+          <h3 className="text-h3 mb-1">Campaign Performance</h3>
+          <p className="text-caption text-muted-foreground mb-4">Last 30 days overview</p>
+          <LineChart
+            data={performanceData}
+            xKey="day"
+            series={[
+              { key: "opens", label: "Opens", color: "#4F46E5" },
+              { key: "clicks", label: "Clicks", color: "#94A3B8" },
+              { key: "conversions", label: "Conversions", color: "#FB923C" },
+            ]}
+          />
         </div>
-    );
+        <div className="rounded-lg border border-border bg-card p-5 shadow-e1">
+          <h3 className="text-h3 mb-1">Campaign Types</h3>
+          <p className="text-caption text-muted-foreground mb-4">Distribution</p>
+          <DonutChart data={typesData} centerLabel={{ primary: "35%", secondary: "Newsletter" }} />
+        </div>
+      </div>
+    </div>
+  );
 }
