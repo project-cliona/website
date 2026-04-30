@@ -44,7 +44,7 @@ export default function Dashboard() {
               </Link>
             </Button>
             <Button asChild className="bg-ai-gradient text-white shadow-e2 hover:shadow-e3">
-              <Link href="/app/whatsapp">Create Automation</Link>
+              <Link href="/app/whatsapp/automations">Create Automation</Link>
             </Button>
           </>
         }
