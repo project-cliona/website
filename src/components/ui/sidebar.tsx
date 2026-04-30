@@ -172,7 +172,9 @@ export function SidebarBrand({
 export function SidebarLink({ link }: { link: SidebarLinkType }) {
   const { collapsed, setMobileOpen } = useSidebar();
   const pathname = usePathname();
-  const active = pathname === link.href || pathname.startsWith(link.href + "/");
+  const active =
+    pathname === link.href ||
+    (link.href !== "/app" && pathname.startsWith(link.href + "/"));
 
   return (
     <Link

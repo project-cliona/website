@@ -8,9 +8,8 @@ import {
   SidebarSection,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { usePathname } from "next/navigation";
 import { Toaster } from "sonner";
-import { appLinks, rcsLinks, whatsappLinks } from "@/lib/sidebarLinks";
+import { whatsappLinks } from "@/lib/sidebarLinks";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { UserDock } from "@/components/ui/UserDock";
 import { TopBar } from "@/components/ui/TopBar";
@@ -18,16 +17,12 @@ import { SearchProvider } from "@/providers/searchProvider";
 
 function SidebarInner() {
   const { collapsed, setCollapsed } = useSidebar();
-  const pathname = usePathname();
-  const isRcsRoute = pathname.startsWith("/app/rcs");
-  const isWhatsappRoute = pathname.startsWith("/app/whatsapp");
-  const links = isRcsRoute ? rcsLinks : isWhatsappRoute ? whatsappLinks : appLinks;
 
   return (
     <div className="flex flex-col h-full">
       <SidebarBrand collapsed={collapsed} onToggleCollapse={() => setCollapsed(!collapsed)} />
       <SidebarSection>
-        {links.map((link) => (
+        {whatsappLinks.map((link) => (
           <SidebarLink key={link.href} link={link} />
         ))}
       </SidebarSection>

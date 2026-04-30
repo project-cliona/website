@@ -1,40 +1,86 @@
 "use client";
 
-import { Mail, Users, BarChart3, DollarSign, Plus } from "lucide-react";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import { BarChart3, Send, CheckCircle, Book, Plus, Users, FileText } from "lucide-react";
 import { PageHeading } from "@/components/ui/PageHeading";
 import { Button } from "@/components/ui/Button";
 import { StatsCard } from "@/components/ui/StatsCard";
-import { LineChart, DonutChart } from "@/components/ui/chart";
+import { Card } from "@/components/ui/Card";
+import { StatusPill } from "@/components/ui/StatusPill";
+import { fetchWhatsappDashboard } from "@/lib/api/whatsapp/dashboard";
+import {
+  exchangeWhatsappCode,
+  getWhatsappConnectionStatus,
+  disconnectWhatsapp,
+} from "@/lib/api/whatsapp/onboarding";
+import { launchEmbeddedSignup } from "@/lib/facebook-sdk";
 import { useUser } from "@/providers/userProvider";
 
 export default function Dashboard() {
   const { profile } = useUser();
   const firstName = profile?.fullName?.split(" ")[0] ?? "there";
+  const queryClient = useQueryClient();
+  const [connectError, setConnectError] = useState<string | null>(null);
 
-  // Stub data — real metrics get wired in a follow-up.
-  const performanceData = [
-    { day: "Mar 1", opens: 1200, clicks: 600, conversions: 200 },
-    { day: "Mar 5", opens: 1800, clicks: 900, conversions: 400 },
-    { day: "Mar 10", opens: 2400, clicks: 1100, conversions: 700 },
-    { day: "Mar 15", opens: 2600, clicks: 1200, conversions: 800 },
-    { day: "Mar 20", opens: 1900, clicks: 950, conversions: 500 },
-    { day: "Mar 25", opens: 1700, clicks: 850, conversions: 450 },
-    { day: "Mar 31", opens: 1500, clicks: 700, conversions: 350 },
-  ];
+  const { data, isLoading } = useQuery({
+    queryKey: ["whatsapp-dashboard"],
+    queryFn: fetchWhatsappDashboard,
+  });
 
-  const typesData = [
-    { name: "Newsletter", value: 35, color: "#4F46E5" },
-    { name: "Promotional", value: 28, color: "#A5B4FC" },
-    { name: "Transactional", value: 22, color: "#C7D2FE" },
-    { name: "Other", value: 15, color: "#E2E8F0" },
-  ];
+  const { data: connectionStatus, isLoading: statusLoading } = useQuery({
+    queryKey: ["whatsapp-connection-status"],
+    queryFn: getWhatsappConnectionStatus,
+  });
+
+  const exchangeMutation = useMutation({
+    mutationFn: exchangeWhatsappCode,
+    onSuccess: () => {
+      setConnectError(null);
+      queryClient.invalidateQueries({ queryKey: ["whatsapp-connection-status"] });
+      queryClient.invalidateQueries({ queryKey: ["whatsapp-dashboard"] });
+    },
+    onError: (error: Error & { response?: { data?: { message?: string } } }) => {
+      setConnectError(
+        error?.response?.data?.message ??
+          "Failed to connect WhatsApp account. Please try again.",
+      );
+    },
+  });
+
+  const disconnectMutation = useMutation({
+    mutationFn: disconnectWhatsapp,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["whatsapp-connection-status"] });
+    },
+  });
+
+  const handleConnect = async () => {
+    setConnectError(null);
+    const result = await launchEmbeddedSignup();
+    if (result.status === "success") {
+      exchangeMutation.mutate({
+        code: result.code,
+        wabaId: result.wabaId,
+        phoneNumberId: result.phoneNumberId,
+      });
+    } else if (result.status === "error") {
+      setConnectError(result.message);
+    }
+  };
+
+  const handleDisconnect = () => {
+    if (window.confirm("Are you sure you want to disconnect your WhatsApp account?")) {
+      disconnectMutation.mutate();
+    }
+  };
 
   return (
     <div className="space-y-6">
       <PageHeading
         title={`Welcome back, ${firstName}!`}
-        subtitle="Welcome back! Here's what's happening today."
+        subtitle="Here's what's happening with your WhatsApp campaigns today."
         actions={
           <>
             <Button variant="outline" asChild>
@@ -50,53 +96,131 @@ export default function Dashboard() {
         }
       />
 
+      {!statusLoading && connectionStatus?.connected === false && (
+        <Card className="p-6">
+          <h3 className="text-h3 mb-2">Connect Your WhatsApp Business Account</h3>
+          <p className="text-small text-muted-foreground mb-4">
+            Connect your WABA to start sending campaigns, managing templates, and tracking delivery reports.
+          </p>
+          <Button onClick={handleConnect} loading={exchangeMutation.isPending}>
+            Connect WhatsApp
+          </Button>
+          {connectError && (
+            <div className="mt-3 px-3 py-2 bg-destructive/10 border border-destructive/30 rounded-md text-sm text-destructive">
+              {connectError}
+            </div>
+          )}
+        </Card>
+      )}
+
+      {!statusLoading && connectionStatus?.connected === true && connectionStatus.account && (
+        <Card className="p-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="inline-block w-2.5 h-2.5 rounded-full bg-success" />
+              <div>
+                <p className="text-sm font-semibold text-foreground">
+                  {connectionStatus.account.displayPhoneNumber}
+                </p>
+                {connectionStatus.account.businessName && (
+                  <p className="text-caption text-muted-foreground">
+                    {connectionStatus.account.businessName}
+                  </p>
+                )}
+              </div>
+            </div>
+            <Button variant="outline" onClick={handleDisconnect} loading={disconnectMutation.isPending}>
+              Disconnect
+            </Button>
+          </div>
+        </Card>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
-          icon={<Mail className="h-4 w-4" />}
-          label="Total Campaigns"
-          value="24"
-          trend={{ value: "+12%", positive: true }}
-        />
-        <StatsCard
-          icon={<Users className="h-4 w-4" />}
-          label="Active Contacts"
-          value="8,429"
-          trend={{ value: "+23%", positive: true }}
-        />
-        <StatsCard
           icon={<BarChart3 className="h-4 w-4" />}
-          label="Avg. Open Rate"
-          value="42.8%"
-          trend={{ value: "+5.2%", positive: true }}
+          label="Total Campaigns"
+          value={data?.totalCampaigns?.toLocaleString() ?? "0"}
+          trend={data?.campaignsTrend ? { value: data.campaignsTrend, positive: true } : undefined}
         />
         <StatsCard
-          icon={<DollarSign className="h-4 w-4" />}
-          label="Revenue (MTD)"
-          value="$12,450"
-          trend={{ value: "-2.4%", positive: false }}
+          icon={<Send className="h-4 w-4" />}
+          label="Messages Sent"
+          value={data?.messagesSent?.toLocaleString() ?? "0"}
+          trend={data?.messagesTrend ? { value: data.messagesTrend, positive: true } : undefined}
+        />
+        <StatsCard
+          icon={<CheckCircle className="h-4 w-4" />}
+          label="Delivery Rate"
+          value={data?.deliveryRate ?? "0%"}
+          trend={data?.deliveryRateTrend ? { value: data.deliveryRateTrend, positive: true } : undefined}
+        />
+        <StatsCard
+          icon={<Book className="h-4 w-4" />}
+          label="Active Templates"
+          value={data?.activeTemplates?.toLocaleString() ?? "0"}
+          trend={data?.templatesTrend ? { value: data.templatesTrend, positive: true } : undefined}
           accent
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 rounded-lg border border-border bg-card p-5 shadow-e1">
-          <h3 className="text-h3 mb-1">Campaign Performance</h3>
-          <p className="text-caption text-muted-foreground mb-4">Last 30 days overview</p>
-          <LineChart
-            data={performanceData}
-            xKey="day"
-            series={[
-              { key: "opens", label: "Opens", color: "#4F46E5" },
-              { key: "clicks", label: "Clicks", color: "#94A3B8" },
-              { key: "conversions", label: "Conversions", color: "#FB923C" },
-            ]}
-          />
-        </div>
-        <div className="rounded-lg border border-border bg-card p-5 shadow-e1">
-          <h3 className="text-h3 mb-1">Campaign Types</h3>
-          <p className="text-caption text-muted-foreground mb-4">Distribution</p>
-          <DonutChart data={typesData} centerLabel={{ primary: "35%", secondary: "Newsletter" }} />
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card className="p-5">
+          <h3 className="text-h3 mb-4">Recent Campaigns</h3>
+          {isLoading ? (
+            <div className="text-small text-muted-foreground">Loading…</div>
+          ) : data?.recentCampaigns?.length ? (
+            <div className="divide-y divide-border">
+              {data.recentCampaigns.map(
+                (
+                  c: { campaignName: string; status: string; messageCount: number; createdAt: string },
+                  i: number,
+                ) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
+                  >
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold text-foreground truncate">
+                        {c.campaignName}
+                      </div>
+                      <div className="text-caption text-muted-foreground">
+                        {c.messageCount.toLocaleString()} messages
+                      </div>
+                    </div>
+                    <StatusPill status={c.status.toLowerCase()}>{c.status}</StatusPill>
+                  </div>
+                ),
+              )}
+            </div>
+          ) : (
+            <div className="text-small text-muted-foreground py-4">No campaigns yet.</div>
+          )}
+        </Card>
+
+        <Card className="p-5">
+          <h3 className="text-h3 mb-4">Quick Actions</h3>
+          <div className="flex flex-col gap-3">
+            <Button asChild className="w-full">
+              <Link href="/app/whatsapp/sendMessage">
+                <Send className="h-4 w-4" />
+                Send New Campaign
+              </Link>
+            </Button>
+            <Button variant="outline" asChild className="w-full">
+              <Link href="/app/whatsapp/templates/create">
+                <FileText className="h-4 w-4" />
+                Create Template
+              </Link>
+            </Button>
+            <Button variant="outline" asChild className="w-full">
+              <Link href="/app/whatsapp/contacts">
+                <Users className="h-4 w-4" />
+                Manage Contacts
+              </Link>
+            </Button>
+          </div>
+        </Card>
       </div>
     </div>
   );

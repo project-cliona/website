@@ -34,7 +34,7 @@ export const rcsLinks = [
 ];
 
 export const whatsappLinks = [
-  { label: "Dashboard", href: "/app/whatsapp", icon: <LayoutDashboard /> },
+  { label: "Dashboard", href: "/app", icon: <LayoutDashboard /> },
   { label: "Send Message", href: "/app/whatsapp/sendMessage", icon: <Send /> },
   { label: "Automations", href: "/app/whatsapp/automations", icon: <Workflow /> },
   { label: "Analytics", href: "/app/whatsapp/analytics", icon: <BarChart3 /> },
