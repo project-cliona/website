@@ -59,8 +59,15 @@ export function useSearch() {
 
 export function usePageSearch(config: SearchConfig | null) {
   const { registerConfig } = useSearch();
+  const placeholder = config?.placeholder ?? null;
+  const onChangeRef = useRef(config?.onChange);
+  onChangeRef.current = config?.onChange;
+
   useEffect(() => {
-    if (!config) return;
-    return registerConfig(config);
-  }, [config, registerConfig]);
+    if (!placeholder) return;
+    return registerConfig({
+      placeholder,
+      onChange: (v) => onChangeRef.current?.(v),
+    });
+  }, [placeholder, registerConfig]);
 }
