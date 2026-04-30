@@ -56,25 +56,25 @@
 ::placeholder { color: var(--muted-foreground); opacity: 1; }
 
 :root {
-  /* Primary ramp — Squalto green */
-  --primary-50:  #F0FDF4;
-  --primary-100: #DCFCE7;
-  --primary-200: #BBF7D0;
-  --primary-300: #86EFAC;
-  --primary-400: #4ADE80;
-  --primary-500: #22C55E;
-  --primary-600: #16A34A;
-  --primary-700: #15803D;
-  --primary-800: #166534;
-  --primary-900: #14532D;
-  --primary-950: #052E16;
+  /* Primary ramp — indigo */
+  --primary-50:  #EEF2FF;
+  --primary-100: #E0E7FF;
+  --primary-200: #C7D2FE;
+  --primary-300: #A5B4FC;
+  --primary-400: #818CF8;
+  --primary-500: #6366F1;
+  --primary-600: #4F46E5;
+  --primary-700: #4338CA;
+  --primary-800: #3730A3;
+  --primary-900: #312E81;
+  --primary-950: #1E1B4B;
 
   /* Canonical primary */
   --primary: var(--primary-600);
   --primary-foreground: #FFFFFF;
 
   /* Semantic */
-  --success: var(--primary-600);
+  --success: #16A34A;       /* old Squalto green, demoted to success only */
   --warning: #D97706;       /* amber-600 */
   --info:    #2563EB;       /* blue-600 */
   --destructive: #DC2626;   /* red-600 */
@@ -82,7 +82,7 @@
 
   /* Channel colors (use only when channel identity is the point) */
   --channel-whatsapp: #25D366;
-  --channel-rcs:      #4F46E5; /* indigo-600 */
+  --channel-rcs:      #7C3AED; /* violet-600 — was indigo, bumped to avoid primary collision */
   --channel-sms:      #4B5563; /* gray-600 */
 
   /* Slate neutrals */
@@ -109,6 +109,8 @@
   --motion-base: 180ms;
   --motion-slow: 240ms;
   --ease-out-default: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --gradient-ai: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #06B6D4 100%);
 }
 
 .dark {
@@ -144,10 +146,11 @@
   .shadow-e2 { box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 12px -2px rgb(15 23 42 / 0.06); }
   .shadow-e3 { box-shadow: 0 8px 24px -4px rgb(15 23 42 / 0.12); }
   .shadow-e4 { box-shadow: 0 16px 48px -8px rgb(15 23 42 / 0.18); }
-  .shadow-primary-glow { box-shadow: 0 8px 24px -8px rgb(22 163 74 / 0.45); }
+  .shadow-primary-glow { box-shadow: 0 8px 24px -8px rgb(79 70 229 / 0.45); }
+  .bg-ai-gradient { background: var(--gradient-ai); }
 
   .focus-ring { outline: none; }
-  .focus-ring:focus-visible { box-shadow: 0 0 0 2px var(--background), 0 0 0 4px rgb(22 163 74 / 0.30); }
+  .focus-ring:focus-visible { box-shadow: 0 0 0 2px var(--background), 0 0 0 4px rgb(79 70 229 / 0.30); }
 
   @keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
   .animate-shimmer { background: linear-gradient(90deg, var(--secondary) 0px, var(--accent) 200px, var(--secondary) 400px); background-size: 800px 100%; animation: shimmer 1.5s infinite linear; }
