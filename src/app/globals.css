@@ -130,7 +130,7 @@
   --border: #1F2937;
   --input: #1F2937;
   --ring: var(--primary-500);
-  --primary-foreground: #052E16;
+  --primary-foreground: #1E1B4B;
 }
 
 @layer utilities {
