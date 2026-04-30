@@ -22,9 +22,9 @@ const C = {
   darkBg: "#0F1117",
   darkCard: "#161B22",
   darkBorder: "#21262D",
-  accent: "#16A34A",
-  accentHover: "#15803D",
-  accentLight: "#DCFCE7",
+  accent: "#4F46E5",
+  accentHover: "#4338CA",
+  accentLight: "#E0E7FF",
 };
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
@@ -287,12 +287,12 @@ function Features() {
           {features.map(f => (
             <div
               key={f.title}
-              className="flex flex-col gap-4 p-6 rounded-xl border transition-all hover:border-[#16A34A]/40"
+              className="flex flex-col gap-4 p-6 rounded-xl border transition-all hover:border-[#4F46E5]/40"
               style={{ backgroundColor: C.darkCard, borderColor: C.darkBorder }}
             >
               <div
                 className="w-10 h-10 rounded-lg flex items-center justify-center"
-                style={{ backgroundColor: "#16A34A20" }}
+                style={{ backgroundColor: "#4F46E520" }}
               >
                 <f.icon size={18} style={{ color: C.accent }} />
               </div>
@@ -583,7 +583,7 @@ function Integrations() {
           {integrations.map(name => (
             <div
               key={name}
-              className="flex items-center justify-center bg-white border border-gray-100 shadow-sm rounded-xl py-4 px-3 text-sm font-medium text-gray-700 hover:border-[#16A34A]/40 hover:shadow-md transition-all"
+              className="flex items-center justify-center bg-white border border-gray-100 shadow-sm rounded-xl py-4 px-3 text-sm font-medium text-gray-700 hover:border-[#4F46E5]/40 hover:shadow-md transition-all"
             >
               {name}
             </div>
