@@ -12,7 +12,7 @@ import {
   disconnectWhatsapp,
 } from "@/lib/api/whatsapp/onboarding";
 import { launchEmbeddedSignup } from "@/lib/facebook-sdk";
-import { BarChart, Send, CheckCircle, Book, LucideProps } from "lucide-react";
+import { BarChart, Send, CheckCircle, Book } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -162,38 +162,44 @@ export default function WhatsappDashboard() {
       {/* Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
-          title="Total Campaigns"
+          label="Total Campaigns"
           value={data?.totalCampaigns?.toString() ?? "0"}
-          icon={<BarChart color="#3b82f6" /> as React.ReactElement<LucideProps>}
-          trend={data?.campaignsTrend ?? ""}
-          trendUp={true}
-          tooltip="Total number of WhatsApp campaigns"
-        />
-        <StatsCard
-          title="Messages Sent"
-          value={data?.messagesSent?.toLocaleString() ?? "0"}
-          icon={<Send color="#4f46e5" /> as React.ReactElement<LucideProps>}
-          trend={data?.messagesTrend ?? ""}
-          trendUp={true}
-          tooltip="Total messages sent across all campaigns"
-        />
-        <StatsCard
-          title="Delivery Rate"
-          value={data?.deliveryRate ?? "0%"}
-          icon={
-            <CheckCircle color="#22c55e" /> as React.ReactElement<LucideProps>
+          icon={<BarChart className="h-4 w-4" />}
+          trend={
+            data?.campaignsTrend
+              ? { value: data.campaignsTrend, positive: true }
+              : undefined
           }
-          trend={data?.deliveryRateTrend ?? ""}
-          trendUp={true}
-          tooltip="Percentage of messages successfully delivered"
         />
         <StatsCard
-          title="Active Templates"
+          label="Messages Sent"
+          value={data?.messagesSent?.toLocaleString() ?? "0"}
+          icon={<Send className="h-4 w-4" />}
+          trend={
+            data?.messagesTrend
+              ? { value: data.messagesTrend, positive: true }
+              : undefined
+          }
+        />
+        <StatsCard
+          label="Delivery Rate"
+          value={data?.deliveryRate ?? "0%"}
+          icon={<CheckCircle className="h-4 w-4" />}
+          trend={
+            data?.deliveryRateTrend
+              ? { value: data.deliveryRateTrend, positive: true }
+              : undefined
+          }
+        />
+        <StatsCard
+          label="Active Templates"
           value={data?.activeTemplates?.toString() ?? "0"}
-          icon={<Book color="#f59e0b" /> as React.ReactElement<LucideProps>}
-          trend={data?.templatesTrend ?? ""}
-          trendUp={true}
-          tooltip="Number of active message templates"
+          icon={<Book className="h-4 w-4" />}
+          trend={
+            data?.templatesTrend
+              ? { value: data.templatesTrend, positive: true }
+              : undefined
+          }
         />
       </div>
 

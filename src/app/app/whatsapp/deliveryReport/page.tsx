@@ -215,56 +215,53 @@ export default function WhatsappDeliveryReports() {
 
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <StatsCard
-          title="Total Messages"
+          label="Total Messages"
           value={summary.totalSubmitted.toLocaleString()}
-          icon={<Mail className="text-blue-600 w-5 h-5" />}
-          tooltip="Total number of messages submitted"
+          icon={<Mail className="h-4 w-4" />}
         />
 
         <StatsCard
-          title="Sent"
+          label="Sent"
           value={summary.sent.toLocaleString()}
-          icon={<Send className="text-green-600 w-5 h-5" />}
-          trend={summary.sent > 0
-            ? `${getRate(summary.sent)}%`
-            : undefined}
-          trendUp={true}
-          tooltip="Messages successfully sent"
-        />
-
-        <StatsCard
-          title="Delivered"
-          value={summary.delivered.toLocaleString()}
-          icon={<CheckCircle className="text-blue-600 w-5 h-5" />}
-          trend={summary.delivered > 0
-            ? `${getRate(summary.delivered)}%`
-            : undefined}
-          trendUp={true}
-          tooltip="Messages delivered to recipients"
-        />
-
-        <StatsCard
-          title="Read"
-          value={summary.read.toLocaleString()}
-          icon={<Eye className="text-purple-600 w-5 h-5" />}
-          trend={summary.read > 0
-            ? `${getRate(summary.read)}%`
-            : undefined}
-          trendUp={true}
-          tooltip="Messages read by users"
-        />
-
-        <StatsCard
-          title="Failed"
-          value={summary.failed.toLocaleString()}
-          icon={<XCircle className="text-red-600 w-5 h-5" />}
+          icon={<Send className="h-4 w-4" />}
           trend={
-            summary.failed > 0
-              ? `${getRate(summary.failed)}%`
+            summary.sent > 0
+              ? { value: `${getRate(summary.sent)}%`, positive: true }
               : undefined
           }
-          trendUp={false}
-          tooltip="Messages that failed to send"
+        />
+
+        <StatsCard
+          label="Delivered"
+          value={summary.delivered.toLocaleString()}
+          icon={<CheckCircle className="h-4 w-4" />}
+          trend={
+            summary.delivered > 0
+              ? { value: `${getRate(summary.delivered)}%`, positive: true }
+              : undefined
+          }
+        />
+
+        <StatsCard
+          label="Read"
+          value={summary.read.toLocaleString()}
+          icon={<Eye className="h-4 w-4" />}
+          trend={
+            summary.read > 0
+              ? { value: `${getRate(summary.read)}%`, positive: true }
+              : undefined
+          }
+        />
+
+        <StatsCard
+          label="Failed"
+          value={summary.failed.toLocaleString()}
+          icon={<XCircle className="h-4 w-4" />}
+          trend={
+            summary.failed > 0
+              ? { value: `${getRate(summary.failed)}%`, positive: false }
+              : undefined
+          }
         />
       </div>
 

@@ -1,12 +1,13 @@
-import { LucideProps } from "lucide-react"
+import type { ReactNode } from "react";
 
 export interface StatsCardProps {
-  title: string
-  value: string
-  icon: React.ReactElement<LucideProps>
-  trend?: string
-  trendUp?: boolean
-  tooltip?: string
+  icon?: ReactNode;
+  iconBg?: string;
+  label: string;
+  value: string | number;
+  trend?: { value: string; positive: boolean };
+  accent?: boolean;
+  onMenuOpen?: () => void;
 }
 
 export type Agent = {

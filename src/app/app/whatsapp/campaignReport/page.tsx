@@ -261,31 +261,27 @@ export default function WhatsappCampaignReports() {
       {/* Summary cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatsCard
-          title="Total Campaigns"
+          label="Total Campaigns"
           value={summary.total.toLocaleString()}
-          icon={<Layers className="text-gray-700 w-5 h-5" />}
-          tooltip="Total number of campaigns"
+          icon={<Layers className="h-4 w-4" />}
         />
 
         <StatsCard
-          title="Completed"
+          label="Completed"
           value={summary.completed.toLocaleString()}
-          icon={<CheckCircle className="text-green-600 w-5 h-5" />}
-          tooltip="Campaigns that completed successfully"
+          icon={<CheckCircle className="h-4 w-4" />}
         />
 
         <StatsCard
-          title="In Flight"
+          label="In Flight"
           value={summary.inFlight.toLocaleString()}
-          icon={<Loader className="text-yellow-600 w-5 h-5" />}
-          tooltip="Campaigns currently running"
+          icon={<Loader className="h-4 w-4" />}
         />
 
         <StatsCard
-          title="Failed"
+          label="Failed"
           value={summary.failed.toLocaleString()}
-          icon={<XCircle className="text-red-600 w-5 h-5" />}
-          tooltip="Campaigns that failed"
+          icon={<XCircle className="h-4 w-4" />}
         />
       </div>
 
