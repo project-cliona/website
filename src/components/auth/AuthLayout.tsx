@@ -1,59 +1,72 @@
 "use client";
 
 import { ReactNode } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
+interface AuthLayoutProps {
+  title: string;
+  panelTitle: string;
+  panelSubtitle: string;
+  panelTagline?: string;
+  children: ReactNode;
+}
+
 export function AuthLayout({
   title,
-  subtitle,
+  panelTitle,
+  panelSubtitle,
+  panelTagline,
   children,
-}: {
-  title: string;
-  subtitle: string;
-  children: ReactNode;
-}) {
+}: AuthLayoutProps) {
   return (
     <div className="min-h-screen grid md:grid-cols-2">
+      {/* Left brand panel */}
+      <aside className="relative hidden md:flex flex-col justify-between overflow-hidden bg-primary-600 text-white px-10 py-12 md:px-16 md:py-16">
+        {/* Decorative geometric strips */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute top-10 right-0 h-3 w-44 bg-primary-400/50 -rotate-12 translate-x-1/3" />
+          <div className="absolute top-20 right-0 h-3 w-28 bg-primary-300/50 -rotate-12 translate-x-1/2" />
+          <div className="absolute bottom-[34%] -left-12 h-3 w-52 bg-primary-300/70 -rotate-12" />
+          <div className="absolute bottom-[28%] -left-6 h-3 w-32 bg-primary-200/70 -rotate-12" />
+        </div>
+
+        {/* Logo */}
+        <Link href="/" className="relative inline-flex items-center gap-2.5">
+          <div className="h-7 w-7 rounded-full bg-white" />
+          <span className="text-lg font-semibold tracking-tight">Squalto</span>
+        </Link>
+
+        {/* Headline + subtitle */}
+        <div className="relative max-w-md">
+          <h1 className="text-[40px] md:text-[44px] font-bold leading-[1.1] tracking-tight">
+            {panelTitle}
+          </h1>
+          <p className="text-white/80 text-base mt-6 max-w-sm leading-relaxed">
+            {panelSubtitle}
+          </p>
+        </div>
+
+        {/* Brand tagline at bottom */}
+        {panelTagline && (
+          <p className="relative italic text-white/80 text-sm leading-relaxed max-w-sm">
+            {panelTagline}
+          </p>
+        )}
+      </aside>
+
+      {/* Right form panel */}
       <motion.div
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.24 }}
         className="flex flex-col justify-center px-6 py-12 md:px-16"
       >
-        <Link href="/" className="inline-flex items-center gap-2 mb-12">
-          <Image src="/logo-wordmark.svg" alt="Squalto" width={120} height={28} />
-        </Link>
-        <div className="max-w-[400px] w-full">
-          <h1 className="text-h1 text-foreground">{title}</h1>
-          <p className="text-small text-muted-foreground mt-2">{subtitle}</p>
-          <div className="mt-8">{children}</div>
+        <div className="w-full max-w-[420px] mx-auto">
+          <h2 className="text-[28px] font-bold tracking-tight text-foreground">{title}</h2>
+          {children}
         </div>
       </motion.div>
-
-      <aside className="hidden md:flex relative items-center justify-center bg-[radial-gradient(ellipse_at_center,_var(--primary-50),_transparent_70%)] overflow-hidden">
-        <div className="relative w-64 bg-[#0F1117] rounded-3xl p-3 shadow-e3 ring-1 ring-white/10">
-          <div className="bg-primary-600 rounded-t-xl px-3 py-2 flex items-center gap-2">
-            <div className="w-7 h-7 bg-white/20 rounded-full" />
-            <div>
-              <p className="text-white text-xs font-semibold">Squalto AI</p>
-              <p className="text-white/70 text-[10px]">Online</p>
-            </div>
-          </div>
-          <div className="bg-[#ECE5DD] rounded-b-xl px-3 py-3 flex flex-col gap-2 min-h-[220px]">
-            <div className="bg-white rounded-lg rounded-tl-none px-3 py-2 max-w-[80%] shadow-sm">
-              <p className="text-[11px] text-gray-800">Your order is confirmed.</p>
-            </div>
-            <div className="self-end bg-[#DCF8C6] rounded-lg rounded-tr-none px-3 py-2 max-w-[80%] shadow-sm">
-              <p className="text-[11px] text-gray-800">Track your order</p>
-            </div>
-            <div className="bg-white rounded-lg rounded-tl-none px-3 py-2 max-w-[80%] shadow-sm">
-              <p className="text-[11px] text-gray-800">Out for delivery</p>
-            </div>
-          </div>
-        </div>
-      </aside>
     </div>
   );
 }

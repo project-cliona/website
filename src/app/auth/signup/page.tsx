@@ -36,36 +36,31 @@ export default function Signup() {
 
   const onSubmit = async (data: SignupForm) => {
     try {
-      setLoading(true);
-      const response = await apiClient().post('/auth/signup', {
+      setLoading(true)
+      await apiClient().post('/auth/signup', {
         username: data.name,
         email: data.email,
         password: data.password
       })
-      console.log(response)
       reset()
       router.push(`/auth/verify?email=${encodeURIComponent(data.email)}`)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   const handleSocialLogin = async (provider: 'google' | 'github') => {
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
       })
-      console.log(data)
 
-      if (error) {
-        console.error('Social login error:', error.message)
-        return
-      }
+      if (error) console.error('Social login error:', error.message)
     } catch (err) {
       console.error(err)
     }
@@ -74,108 +69,26 @@ export default function Signup() {
   return (
     <AuthLayout
       title="Create your account"
-      subtitle="Start sending in minutes — no card required."
+      panelTitle="Start engaging customers."
+      panelSubtitle="Send campaigns, automate replies, and grow with every conversation — across WhatsApp, RCS, and SMS."
+      panelTagline="AI-First WhatsApp & RCS Engagement Platform"
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      {/* Cross-link under heading */}
+      <p className="text-small text-muted-foreground mt-2">
+        Have an account?{' '}
+        <Link href="/auth/login" className="text-primary font-medium hover:underline">
+          Login
+        </Link>
+      </p>
 
-        {/* Name */}
-        <div className="space-y-1">
-          <Label htmlFor="name">Full Name *</Label>
-          <Controller
-            name="name"
-            control={control}
-            render={({ field }) => (
-              <Input id="name" placeholder="Enter your full name" {...field} />
-            )}
-          />
-          {errors.name && (
-            <p className="text-xs text-red-600">{errors.name.message}</p>
-          )}
-        </div>
-
-        {/* Email */}
-        <div className="space-y-1">
-          <Label htmlFor="email">Email Address *</Label>
-          <Controller
-            name="email"
-            control={control}
-            render={({ field }) => (
-              <Input id="email" placeholder="Enter your email" {...field} />
-            )}
-          />
-          {errors.email && (
-            <p className="text-xs text-red-600">{errors.email.message}</p>
-          )}
-        </div>
-
-        {/* Password */}
-        <div className="space-y-1">
-          <Label htmlFor="password">Password *</Label>
-          <Controller
-            name="password"
-            control={control}
-            render={({ field }) => (
-              <Input id="password" type="password" {...field} />
-            )}
-          />
-          {errors.password && (
-            <p className="text-xs text-red-600">{errors.password.message}</p>
-          )}
-        </div>
-
-        {/* Confirm Password */}
-        <div className="space-y-1">
-          <Label htmlFor="confirmPassword">Confirm Password *</Label>
-          <Controller
-            name="confirmPassword"
-            control={control}
-            render={({ field }) => (
-              <Input id="confirmPassword" type="password" {...field} />
-            )}
-          />
-          {errors.confirmPassword && (
-            <p className="text-xs text-red-600">
-              {errors.confirmPassword.message}
-            </p>
-          )}
-        </div>
-
-        {/* Terms */}
-        <div className="flex items-start gap-2">
-          <Controller
-            name="terms"
-            control={control}
-            render={({ field }) => (
-              <Checkbox
-                checked={field.value}
-                onCheckedChange={(checked) => field.onChange(checked === true)}
-              />
-            )}
-          />
-          <Label className="text-sm leading-snug">
-            I agree to the Terms &amp; Privacy Policy
-          </Label>
-        </div>
-
-        {errors.terms && (
-          <p className="text-xs text-red-600">{errors.terms.message}</p>
-        )}
-
-        {/* Submit */}
-        <Button type="submit" loading={loading} disabled={loading} className="w-full" size="lg">
-          {loading ? 'Creating account...' : 'Create Account'}
-        </Button>
-      </form>
-
-      {/* Social Login */}
-      <div className="mt-6">
-        {/* Google Sign-in */}
+      {/* OAuth */}
+      <div className="mt-8 space-y-3">
         <Button
           type="button"
           variant="outline"
           size="lg"
           onClick={() => handleSocialLogin('google')}
-          className="w-full"
+          className="w-full justify-center gap-3"
         >
           <svg className="w-5 h-5" viewBox="0 0 533.5 544.3">
             <path fill="#4285F4" d="M533.5 278.4c0-17.4-1.6-34.3-4.7-50.7H272v95.9h147.1c-6.3 33.8-25 62.5-53.2 81.6v67h85.8c50.1-46.1 79-114.3 79-193.8z" />
@@ -185,25 +98,107 @@ export default function Signup() {
           </svg>
           <span>Continue with Google</span>
         </Button>
-
-        {/* Magic link / passwordless */}
-        <div className="mt-3 text-center">
-          <Link
-            href="/auth/verify"
-            className="text-sm text-primary underline-offset-4 hover:underline"
-          >
-            Continue with Email OTP (Passwordless)
-          </Link>
-        </div>
       </div>
 
-      {/* Login */}
-      <p className="text-center text-sm text-muted-foreground mt-6">
-        Already signed up?{' '}
-        <Link href="/auth/login" className="underline">
-          Login
-        </Link>
-      </p>
+      {/* OR divider */}
+      <div className="my-6 flex items-center gap-3">
+        <div className="h-px flex-1 bg-border" />
+        <span className="text-caption text-muted-foreground">OR</span>
+        <div className="h-px flex-1 bg-border" />
+      </div>
+
+      {/* Form */}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <div className="space-y-1.5">
+          <Label htmlFor="name">Full Name</Label>
+          <Controller
+            name="name"
+            control={control}
+            render={({ field }) => (
+              <Input id="name" placeholder="Enter your full name" {...field} />
+            )}
+          />
+          {errors.name && (
+            <p className="text-xs text-destructive">{errors.name.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="email">Email</Label>
+          <Controller
+            name="email"
+            control={control}
+            render={({ field }) => (
+              <Input id="email" placeholder="you@company.com" {...field} />
+            )}
+          />
+          {errors.email && (
+            <p className="text-xs text-destructive">{errors.email.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="password">Password</Label>
+          <Controller
+            name="password"
+            control={control}
+            render={({ field }) => (
+              <Input id="password" type="password" {...field} />
+            )}
+          />
+          {errors.password && (
+            <p className="text-xs text-destructive">{errors.password.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <Controller
+            name="confirmPassword"
+            control={control}
+            render={({ field }) => (
+              <Input id="confirmPassword" type="password" {...field} />
+            )}
+          />
+          {errors.confirmPassword && (
+            <p className="text-xs text-destructive">
+              {errors.confirmPassword.message}
+            </p>
+          )}
+        </div>
+
+        <div className="flex items-start gap-2">
+          <Controller
+            name="terms"
+            control={control}
+            render={({ field }) => (
+              <Checkbox
+                checked={field.value}
+                onCheckedChange={(checked) => field.onChange(checked === true)}
+                className="mt-0.5"
+              />
+            )}
+          />
+          <Label className="text-sm leading-snug font-normal">
+            By signing up, you agree to our{' '}
+            <Link href="/terms" className="text-primary hover:underline">
+              Terms &amp; Conditions
+            </Link>{' '}
+            and{' '}
+            <Link href="/privacy" className="text-primary hover:underline">
+              Privacy Policy
+            </Link>
+          </Label>
+        </div>
+
+        {errors.terms && (
+          <p className="text-xs text-destructive">{errors.terms.message}</p>
+        )}
+
+        <Button type="submit" loading={loading} disabled={loading} className="w-full" size="lg">
+          {loading ? 'Creating account...' : 'Signup'}
+        </Button>
+      </form>
     </AuthLayout>
   )
 }
