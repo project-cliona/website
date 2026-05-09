@@ -93,7 +93,7 @@ export function exportToCSV<T>({
   // 🔥 If no columns provided → auto-generate
   const finalColumns =
     columns ||
-    Object.keys(data[0]).map((key) => ({
+    Object.keys(data[0] as object).map((key) => ({
       header: key,
       accessor: key as keyof T,
     }));
