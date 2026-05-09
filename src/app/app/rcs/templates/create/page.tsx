@@ -19,16 +19,19 @@ import { authenticatedApiClient } from '@/lib/axios'
 import { useSearchParams } from 'next/navigation'
 import { getTemplateById } from '@/lib/api/rcs/templates'
 import { Agent, RCSTemplate } from '@/lib/type'
+import { useUser } from '@/providers/userProvider'
 
 export default function CreateTemplate() {
-  const userId = 2
+  const { user } = useUser()
+  const userId = user?.userId
   const searchParams = useSearchParams()
   const isEdit = searchParams.get('edit') === 'true'
   const id = searchParams.get('id')
 
   const { data: agentData } = useQuery<Agent[]>({
     queryKey: ['agents', userId],
-    queryFn: () => fetchAgents(userId),
+    queryFn: () => fetchAgents(userId as number),
+    enabled: !!userId,
   })
 
   const {
@@ -119,11 +122,12 @@ export default function CreateTemplate() {
 
   // Submit handler
   const onSubmit = async (data: CreateTemplateForm) => {
+    if (!userId) return;
     try {
       console.log('Submitting template data:', data)
       const filePath = await uploadImage(data.mediaFile);
       const payload = {
-        userId: 2,
+        userId,
         agentID: data.agentID,
         templateType: data.templateType,
         templateName: data.templateName,
