@@ -168,7 +168,7 @@ export default function SendWhatsappMessage() {
       const variablesForAll: Record<string, string> | string[] | undefined =
         bodyVariables.length === 0
           ? undefined
-          : isNamedFormat
+          : isNamedFormat    
             ? bodyVariables.reduce<Record<string, string>>((acc, v) => {
                 acc[v] = variableValues[v] ?? "";
                 return acc;
@@ -334,7 +334,6 @@ export default function SendWhatsappMessage() {
                 </h2>
                 <p className="text-sm text-muted-foreground mb-4">
                   These values are used for every recipient in this campaign.
-                  Per-recipient personalization is coming soon.
                 </p>
                 <div className="space-y-3">
                   {bodyVariables.map((variable) => (
