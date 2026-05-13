@@ -1,4 +1,20 @@
-import axios, { AxiosHeaders } from 'axios';
+import axios, { AxiosHeaders, type AxiosInstance } from 'axios';
+import { toast } from 'sonner';
+
+function attachForbiddenInterceptor(instance: AxiosInstance) {
+  instance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error?.response?.status === 403) {
+        const message =
+          error?.response?.data?.message ??
+          "You don't have permission for that action.";
+        toast.error(message);
+      }
+      return Promise.reject(error);
+    }
+  );
+}
 
 export const apiClient = (headers?: AxiosHeaders) => {
   const systemHeader = new AxiosHeaders();
@@ -13,15 +29,15 @@ export const apiClient = (headers?: AxiosHeaders) => {
     },
   });
 
+  attachForbiddenInterceptor(instance);
   return instance;
 };
 
 export const authenticatedApiClient = () => {
   const axiosInstance = apiClient();
-  axiosInstance.interceptors.request.use(async (config: any) => {
+  axiosInstance.interceptors.request.use(async (config) => {
     const access_token = localStorage.getItem("accessToken");
     if (!access_token) {
-      console.warn("No access token found.");
       return Promise.reject(new Error("Unauthorized: No token found"));
     }
     config.headers.Authorization = `Bearer ${access_token}`;
