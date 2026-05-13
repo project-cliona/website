@@ -1,9 +1,10 @@
 # RBAC — Frontend Design
 
 **Status:** Design approved, implementation pending
-**Date:** 2026-05-12
-**Branch:** `feat/rbac` (in both `website` and `cliona-backend`)
+**Date:** 2026-05-12 (rebased against `design/ui-polish-pass` 2026-05-13)
+**Branches:** `feat/rbac` in `website` (rebased onto `origin/design/ui-polish-pass`) and `feat/rbac` in `cliona-backend` (cut from `main`).
 **Depends on:** Backend RBAC already shipped on `feat/rbac` in `cliona-backend` (role in JWT, scoped reads, `PATCH /admin/users/:id/role`).
+**PR target:** Open the RBAC PR with **`design/ui-polish-pass`** as base (not `main`). When PR #16 (the polish pass) merges to `main`, GitHub auto-retargets the RBAC PR.
 **Companion section in CLAUDE.md:** existing `## RBAC` block (backend); a new `## RBAC — Frontend` block lands as part of this work.
 
 ---
@@ -23,13 +24,13 @@ This pass closes the frontend gap so:
 
 ### What v1 ships
 
-- **Role primitives** on the client: a constants module mirroring `authz.ts`, role helpers on `useUser()`, a `<RoleGate>` component for in-page action hiding, a `<RequireRole>` component for whole-page guards.
-- **Sidebar filtering**: links tagged with optional `roles?` and filtered at render. One new role-gated link (Admin) is added; everything else stays visible to all roles.
+- **Role primitives** on the client: a constants module mirroring `authz.ts`, role helpers on `useUser()`, a `<RoleGate>` component for in-page action hiding, a `<RequireRole>` component for whole-page role checks. `<RequireRole>` is a **sibling** of the existing `<ProtectedRoute>` (which checks auth-only), not a replacement.
+- **Admin link in `UserDock`**: a new admin-only `DropdownMenuItem` ("Admin") inside the existing `UserDock` (sidebar account menu). The actively-rendered sidebar list (`whatsappLinks`) is **not** modified — Admin is account-level, not WhatsApp-level.
 - **Admin Users page** at `/app/admin/users`: minimal list + per-row role change. Replaces curl-only role management.
 - **Backend addition**: `GET /api/v1/admin/users` returning enriched profile rows (joined with `Users` for email) for the admin table to consume.
-- **403 handling**: global axios interceptor surfaces `sonner` toasts.
-- **Cleanup folded in**: replace remaining `userId = 2` hardcodings in three RCS pages and the unpassed `userId` prop in `/kyc` with `useUser()`.
-- **Documentation**: CLAUDE.md updated — remove the stale `ProtectedRoute.tsx` reference, add a feature-wise `## RBAC — Frontend` section.
+- **403 handling**: global axios interceptor surfaces toasts via the already-mounted `sonner` `<Toaster />` in `src/app/app/layout.tsx`.
+- **Cleanup folded in**: replace remaining `userId = 2` hardcodings in three RCS pages with `useUser()`.
+- **Documentation**: add a feature-wise `## RBAC — Frontend` section to the root `CLAUDE.md`.
 
 ### What v1 does NOT ship (explicit non-goals)
 
@@ -44,6 +45,10 @@ This pass closes the frontend gap so:
 - Migration of the access token from `localStorage` to an HTTP-only cookie (would unblock Next middleware-based gating but is a separate, larger auth concern).
 - Refresh-token rotation, retry-on-401, automatic logout on 401 — out of scope.
 - Removal or rework of the pre-existing stub links (`/app/integrations`, `/app/billing`, `/app/usage`, `/app/profile`). They predate RBAC and remain unchanged.
+- Re-introducing `appLinks` / `rcsLinks` to the sidebar. The polish-pass design intentionally renders only `whatsappLinks`; multi-product navigation, if needed, is a separate design decision.
+- KYC `userId` prop fix — already resolved on `design/ui-polish-pass` (`src/app/kyc/page.tsx` uses `useUser()`).
+- Installing or mounting `sonner` — already present on `design/ui-polish-pass`.
+- Removing the `ProtectedRoute.tsx` CLAUDE.md reference — not stale on `design/ui-polish-pass`; the file exists.
 
 ---
 
@@ -138,10 +143,20 @@ export function RoleGate({ roles, children }: { roles: Role[]; children: React.R
 
 Renders `null` while loading to avoid a momentary flash of an admin-only button. No `fallback` prop in v1 — the design landed on "hide entirely," so any "you don't have access" message would contradict that.
 
-### 3.5 `<RequireRole>` — page guard
+### 3.5 `<RequireRole>` — page-level role check (sibling of `ProtectedRoute`)
+
+The existing `src/components/auth/ProtectedRoute.tsx` handles **auth-only** gating (redirects unauthenticated users to `/auth/login`) and wraps the entire `/app` tree from `src/app/app/layout.tsx`. It is intentionally untouched in this pass.
+
+`<RequireRole>` is a separate component used **inside** specific pages that need additional role-level gating (today: only `/app/admin/users`). It assumes auth has already been verified by the surrounding `ProtectedRoute`.
 
 ```tsx
 // components/auth/RequireRole.tsx
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/providers/userProvider";
+import type { Role } from "@/lib/rbac";
+
 export function RequireRole({ roles, children }: { roles: Role[]; children: React.ReactNode }) {
   const { hasRole, userAuthLoading } = useUser();
   const router = useRouter();
@@ -157,44 +172,29 @@ export function RequireRole({ roles, children }: { roles: Role[]; children: Reac
 
 No `redirectTo` prop in v1. If a future admin sub-page needs to redirect elsewhere, add the prop then.
 
-### 3.6 Sidebar filtering
+### 3.6 Admin link placement — inside `UserDock`
 
-**`lib/sidebarLinks.tsx`** — extend the link shape and add one new entry:
+The polish-pass layout (`src/app/app/layout.tsx`) renders only `whatsappLinks` in the main sidebar. `appLinks` and `rcsLinks` are still exported from `sidebarLinks.tsx` but no longer rendered — likely dead code on this branch. The Admin entry is **account-level**, not WhatsApp-level, so it belongs in the existing `UserDock` dropdown (already houses Profile / Settings / Switch service / Log out) rather than the WhatsApp feature list.
 
-```ts
-export type SidebarLink = {
-  label: string;
-  href: string;
-  icon: React.ReactNode;
-  roles?: Role[];        // omit = visible to everyone
-};
+**Change in `src/components/ui/UserDock.tsx`** — add one conditional `DropdownMenuItem` between "Switch service" and the separator, wrapped in `<RoleGate>`:
 
-export const appLinks: SidebarLink[] = [
-  { label: "Services",     href: "/app",              icon: <Boxes /> },
-  { label: "Integrations", href: "/app/integrations", icon: <Plug /> },
-  { label: "Billing",      href: "/app/billing",      icon: <CreditCard /> },
-  { label: "Usage",        href: "/app/usage",        icon: <BarChart /> },
-  { label: "Profile",      href: "/app/profile",      icon: <User /> },
-  { label: "Admin",        href: "/app/admin/users",  icon: <ShieldCheck />, roles: [ROLE_ADMIN] },
-];
+```tsx
+<RoleGate roles={[ROLE_ADMIN]}>
+  <DropdownMenuItem asChild>
+    <Link href="/app/admin/users">
+      <ShieldCheck className="h-4 w-4 mr-2" /> Admin
+    </Link>
+  </DropdownMenuItem>
+</RoleGate>
 ```
 
-`rcsLinks` and `whatsappLinks` are not tagged with `roles` — both products are for every role and the backend's data scoping handles tenant isolation.
+`<RoleGate>` returns `null` while `userAuthLoading`, so non-admins never see the item flash. The Radix dropdown handles a `null` child gracefully — no menu-item gap appears.
 
-**Filtering at render** — `src/app/app/layout.tsx:21` already selects one of the three link arrays based on route (`isRcsRoute ? rcsLinks : isWhatsappRoute ? whatsappLinks : appLinks`). Apply the filter on the result before passing to the `ui/sidebar.tsx` primitive:
+**Out of scope for this pass:** adding `roles?` to the `SidebarLink` shape or filtering link arrays at render. That generalisation is justified only when a second role-gated sidebar link appears; for v1 it's YAGNI. `sidebarLinks.tsx` is unchanged.
 
-```ts
-const visibleLinks = useMemo(
-  () => links.filter(l => !l.roles || hasRole(l.roles)),
-  [links, role]
-);
-```
+### 3.7 403 handling — axios interceptor
 
-While `userAuthLoading`, role-gated entries are hidden by default — `hasRole(...)` returns `false` when `role` is `null`. Prevents the Admin link from flashing for non-admins on slow loads.
-
-### 3.7 403 handling — axios interceptor + sonner
-
-**Install**: `sonner` (~5 KB, plays well with Tailwind + Radix). Mount `<Toaster richColors position="bottom-right" />` in `app/layout.tsx` once.
+`sonner` is already a dependency and `<Toaster />` is already mounted by `src/app/app/layout.tsx` (with project styling). No install needed; just attach the interceptor.
 
 **`lib/axios.ts`** — attach a response interceptor to **both** clients (`apiClient()` and `authenticatedApiClient()`; the unauthenticated one rarely sees 403 but installing universally is one line):
 
@@ -281,22 +281,23 @@ There is a single `CLAUDE.md` at the project root (`/Users/harshitsingh/code/per
 ## RBAC — Frontend
 - Role constants: src/lib/rbac.ts mirrors backend authz.ts
 - useUser() exposes: role, isAdmin, isReseller, isClient, hasRole(allowed[])
-- <RoleGate roles={[...]}> hides inline actions
-- <RequireRole roles={[...]}> guards whole pages; silent redirect to /app on miss
-- Sidebar links tagged with optional roles?; filtered at render in layout
-- 403 axios interceptor → sonner toast; mutations can override via onError
+- <ProtectedRoute> (existing) handles auth-only gating at the app layout level
+- <RoleGate roles={[...]}> hides inline actions and dropdown items
+- <RequireRole roles={[...]}> sibling of ProtectedRoute, used inside pages that need a role check; silent redirect to /app on miss
+- Admin link lives in UserDock dropdown (not the sidebar list); rendered via RoleGate
+- 403 axios interceptor → sonner toast (Toaster already mounted in app/layout.tsx); mutations can override via onError
 - Admin page: /app/admin/users (admin only)
 ```
 
-The stale `components/ProtectedRoute.tsx` line in the directory structure and "Key Files Reference" tables is removed. The existing `## RBAC` section in the same file gets one additional bullet under "Endpoints" for `GET /api/v1/admin/users`.
+The existing `## RBAC` section in the same file gets one additional bullet under "Endpoints" for `GET /api/v1/admin/users`. The `components/ProtectedRoute.tsx` line in the directory structure and "Key Files Reference" tables is **not** removed — it exists on `design/ui-polish-pass` and remains accurate.
 
-### 3.10 Hardcoded `userId = 2` and KYC prop
+### 3.10 Hardcoded `userId = 2`
 
-**Three RCS pages** still read `const userId = 2`:
+Three RCS pages still read `const userId = 2` on `design/ui-polish-pass`:
 
 - `src/app/app/rcs/agents/page.tsx:104`
 - `src/app/app/rcs/templates/page.tsx:102`
-- `src/app/app/rcs/sendMessage/page.tsx:39`
+- `src/app/app/rcs/sendMessage/page.tsx:40`
 
 Each becomes:
 
@@ -305,9 +306,9 @@ const { user } = useUser();
 const userId = user?.userId;
 ```
 
-with the existing data-fetching `enabled: !!userId` guard added where needed.
+with `enabled: !!userId` guards on dependent `useQuery` calls.
 
-**`/kyc`** — `src/app/kyc/page.tsx` accepts a `userId` prop that no parent passes. Replace with `useUser().user.userId`. Without this, fresh signups can't complete KYC.
+**KYC page** — already fixed on `design/ui-polish-pass` (`src/app/kyc/page.tsx` reads `userId` from `useUser()`). No change needed in this pass.
 
 ---
 
@@ -324,9 +325,11 @@ with the existing data-fetching `enabled: !!userId` guard added where needed.
 
 ### 4.2 Navigating to `/app/admin/users`
 
-- **Admin**: page renders. `listUsers()` calls `GET /admin/users` → backend `requireAdmin` passes → table populates.
-- **Reseller / Client**: `RequireRole` redirects to `/app`. Even if the request reached the backend, `requireAdmin` would 403; the redirect runs first.
-- **During role load**: nothing rendered, no redirect. Resolves once `/auth/me` returns.
+1. `ProtectedRoute` (mounted by `src/app/app/layout.tsx`) verifies auth — unauthenticated → `/auth/login`.
+2. Page renders `<RequireRole roles={[ROLE_ADMIN]}>`.
+3. **Admin**: `<RequireRole>` passes → `listUsers()` calls `GET /admin/users` → backend `requireAdmin` passes → table populates.
+4. **Reseller / Client**: `<RequireRole>` redirects to `/app`. Even if the request reached the backend, `requireAdmin` would 403; the redirect runs first.
+5. **During role load**: `<RequireRole>` renders `null` (no redirect, no flicker). Resolves once `/auth/me` completes via `UserProvider`.
 
 ### 4.3 Changing a role
 
@@ -364,19 +367,19 @@ with the existing data-fetching `enabled: !!userId` guard added where needed.
 
 ## 6. Implementation order
 
-Each commit compiles and the app boots. Steps 1–6 and 9–11 can ship without step 7; only step 8 strictly depends on step 7.
+Each commit compiles and the app boots. Steps 1–5 and 8–9 can ship without step 6; only step 7 strictly depends on step 6.
 
 1. `feat(rbac-fe): role constants + User type narrowed to /auth/me shape` (`website`)
 2. `feat(rbac-fe): expose role helpers on useUser (isAdmin, hasRole, ...)` (`website`)
 3. `feat(rbac-fe): RoleGate + RequireRole primitives` (`website`)
-4. `chore(rbac-fe): add sonner, mount <Toaster /> in root layout` (`website`)
-5. `feat(rbac-fe): 403 axios interceptor → toast` (`website`)
-6. `feat(rbac-fe): sidebar links tagged with roles + filtered render` (`website`)
-7. `feat(rbac): GET /admin/users (admin-only list with email join)` (**`cliona-backend`**)
-8. `feat(rbac-fe): /app/admin/users page + change-role dialog` (`website`)
-9. `fix(rbac-fe): replace hardcoded userId=2 in rcs agents/templates/sendMessage` (`website`)
-10. `fix(rbac-fe): use useUser() instead of unpassed userId prop in /kyc` (`website`)
-11. `docs(rbac): CLAUDE.md — remove ProtectedRoute, add RBAC Frontend section, add /admin/users endpoint bullet` (root `CLAUDE.md`)
+4. `feat(rbac-fe): 403 axios interceptor → sonner toast` (`website`)
+5. `feat(rbac-fe): Admin link in UserDock dropdown` (`website`)
+6. `feat(rbac): GET /admin/users (admin-only list with email join)` (**`cliona-backend`**)
+7. `feat(rbac-fe): /app/admin/users page + change-role dialog` (`website`)
+8. `fix(rbac-fe): replace hardcoded userId=2 in rcs agents/templates/sendMessage` (`website`)
+9. `docs(rbac): CLAUDE.md — add RBAC Frontend section, add /admin/users endpoint bullet` (root `CLAUDE.md`)
+
+**Rebase cadence.** While PR #16 is still open, rebase `feat/rbac` onto `origin/design/ui-polish-pass` every few days and after any new commits on that branch. Dispatch a parallel reviewer subagent on each rebase to catch regressions the rebase introduces — per project convention for refactors. When PR #16 merges to `main`, rebase once more onto `main`; expect minimal conflicts since the rebase cadence kept the branch current.
 
 ---
 
@@ -387,27 +390,27 @@ Manual, in a browser. The project has no automated test infra; per project conve
 **Pre-step.** Confirm `pnpm seed:admin` has been run against the dev DB. If unsure, run it — it's idempotent.
 
 1. **Admin path.** Log in as the seeded admin.
-   - ✓ Admin link visible in sidebar.
-   - ✓ `/app/admin/users` renders the table with all profiles (including `incomplete`).
+   - ✓ Open the `UserDock` dropdown — "Admin" item visible between "Switch service" and the log-out separator.
+   - ✓ Click "Admin" → `/app/admin/users` renders the table with all profiles (including `incomplete`).
    - ✓ Promote a test user from Client → Reseller. Table refetches, toast confirms.
    - ✓ Own row has no `Change role` button.
    - ✓ Single-admin row (the seeded one) has button disabled with the "last admin" tooltip.
 
 2. **Reseller path.** Log out, log in as the user just promoted.
-   - ✓ Admin link absent from sidebar.
+   - ✓ Open `UserDock` dropdown — no "Admin" item.
    - ✓ Manually navigate to `/app/admin/users` → silent redirect to `/app`. No flash of the admin table.
 
 3. **Client path.** Sign up a fresh user.
-   - ✓ KYC form completes without prop-related errors (validates §3.10 KYC fix).
-   - ✓ Same sidebar hiding + redirect behaviour as reseller.
-   - ✓ RCS agents/templates/sendMessage pages render the new user's data — not `userId=2`'s (validates §3.10 hardcoded userId fix).
+   - ✓ KYC form completes (already works on polish-pass; this validates we didn't regress it).
+   - ✓ `UserDock` dropdown does not show "Admin".
+   - ✓ RCS agents/templates/sendMessage pages render the new user's data — not `userId=2`'s (validates §3.10).
 
-4. **403 toast.** From any non-admin session, trigger an admin-only mutation (e.g., DevTools fetch to `PATCH /admin/users/:id/role`).
-   - ✓ Toast fires with server `message`.
+4. **403 toast.** From a non-admin session, trigger an admin-only mutation (e.g., DevTools fetch to `PATCH /admin/users/:id/role`).
+   - ✓ Sonner toast fires with the server `message`.
 
 5. **Build + lint.** `npm run build` (Turbopack typechecks) and `npm run lint` both pass.
 
-**Not validated automatically** — RoleGate "no flicker" on slow networks (visual check only); cross-browser sidebar layout regression; theming of the new sonner toast.
+**Not validated automatically** — RoleGate "no flicker" on slow networks (visual check only); cross-browser dropdown rendering; that the `UserDock` dropdown collapses correctly when `Admin` is the longest label.
 
 ---
 
@@ -416,11 +419,12 @@ Manual, in a browser. The project has no automated test infra; per project conve
 | Risk | Mitigation |
 |---|---|
 | The narrowed `User` type breaks a callsite I missed in grep | Grep was exhaustive (`user.userName`, `user.isSocialLogin`, etc.); narrowing reveals real bugs (callsites reading fields the API never returned). Fix at the breakage. |
-| Sonner toast styling conflicts with Tailwind v4 | Sonner ships its own CSS module and is widely used with Tailwind v4 in the Next 15 ecosystem. If conflict appears, override via the `toastOptions` prop. |
-| Backend `GET /admin/users` slips its review | Steps 1–6 + 9–11 still ship and improve baseline RBAC posture; only step 8 (the admin page) waits. |
+| PR #16 evolves before our PR merges, invalidating `UserDock`/`ProtectedRoute` assumptions | Rebase cadence (§6) catches this early. If `UserDock` is restructured significantly, the Admin-link integration moves to whatever component owns the account menu. |
+| Backend `GET /admin/users` slips its review | Steps 1–5 + 8–9 still ship and improve baseline RBAC posture; only step 7 (the admin page) waits. |
 | User decodes the JWT to spoof a role client-side | Backend re-verifies on every request. Frontend gating is UX, not security. |
 | A future admin sub-page needs a different redirect target | Add a `redirectTo` prop to `RequireRole` then. YAGNI now. |
 | `useUser()` is called outside `UserProvider` (e.g. in `/auth/login`) | The hook already throws; no new failure mode. Guards live inside the `/app` tree where the provider wraps them. |
+| `RoleGate` returning `null` causes a visible gap in the `UserDock` dropdown | Radix `DropdownMenu` handles `null` children gracefully; sanity-checked during verification step 1. |
 
 ---
 
