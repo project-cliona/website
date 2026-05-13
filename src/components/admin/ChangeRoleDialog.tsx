@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -133,7 +132,9 @@ export function ChangeRoleDialog({ open, onOpenChange, row, allUsers }: ChangeRo
                     <select
                       className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
                       value={field.value ?? ""}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={(e) =>
+                        field.onChange(e.target.value === "" ? null : Number(e.target.value))
+                      }
                     >
                       {eligibleParents.length === 0 && (
                         <option value="">No eligible parents</option>
@@ -157,11 +158,9 @@ export function ChangeRoleDialog({ open, onOpenChange, row, allUsers }: ChangeRo
             <AlertDialogCancel asChild>
               <Button type="button" variant="ghost">Cancel</Button>
             </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button type="submit" disabled={isSubmitting || mutation.isPending}>
-                {mutation.isPending ? "Saving…" : "Save"}
-              </Button>
-            </AlertDialogAction>
+            <Button type="submit" disabled={isSubmitting || mutation.isPending}>
+              {mutation.isPending ? "Saving…" : "Save"}
+            </Button>
           </AlertDialogFooter>
         </form>
       </AlertDialogContent>

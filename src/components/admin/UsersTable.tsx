@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { listUsers } from "@/lib/api/admin/users";
 import { useUser } from "@/providers/userProvider";
-import { ROLE_ADMIN, ROLE_LABEL, type Role } from "@/lib/rbac";
+import { ROLE_ADMIN, ROLE_LABEL } from "@/lib/rbac";
 import type { AdminUserRow } from "@/lib/type";
 import { Button } from "@/components/ui/Button";
 import {
@@ -63,7 +63,7 @@ export function UsersTable() {
                 <tr key={row.userId} className="border-t border-border">
                   <td className="px-4 py-2 font-medium">{row.email}</td>
                   <td className="px-4 py-2">{row.fullName ?? "—"}</td>
-                  <td className="px-4 py-2">{ROLE_LABEL[row.roleId as Role]}</td>
+                  <td className="px-4 py-2">{ROLE_LABEL[row.roleId]}</td>
                   <td className="px-4 py-2">{parentEmail(row.parentId)}</td>
                   <td className="px-4 py-2 capitalize">{row.profileStatus}</td>
                   <td className="px-4 py-2 text-right">
