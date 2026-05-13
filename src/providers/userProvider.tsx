@@ -6,11 +6,17 @@ import { User, UserProfile } from "@/lib/type";
 import { getCurrentUser, getUserProfile, logoutUser } from "@/lib/api/auth";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
+import { ROLE_ADMIN, ROLE_RESELLER, ROLE_CLIENT, type Role } from "@/lib/rbac";
 
 interface UserContextType {
     user: User | null;
     profile: UserProfile | null;
     userAuthLoading: boolean;
+    role: Role | null;
+    isAdmin: boolean;
+    isReseller: boolean;
+    isClient: boolean;
+    hasRole: (allowed: Role[]) => boolean;
     refetchUser: () => Promise<QueryObserverResult<User, Error>>;
     refetchProfile: () => Promise<QueryObserverResult<UserProfile, Error>>;
     logout: () => Promise<void>;
@@ -46,6 +52,12 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     const userAuthLoading = userLoading || profileLoading;
+
+    const role: Role | null = user?.role ?? null;
+    const isAdmin = role === ROLE_ADMIN;
+    const isReseller = role === ROLE_RESELLER;
+    const isClient = role === ROLE_CLIENT;
+    const hasRole = (allowed: Role[]) => role !== null && allowed.includes(role);
 
     const logout = async () => {
         try {
@@ -90,6 +102,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
                 user: user ?? null,
                 profile: profile ?? null,
                 userAuthLoading,
+                role,
+                isAdmin,
+                isReseller,
+                isClient,
+                hasRole,
                 refetchUser,
                 refetchProfile,
                 logout,
