@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchTemplates } from "@/lib/api/rcs/templates";
 import { VariantProps } from "class-variance-authority";
 import { RCSTemplate } from "@/lib/type";
+import { useUser } from "@/providers/userProvider";
 
 
 const multiColumnFilterFn: FilterFn<RCSTemplate> = (row, _columnId, value) => {
@@ -99,11 +100,13 @@ const columns: ColumnDef<RCSTemplate>[] = [
 /* ---------------- Component ---------------- */
 
 export default function UsersTable() {
-  const userId = 2;
+  const { user } = useUser();
+  const userId = user?.userId;
 
   const { data: templateData, isLoading } = useQuery({
     queryKey: ["templates", userId],
-    queryFn: () => fetchTemplates(userId),
+    queryFn: () => fetchTemplates(userId!),
+    enabled: !!userId,
   });
 
   if (isLoading) {
