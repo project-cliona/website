@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { Role } from "@/lib/rbac";
 
 export interface StatsCardProps {
   icon?: ReactNode;
@@ -85,12 +86,7 @@ export interface RCSTemplate {
 export interface User {
   userId: number;
   email: string;
-  userName: string;
-  isSocialLogin: boolean;
-  status: string;
-  isEmailConfirmed: boolean;
-  isPhoneConfirmed: boolean;
-  createdOn: string;
+  role: Role;
 }
 
 export interface UserProfile {
