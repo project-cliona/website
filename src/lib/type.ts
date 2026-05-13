@@ -359,3 +359,13 @@ export interface CsvImportResult {
   errors: Array<{ row: number; phone: string | null; reason: string }>;
   listId: number | null;
 }
+
+export interface AdminUserRow {
+  userId: number;
+  email: string;
+  fullName: string | null;
+  roleId: Role;
+  parentId: number | null;
+  profileStatus: "active" | "incomplete" | "suspended" | "inactive";
+  createdAt: string;
+}
