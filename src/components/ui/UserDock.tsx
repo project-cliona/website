@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronUp, LogOut, User as UserIcon, Settings, Repeat } from "lucide-react";
+import { ChevronUp, LogOut, User as UserIcon, Settings, Repeat, ShieldCheck } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,6 +9,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useUser } from "@/providers/userProvider";
+import { RoleGate } from "@/components/auth/RoleGate";
+import { ROLE_ADMIN } from "@/lib/rbac";
 import Link from "next/link";
 
 interface UserDockProps {
@@ -73,6 +75,13 @@ export function UserDock({ collapsed = false }: UserDockProps) {
             <Repeat className="h-4 w-4 mr-2" /> Switch service
           </Link>
         </DropdownMenuItem>
+        <RoleGate roles={[ROLE_ADMIN]}>
+          <DropdownMenuItem asChild>
+            <Link href="/app/admin/users">
+              <ShieldCheck className="h-4 w-4 mr-2" /> Admin
+            </Link>
+          </DropdownMenuItem>
+        </RoleGate>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={handleLogout}

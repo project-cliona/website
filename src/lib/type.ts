@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { Role } from "@/lib/rbac";
 
 export interface StatsCardProps {
   icon?: ReactNode;
@@ -85,12 +86,7 @@ export interface RCSTemplate {
 export interface User {
   userId: number;
   email: string;
-  userName: string;
-  isSocialLogin: boolean;
-  status: string;
-  isEmailConfirmed: boolean;
-  isPhoneConfirmed: boolean;
-  createdOn: string;
+  role: Role;
 }
 
 export interface UserProfile {
@@ -362,4 +358,14 @@ export interface CsvImportResult {
   columnsIgnored: string[];
   errors: Array<{ row: number; phone: string | null; reason: string }>;
   listId: number | null;
+}
+
+export interface AdminUserRow {
+  userId: number;
+  email: string;
+  fullName: string | null;
+  roleId: Role;
+  parentId: number | null;
+  profileStatus: "active" | "incomplete" | "suspended" | "inactive";
+  createdAt: string;
 }

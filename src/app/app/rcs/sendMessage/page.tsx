@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { fetchTemplatesByAgentID } from '@/lib/api/rcs/templates'
 import { Agent, RCSTemplate } from '@/lib/type'
+import { useUser } from '@/providers/userProvider'
 export default function SendMessage() {
   const {
     control,
@@ -37,11 +38,13 @@ export default function SendMessage() {
   const selectedTemplate = watch("templateID")
   // const mobileNumbers = watch("mobileNumbers")
 
-  const userId = 2
+  const { user } = useUser();
+  const userId = user?.userId;
 
   const { data: agentData } = useQuery<Agent[]>({
     queryKey: ['agents', userId],
-    queryFn: () => fetchAgents(userId),
+    queryFn: () => fetchAgents(userId!),
+    enabled: !!userId,
   })
 
   const { data: templateData } = useQuery<RCSTemplate[]>({
