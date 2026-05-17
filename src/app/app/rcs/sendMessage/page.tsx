@@ -13,8 +13,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Textarea } from '@/components/ui/Textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/Button'
+import { Card } from '@/components/ui/Card'
 import { fetchTemplatesByAgentID } from '@/lib/api/rcs/templates'
 import { Agent, RCSTemplate } from '@/lib/type'
+import { useUser } from '@/providers/userProvider'
 export default function SendMessage() {
   const {
     control,
@@ -36,11 +38,13 @@ export default function SendMessage() {
   const selectedTemplate = watch("templateID")
   // const mobileNumbers = watch("mobileNumbers")
 
-  const userId = 2
+  const { user } = useUser();
+  const userId = user?.userId;
 
   const { data: agentData } = useQuery<Agent[]>({
     queryKey: ['agents', userId],
-    queryFn: () => fetchAgents(userId),
+    queryFn: () => fetchAgents(userId!),
+    enabled: !!userId,
   })
 
   const { data: templateData } = useQuery<RCSTemplate[]>({
@@ -69,7 +73,7 @@ export default function SendMessage() {
 
           {/* Main Form */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white border border-gray-100 rounded-xl p-6">
+            <Card className="p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Campaign Settings
               </h2>
@@ -146,10 +150,10 @@ export default function SendMessage() {
                   )}
                 </div>
               </div>
-            </div>
+            </Card>
 
             {/* Mobile Numbers */}
-            <div className="bg-white border border-gray-100 rounded-xl p-6">
+            <Card className="p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Mobile Numbers
               </h2>
@@ -207,7 +211,7 @@ export default function SendMessage() {
                   )}
                 />
               </div>
-            </div>
+            </Card>
 
             {/* Submit */}
             <Button type="submit" className="w-full">

@@ -15,15 +15,16 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { PhoneFrame } from "@/components/ui/PhoneFrame";
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const C = {
   darkBg: "#0F1117",
   darkCard: "#161B22",
   darkBorder: "#21262D",
-  accent: "#16A34A",
-  accentHover: "#15803D",
-  accentLight: "#DCFCE7",
+  accent: "#4F46E5",
+  accentHover: "#4338CA",
+  accentLight: "#E0E7FF",
 };
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
@@ -36,15 +37,11 @@ function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/squalto.jpg"
+            src="/logo-wordmark.svg"
             alt="Squalto"
-            width={32}
-            height={32}
-            className="rounded-md"
+            width={120}
+            height={28}
           />
-          <span className="text-xl font-semibold text-[#0F1117]">
-            Squalto
-          </span>
         </Link>
 
         {/* Desktop nav */}
@@ -167,18 +164,7 @@ function Hero() {
         {/* Right — WhatsApp chat mockup */}
         <div className="flex justify-center md:justify-end">
           <div className="relative">
-            {/* Phone frame */}
-            <div className="w-64 bg-[#0F1117] rounded-3xl p-3 shadow-2xl ring-1 ring-white/10">
-              {/* Status bar */}
-              <div className="flex items-center justify-between px-2 py-1 mb-1">
-                <span className="text-white text-xs font-medium">9:41</span>
-                <div className="flex gap-1">
-                  <div className="w-3 h-1.5 bg-white/60 rounded-sm" />
-                  <div className="w-3 h-1.5 bg-white/60 rounded-sm" />
-                  <div className="w-3 h-1.5 bg-white/60 rounded-sm" />
-                </div>
-              </div>
-
+            <PhoneFrame>
               {/* Chat header */}
               <div
                 className="flex items-center gap-2 px-3 py-2 rounded-t-xl"
@@ -225,7 +211,7 @@ function Hero() {
                   <p className="text-[9px] text-gray-400 text-right mt-1">10:03</p>
                 </div>
               </div>
-            </div>
+            </PhoneFrame>
 
             {/* Floating stat card */}
             <div className="absolute -bottom-4 -right-6 bg-white border border-gray-100 shadow-lg rounded-xl px-4 py-3 flex items-center gap-3">
@@ -301,12 +287,12 @@ function Features() {
           {features.map(f => (
             <div
               key={f.title}
-              className="flex flex-col gap-4 p-6 rounded-xl border transition-all hover:border-[#16A34A]/40"
+              className="flex flex-col gap-4 p-6 rounded-xl border transition-all hover:border-[#4F46E5]/40"
               style={{ backgroundColor: C.darkCard, borderColor: C.darkBorder }}
             >
               <div
                 className="w-10 h-10 rounded-lg flex items-center justify-center"
-                style={{ backgroundColor: "#16A34A20" }}
+                style={{ backgroundColor: "#4F46E520" }}
               >
                 <f.icon size={18} style={{ color: C.accent }} />
               </div>
@@ -597,7 +583,7 @@ function Integrations() {
           {integrations.map(name => (
             <div
               key={name}
-              className="flex items-center justify-center bg-white border border-gray-100 shadow-sm rounded-xl py-4 px-3 text-sm font-medium text-gray-700 hover:border-[#16A34A]/40 hover:shadow-md transition-all"
+              className="flex items-center justify-center bg-white border border-gray-100 shadow-sm rounded-xl py-4 px-3 text-sm font-medium text-gray-700 hover:border-[#4F46E5]/40 hover:shadow-md transition-all"
             >
               {name}
             </div>
@@ -654,13 +640,11 @@ function Footer() {
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-3">
               <Image
-                src="/squalto.jpg"
+                src="/logo-wordmark.svg"
                 alt="Squalto"
-                width={28}
+                width={120}
                 height={28}
-                className="rounded-md"
               />
-              <span className="text-base font-semibold text-white">Squalto</span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed max-w-[180px]">
               AI-powered WhatsApp &amp; RCS messaging for modern businesses.

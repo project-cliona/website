@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 
 export default function CampaignReports() {
   const [filters, setFilters] = useState({
@@ -134,7 +135,7 @@ export default function CampaignReports() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Completed':
-        return 'bg-green-100 text-green-700'
+        return 'bg-success/15 text-success'
       case 'Scheduled':
         return 'bg-blue-100 text-blue-700'
       case 'Sending':
@@ -160,13 +161,10 @@ export default function CampaignReports() {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">Campaign Reports</h1>
-          <button 
-            onClick={exportAllReports}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center"
-          >
+          <Button onClick={exportAllReports}>
             <span className="mr-2">📊</span>
             Export All Reports
-          </button>
+          </Button>
         </div>
 
         {/* Filters */}
@@ -255,7 +253,7 @@ export default function CampaignReports() {
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-success">
                 {filteredCampaigns.filter(c => c.status === 'Completed').length}
               </div>
               <div className="text-sm text-gray-600 mt-1">Completed</div>
@@ -350,7 +348,7 @@ export default function CampaignReports() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <div>{campaign.scheduledTime}</div>
                       {campaign.actualSentTime !== 'Pending' && campaign.actualSentTime !== 'Failed' && (
-                        <div className="text-xs text-green-600">
+                        <div className="text-xs text-success">
                           Sent: {campaign.actualSentTime}
                         </div>
                       )}
@@ -361,7 +359,7 @@ export default function CampaignReports() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {campaign.deliveryRate > 0 ? (
                         <span className={`font-medium ${
-                          campaign.deliveryRate >= 95 ? 'text-green-600' :
+                          campaign.deliveryRate >= 95 ? 'text-success' :
                           campaign.deliveryRate >= 90 ? 'text-yellow-600' :
                           'text-red-600'
                         }`}>
@@ -374,7 +372,7 @@ export default function CampaignReports() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {campaign.readRate > 0 ? (
                         <span className={`font-medium ${
-                          campaign.readRate >= 70 ? 'text-green-600' :
+                          campaign.readRate >= 70 ? 'text-success' :
                           campaign.readRate >= 50 ? 'text-yellow-600' :
                           'text-red-600'
                         }`}>

@@ -3,18 +3,17 @@
 import { use, useMemo, useState } from "react";
 import Link from "next/link";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import {
   ArrowLeft,
   DownloadIcon,
   Ban,
+  MoreHorizontal,
 } from "lucide-react";
-import type { VariantProps } from "class-variance-authority";
 
-import { PageHeading } from "@/components/ui/PageHeading";
-import { TableSkeleton } from "@/components/ui/skeleton/table";
-import { Badge, badgeVariants } from "@/components/ui/badge";
 import { Button } from "@/components/ui/Button";
 import { Label } from "@/components/ui/Label";
+import { StatusPill } from "@/components/ui/StatusPill";
 import {
   Select,
   SelectContent,
@@ -33,6 +32,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableLoading,
+  TableRow,
+  TableActions,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import {
   fetchCampaignById,
@@ -45,6 +60,7 @@ import type {
   WhatsappCampaignStatus,
 } from "@/lib/type";
 import { exportToCSV } from "@/lib/utils";
+import { usePageSearch } from "@/providers/searchProvider";
 
 const MESSAGES_PAGE_SIZE = 100;
 
@@ -53,18 +69,6 @@ const TERMINAL_STATUSES: WhatsappCampaignStatus[] = [
   "cancelled",
   "failed",
 ];
-
-const statusBadgeVariant: Record<
-  WhatsappCampaignStatus,
-  VariantProps<typeof badgeVariants>["variant"]
-> = {
-  draft: "secondary",
-  queued: "pending",
-  in_progress: "pending",
-  completed: "active",
-  cancelled: "inactive",
-  failed: "rejected",
-};
 
 const statusLabel: Record<WhatsappCampaignStatus, string> = {
   draft: "Draft",
@@ -75,17 +79,14 @@ const statusLabel: Record<WhatsappCampaignStatus, string> = {
   failed: "Failed",
 };
 
-const messageStatusVariant: Record<
-  string,
-  VariantProps<typeof badgeVariants>["variant"]
-> = {
-  pending: "secondary",
-  accepted: "default",
-  sent: "pending",
-  delivered: "active",
-  read: "active",
-  failed: "rejected",
-  cancelled: "inactive",
+const messageStatusLabel: Record<string, string> = {
+  pending: "Pending",
+  accepted: "Accepted",
+  sent: "Sent",
+  delivered: "Delivered",
+  read: "Read",
+  failed: "Failed",
+  cancelled: "Cancelled",
 };
 
 function formatTime(iso: string | null) {
@@ -93,9 +94,12 @@ function formatTime(iso: string | null) {
   return new Date(iso).toLocaleString();
 }
 
-function percent(n: number, d: number) {
-  if (d === 0) return 0;
-  return Math.round((n / d) * 1000) / 10;
+function formatTimeShort(iso: string | null) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }
 
 export default function WhatsappCampaignDetail({
@@ -106,7 +110,16 @@ export default function WhatsappCampaignDetail({
   const { id } = use(params);
   const queryClient = useQueryClient();
   const [statusFilter, setStatusFilter] = useState<string>("");
+  const [recipientSearch, setRecipientSearch] = useState("");
   const [page, setPage] = useState(1);
+
+  usePageSearch({
+    placeholder: "Search recipients",
+    onChange: (value) => {
+      setRecipientSearch(value);
+      setPage(1);
+    },
+  });
 
   const campaignQuery = useQuery<WhatsappCampaign>({
     queryKey: ["whatsapp-campaign", id],
@@ -143,6 +156,15 @@ export default function WhatsappCampaignDetail({
   const totalMessages = messagesQuery.data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalMessages / MESSAGES_PAGE_SIZE));
 
+  const visibleMessages = useMemo(() => {
+    if (!recipientSearch) return messages;
+    const needle = recipientSearch.trim().toLowerCase();
+    if (!needle) return messages;
+    return messages.filter((m) =>
+      m.recipientPhone.toLowerCase().includes(needle)
+    );
+  }, [messages, recipientSearch]);
+
   const cancelMutation = useMutation({
     mutationFn: () => cancelCampaign(id),
     onSuccess: () => {
@@ -164,7 +186,8 @@ export default function WhatsappCampaignDetail({
         { header: "WAMID", accessor: "wamid" },
         {
           header: "Sent At",
-          accessor: (row) => (row.sentAt ? new Date(row.sentAt).toLocaleString() : ""),
+          accessor: (row) =>
+            row.sentAt ? new Date(row.sentAt).toLocaleString() : "",
         },
         {
           header: "Delivered At",
@@ -173,7 +196,8 @@ export default function WhatsappCampaignDetail({
         },
         {
           header: "Read At",
-          accessor: (row) => (row.readAt ? new Date(row.readAt).toLocaleString() : ""),
+          accessor: (row) =>
+            row.readAt ? new Date(row.readAt).toLocaleString() : "",
         },
         { header: "Failure Reason", accessor: "failureReason" },
       ],
@@ -183,74 +207,110 @@ export default function WhatsappCampaignDetail({
   if (campaignQuery.isLoading || !campaign) {
     return (
       <div className="space-y-6">
-        <PageHeading title="Campaign" />
-        <TableSkeleton rows={4} columns={5} />
+        <div>
+          <Link
+            href="/app/whatsapp/campaignReport"
+            className="text-caption text-muted-foreground hover:text-foreground inline-flex items-center gap-1 mb-2"
+          >
+            <ArrowLeft className="w-4 h-4" /> All campaigns
+          </Link>
+          <h1 className="text-h1 text-foreground">Campaign</h1>
+        </div>
+        <div className="rounded-lg border border-border bg-card shadow-e1">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Phone</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Sent</TableHead>
+                <TableHead>Delivered</TableHead>
+                <TableHead>Read</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableLoading rows={5} columns={5} />
+            </TableBody>
+          </Table>
+        </div>
       </div>
     );
   }
 
   const totalRecipients = campaign.totalRecipients;
-  const deliveryRate = percent(campaign.delivered, totalRecipients);
-  const readRate = percent(campaign.read, campaign.delivered);
-  const sentRate = percent(campaign.sent, totalRecipients);
-  const failedRate = percent(campaign.failed, totalRecipients);
-
-  const canCancel = !isTerminal;
+  const sentBase = campaign.sent || totalRecipients || 1;
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div>
         <Link
           href="/app/whatsapp/campaignReport"
-          className="text-sm text-gray-500 hover:text-gray-700 inline-flex items-center gap-1 mb-2"
+          className="text-caption text-muted-foreground hover:text-foreground inline-flex items-center gap-1 mb-2"
         >
           <ArrowLeft className="w-4 h-4" /> All campaigns
         </Link>
         <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-semibold text-gray-900">
-                {campaign.campaignName}
-              </h1>
-              <Badge variant={statusBadgeVariant[campaign.status]}>
-                {statusLabel[campaign.status]}
-              </Badge>
-            </div>
-            <p className="text-sm text-gray-500 mt-1">
-              Template <span className="font-medium text-gray-700">{campaign.templateName}</span>{" "}
-              ({campaign.templateLanguage}) ·{" "}
-              Created {formatTime(campaign.createdAt)}
+          <div className="min-w-0">
+            <h1 className="text-h1 text-foreground truncate">
+              {campaign.campaignName}
+            </h1>
+            <div className="mt-2 flex items-center gap-3 text-caption text-muted-foreground flex-wrap">
+              <span>
+                Template{" "}
+                <span className="font-medium text-foreground">
+                  {campaign.templateName}
+                </span>{" "}
+                ({campaign.templateLanguage})
+              </span>
+              <span>·</span>
+              <span>Created {formatTime(campaign.createdAt)}</span>
               {campaign.startedAt && (
                 <>
-                  {" "}
-                  · Started {formatTime(campaign.startedAt)}
+                  <span>·</span>
+                  <span>Started {formatTime(campaign.startedAt)}</span>
                 </>
               )}
               {campaign.completedAt && (
                 <>
-                  {" "}
-                  · Ended {formatTime(campaign.completedAt)}
+                  <span>·</span>
+                  <span>Ended {formatTime(campaign.completedAt)}</span>
                 </>
               )}
-            </p>
+              <span>·</span>
+              <span>{totalRecipients.toLocaleString()} recipients</span>
+            </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2 shrink-0">
+            <StatusPill status={campaign.status}>
+              {statusLabel[campaign.status]}
+            </StatusPill>
+            {campaign.status === "in_progress" && (
+              <span className="inline-flex items-center gap-1.5 text-caption text-primary-700">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary-600 animate-pulse-dot" />
+                Updating live
+              </span>
+            )}
             <Button
               variant="outline"
+              size="sm"
               onClick={handleExport}
               disabled={messages.length === 0}
             >
               <span className="inline-flex items-center gap-2">
-                <DownloadIcon className="w-4 h-4" /> Export recipients
+                <DownloadIcon className="w-4 h-4" /> Export
               </span>
             </Button>
-            {canCancel && (
+            {!isTerminal && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive" disabled={cancelMutation.isPending}>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    disabled={cancelMutation.isPending}
+                  >
                     <span className="inline-flex items-center gap-2">
                       <Ban className="w-4 h-4" />
-                      {cancelMutation.isPending ? "Cancelling…" : "Cancel campaign"}
+                      {cancelMutation.isPending ? "Cancelling…" : "Cancel"}
                     </span>
                   </Button>
                 </AlertDialogTrigger>
@@ -280,85 +340,52 @@ export default function WhatsappCampaignDetail({
       </div>
 
       {cancelMutation.isError && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
-          {(cancelMutation.error as Error)?.message ?? "Failed to cancel campaign"}
+        <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+          {(cancelMutation.error as Error)?.message ??
+            "Failed to cancel campaign"}
         </div>
       )}
 
-      {/* Metric cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <MetricCard label="Total Recipients" value={totalRecipients} color="text-gray-900" />
-        <MetricCard
-          label="Sent"
-          value={campaign.sent}
-          sub={`${sentRate.toFixed(1)}%`}
-          color="text-green-600"
-        />
-        <MetricCard
-          label="Delivered"
-          value={campaign.delivered}
-          sub={`${deliveryRate.toFixed(1)}%`}
-          color="text-blue-600"
-        />
-        <MetricCard
-          label="Read"
-          value={campaign.read}
-          sub={`${readRate.toFixed(1)}% of delivered`}
-          color="text-purple-600"
-        />
-        <MetricCard
-          label="Failed"
-          value={campaign.failed}
-          sub={`${failedRate.toFixed(1)}%`}
-          color="text-red-600"
-        />
-      </div>
-
       {/* Funnel */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Delivery Funnel
-        </h2>
-        <div className="space-y-3">
-          {[
-            { label: "Submitted", value: totalRecipients, color: "bg-gray-500" },
-            { label: "Sent", value: campaign.sent, color: "bg-green-500" },
-            { label: "Delivered", value: campaign.delivered, color: "bg-blue-500" },
-            { label: "Read", value: campaign.read, color: "bg-purple-500" },
-          ].map((item) => (
-            <div key={item.label} className="flex items-center">
-              <div className="w-24 text-sm text-gray-600">{item.label}</div>
-              <div className="flex-1 bg-gray-200 rounded-full h-4 ml-4">
-                <div
-                  className={`${item.color} h-4 rounded-full transition-all`}
-                  style={{
-                    width: `${
-                      totalRecipients > 0
-                        ? Math.min(100, (item.value / totalRecipients) * 100)
-                        : 0
-                    }%`,
-                  }}
-                />
-              </div>
-              <div className="w-20 text-right text-sm font-medium ml-4">
-                {item.value.toLocaleString()}
-              </div>
-            </div>
-          ))}
-        </div>
+      <div className="rounded-lg border border-border bg-card p-5 shadow-e1">
+        <h2 className="text-h2 mb-4">Funnel</h2>
+        <Funnel
+          steps={[
+            {
+              label: "Submitted",
+              count: totalRecipients,
+              total: totalRecipients || 1,
+            },
+            {
+              label: "Sent",
+              count: campaign.sent,
+              total: totalRecipients || 1,
+            },
+            {
+              label: "Delivered",
+              count: campaign.delivered,
+              total: sentBase,
+            },
+            {
+              label: "Read",
+              count: campaign.read,
+              total: sentBase,
+            },
+          ]}
+        />
       </div>
 
       {/* Per-recipient table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between gap-4 flex-wrap">
-          <h2 className="text-lg font-semibold text-gray-900">
+      <div className="rounded-lg border border-border bg-card shadow-e1">
+        <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-4 flex-wrap">
+          <h3 className="text-h3">
             Recipients{" "}
-            <span className="text-sm text-gray-500 font-normal">
+            <span className="text-caption text-muted-foreground font-normal">
               ({totalMessages.toLocaleString()})
             </span>
-          </h2>
+          </h3>
           <div className="flex items-center gap-3">
-            <Label className="text-sm text-gray-600">Status</Label>
+            <Label className="text-caption text-muted-foreground">Status</Label>
             <Select
               value={statusFilter || "all"}
               onValueChange={(v) => {
@@ -383,69 +410,103 @@ export default function WhatsappCampaignDetail({
           </div>
         </div>
 
-        {messagesQuery.isLoading ? (
-          <div className="p-6">
-            <TableSkeleton rows={6} columns={6} />
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <Th>Phone</Th>
-                  <Th>Status</Th>
-                  <Th>Sent</Th>
-                  <Th>Delivered</Th>
-                  <Th>Read</Th>
-                  <Th>Error</Th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {messages.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={6}
-                      className="px-6 py-12 text-center text-sm text-gray-500"
-                    >
-                      No recipients match this filter.
-                    </td>
-                  </tr>
-                ) : (
-                  messages.map((m) => (
-                    <tr key={m.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {m.recipientPhone}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <Badge
-                          variant={messageStatusVariant[m.status] ?? "default"}
-                        >
-                          {m.status}
-                        </Badge>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {formatTime(m.sentAt)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {formatTime(m.deliveredAt)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {formatTime(m.readAt)}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-red-600 max-w-xs truncate">
-                        {m.failureReason ?? "—"}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Phone</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Sent</TableHead>
+              <TableHead>Delivered</TableHead>
+              <TableHead>Read</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {messagesQuery.isLoading ? (
+              <TableLoading rows={6} columns={6} />
+            ) : visibleMessages.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  className="h-24 text-center text-caption text-muted-foreground"
+                >
+                  No recipients match this filter.
+                </TableCell>
+              </TableRow>
+            ) : (
+              visibleMessages.map((m) => (
+                <TableRow key={m.id}>
+                  <TableCell className="font-mono text-sm">
+                    {m.recipientPhone}
+                  </TableCell>
+                  <TableCell>
+                    <StatusPill status={m.status}>
+                      {messageStatusLabel[m.status] ?? m.status}
+                    </StatusPill>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {formatTimeShort(m.sentAt)}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {formatTimeShort(m.deliveredAt)}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {formatTimeShort(m.readAt)}
+                  </TableCell>
+                  <TableCell>
+                    <TableActions>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            className="h-8 w-8 rounded-md flex items-center justify-center text-muted-foreground hover:bg-secondary focus-ring"
+                            aria-label="More"
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          {m.status === "failed" && m.failureReason && (
+                            <DropdownMenuItem
+                              disabled
+                              className="whitespace-pre-wrap max-w-xs"
+                            >
+                              {m.failureReason}
+                            </DropdownMenuItem>
+                          )}
+                          {m.wamid && (
+                            <DropdownMenuItem
+                              onSelect={() => {
+                                if (typeof navigator !== "undefined" && m.wamid) {
+                                  navigator.clipboard?.writeText(m.wamid);
+                                }
+                              }}
+                            >
+                              Copy WAMID
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuItem
+                            onSelect={() => {
+                              if (typeof navigator !== "undefined") {
+                                navigator.clipboard?.writeText(m.recipientPhone);
+                              }
+                            }}
+                          >
+                            Copy phone
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableActions>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
 
         {totalMessages > MESSAGES_PAGE_SIZE && (
-          <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between text-sm">
-            <span className="text-gray-500">
+          <div className="px-5 py-4 border-t border-border flex items-center justify-between text-caption">
+            <span className="text-muted-foreground">
               Showing {(page - 1) * MESSAGES_PAGE_SIZE + 1}–
               {Math.min(page * MESSAGES_PAGE_SIZE, totalMessages)} of{" "}
               {totalMessages.toLocaleString()}
@@ -453,6 +514,7 @@ export default function WhatsappCampaignDetail({
             <div className="flex gap-2">
               <Button
                 variant="outline"
+                size="sm"
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
               >
@@ -460,6 +522,7 @@ export default function WhatsappCampaignDetail({
               </Button>
               <Button
                 variant="outline"
+                size="sm"
                 disabled={page >= totalPages}
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               >
@@ -473,30 +536,46 @@ export default function WhatsappCampaignDetail({
   );
 }
 
-function MetricCard({
-  label,
-  value,
-  sub,
-  color,
-}: {
+interface FunnelStep {
   label: string;
-  value: number;
-  sub?: string;
-  color: string;
-}) {
-  return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
-      <div className={`text-2xl font-bold ${color}`}>{value.toLocaleString()}</div>
-      <div className="text-sm text-gray-600 mt-1">{label}</div>
-      {sub && <div className={`text-xs mt-1 ${color} opacity-80`}>{sub}</div>}
-    </div>
-  );
+  count: number;
+  total: number;
 }
 
-function Th({ children }: { children: React.ReactNode }) {
+function Funnel({ steps }: { steps: FunnelStep[] }) {
   return (
-    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-      {children}
-    </th>
+    <div className="flex flex-col gap-3">
+      {steps.map((s, i) => {
+        const pct = s.total > 0 ? (s.count / s.total) * 100 : 0;
+        const clamped = Math.min(100, Math.max(0, pct));
+        return (
+          <div key={s.label} className="flex items-center gap-3">
+            <div className="w-24 text-small text-muted-foreground">
+              {s.label}
+            </div>
+            <div className="flex-1 h-7 rounded-md bg-muted overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${clamped}%` }}
+                transition={{
+                  duration: 0.6,
+                  delay: i * 0.08,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="h-full rounded-md bg-primary-600"
+              />
+            </div>
+            <div className="w-32 text-right text-small tabular-nums">
+              <span className="font-semibold">
+                {s.count.toLocaleString()}
+              </span>
+              <span className="text-muted-foreground ml-1">
+                ({pct.toFixed(1)}%)
+              </span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }

@@ -188,10 +188,7 @@ export function WhatsappPreview(props: WhatsappPreviewProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-6">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">
-        Live Preview
-      </h2>
+    <div className="p-6 sticky">
 
       {/* Phone Frame */}
       <div className="mx-auto bg-black rounded-[2rem] p-2 w-64">

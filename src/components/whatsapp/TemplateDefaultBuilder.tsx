@@ -903,20 +903,20 @@ export default function TemplateDefaultBuilder({
             <div className="space-y-2">
               {/* Upload success state */}
               {mediaUrl ? (
-                  <div className="flex items-center gap-3 rounded-md border border-green-200 bg-green-50 p-3">
-                    <CheckCircle2 className="h-5 w-5 shrink-0 text-green-600" />
+                  <div className="flex items-center gap-3 rounded-md border border-success/30 bg-success/10 p-3">
+                    <CheckCircle2 className="h-5 w-5 shrink-0 text-success" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-green-800 truncate">
+                      <p className="text-sm font-medium text-success truncate">
                         {uploadedFileName || "Existing media"}
                       </p>
-                      <p className="text-xs text-green-600 truncate">
+                      <p className="text-xs text-success truncate">
                         {uploadedFileName ? "Uploaded successfully" : mediaUrl}
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={clearUploadedFile}
-                      className="shrink-0 rounded p-1 text-green-600 hover:bg-green-100"
+                      className="shrink-0 rounded p-1 text-success hover:bg-success/15"
                     >
                       <X className="h-4 w-4" />
                     </button>

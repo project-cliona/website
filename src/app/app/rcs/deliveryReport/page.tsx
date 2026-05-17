@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 
 export default function DeliveryReports() {
   const [filters, setFilters] = useState({
@@ -96,13 +97,10 @@ export default function DeliveryReports() {
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">Delivery Reports</h1>
           <div className="flex gap-2">
-            <button 
-              onClick={exportToExcel}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center"
-            >
+            <Button onClick={exportToExcel}>
               <span className="mr-2">📊</span>
               Export to Excel
-            </button>
+            </Button>
             <button 
               onClick={downloadReport}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
@@ -203,9 +201,9 @@ export default function DeliveryReports() {
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{deliveryData.sent.toLocaleString()}</div>
+              <div className="text-2xl font-bold text-success">{deliveryData.sent.toLocaleString()}</div>
               <div className="text-sm text-gray-600 mt-1">Sent</div>
-              <div className="text-xs text-green-500">
+              <div className="text-xs text-success">
                 {((deliveryData.sent / deliveryData.totalSubmitted) * 100).toFixed(1)}%
               </div>
             </div>
@@ -254,7 +252,7 @@ export default function DeliveryReports() {
             <div className="flex items-center">
               <div className="w-24 text-sm text-gray-600">Sent</div>
               <div className="flex-1 bg-gray-200 rounded-full h-4 ml-4">
-                <div className="bg-green-500 h-4 rounded-full" style={{width: `${(deliveryData.sent / deliveryData.totalSubmitted) * 100}%`}}></div>
+                <div className="bg-success h-4 rounded-full" style={{width: `${(deliveryData.sent / deliveryData.totalSubmitted) * 100}%`}}></div>
               </div>
               <div className="w-20 text-right text-sm font-medium ml-4">{deliveryData.sent.toLocaleString()}</div>
             </div>
@@ -337,7 +335,7 @@ export default function DeliveryReports() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {report.totalNumbers.toLocaleString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-success font-medium">
                       {report.sent.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600 font-medium">
@@ -351,9 +349,9 @@ export default function DeliveryReports() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                        report.uploadSource === 'File Upload' 
-                          ? 'bg-blue-100 text-blue-700' 
-                          : 'bg-green-100 text-green-700'
+                        report.uploadSource === 'File Upload'
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'bg-primary-100 text-primary-700'
                       }`}>
                         {report.uploadSource}
                       </span>

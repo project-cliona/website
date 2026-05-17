@@ -145,7 +145,7 @@ export function CsvImportModal({ open, onClose }: Props) {
             </>
           ) : (
             <div className="space-y-3">
-              <h3 className="font-semibold text-green-700">
+              <h3 className="font-semibold text-success">
                 ✅ Import complete
               </h3>
               <ul className="text-sm space-y-1">

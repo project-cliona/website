@@ -54,9 +54,9 @@ export default function TemplateDetails() {
           className={`inline-flex items-center rounded-full px-4 py-1 text-xs font-semibold
             ${
               data.status === 'Approved'
-                ? 'bg-green-100 text-green-700'
+                ? 'bg-success/15 text-success'
                 : data.status === 'Rejected'
-                ? 'bg-red-100 text-red-700'
+                ? 'bg-destructive/15 text-destructive'
                 : 'bg-yellow-100 text-yellow-700'
             }
           `}
