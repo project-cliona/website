@@ -6,6 +6,7 @@ import { importContactsCsv } from "@/lib/api/whatsapp/contacts";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { notify } from "@/lib/toast";
 import { X, Upload } from "lucide-react";
 import type { CsvImportResult } from "@/lib/type";
 
@@ -20,7 +21,6 @@ export function CsvImportModal({ open, onClose }: Props) {
   const [saveAsListEnabled, setSaveAsListEnabled] = useState(false);
   const [listName, setListName] = useState("");
   const [result, setResult] = useState<CsvImportResult | null>(null);
-  const [err, setErr] = useState<string | null>(null);
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -31,12 +31,12 @@ export function CsvImportModal({ open, onClose }: Props) {
     },
     onSuccess: (r) => {
       setResult(r);
-      setErr(null);
       qc.invalidateQueries({ queryKey: ["whatsapp-contacts"] });
       qc.invalidateQueries({ queryKey: ["whatsapp-lists"] });
       qc.invalidateQueries({ queryKey: ["whatsapp-tags"] });
+      notify.success(`Imported ${r.added + r.updated} contacts`);
     },
-    onError: (e: Error) => setErr(e.message),
+    onError: (e) => notify.error(e, "Could not import contacts"),
   });
 
   const reset = () => {
@@ -44,7 +44,6 @@ export function CsvImportModal({ open, onClose }: Props) {
     setSaveAsListEnabled(false);
     setListName("");
     setResult(null);
-    setErr(null);
   };
 
   if (!open) return null;
@@ -136,12 +135,6 @@ export function CsvImportModal({ open, onClose }: Props) {
                   )}
                 </span>
               </label>
-
-              {err && (
-                <div className="bg-red-50 border border-red-200 rounded p-3 text-sm text-red-700">
-                  {err}
-                </div>
-              )}
             </>
           ) : (
             <div className="space-y-3">

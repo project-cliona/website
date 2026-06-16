@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { notify } from '@/lib/toast'
 import { Button } from '@/components/ui/Button'
 
 export default function CampaignReports() {
@@ -149,12 +150,12 @@ export default function CampaignReports() {
 
   const handleDownload = (campaignId: string, campaignName: string) => {
     console.log(`Downloading report for campaign ${campaignId}: ${campaignName}`)
-    alert(`Download initiated for: ${campaignName}`)
+    notify.success(`Download initiated for: ${campaignName}`)
   }
 
   const exportAllReports = () => {
     console.log('Exporting all campaign reports...', { filters, campaigns: filteredCampaigns })
-    alert('Export all reports initiated!')
+    notify.success('Export all reports initiated')
   }
 
   return (

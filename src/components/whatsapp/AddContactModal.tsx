@@ -15,6 +15,7 @@ import { createContact, fetchTags } from "@/lib/api/whatsapp/contacts";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
+import { notify } from "@/lib/toast";
 import { X } from "lucide-react";
 import { useState } from "react";
 
@@ -26,7 +27,6 @@ interface Props {
 export function AddContactModal({ open, onClose }: Props) {
   const qc = useQueryClient();
   const [tagInput, setTagInput] = useState("");
-  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const { data: existingTags = [] } = useQuery({
     queryKey: ["whatsapp-tags"],
@@ -59,9 +59,10 @@ export function AddContactModal({ open, onClose }: Props) {
       qc.invalidateQueries({ queryKey: ["whatsapp-contacts"] });
       qc.invalidateQueries({ queryKey: ["whatsapp-tags"] });
       form.reset();
+      notify.success("Contact added");
       onClose();
     },
-    onError: (e: Error) => setSubmitError(e.message),
+    onError: (e) => notify.error(e, "Could not add contact"),
   });
 
   if (!open) return null;
@@ -92,10 +93,7 @@ export function AddContactModal({ open, onClose }: Props) {
           </button>
         </div>
         <form
-          onSubmit={form.handleSubmit((v) => {
-            setSubmitError(null);
-            mutation.mutate(v);
-          })}
+          onSubmit={form.handleSubmit((v) => mutation.mutate(v))}
           className="p-6 space-y-4"
         >
           <div>
@@ -200,12 +198,6 @@ export function AddContactModal({ open, onClose }: Props) {
               ))}
             </datalist>
           </div>
-
-          {submitError && (
-            <div className="bg-red-50 border border-red-200 rounded p-3 text-sm text-red-700">
-              {submitError}
-            </div>
-          )}
 
           <div className="flex gap-3 justify-end pt-2">
             <Button type="button" variant="outline" onClick={onClose}>

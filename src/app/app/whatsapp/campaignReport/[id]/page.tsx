@@ -61,6 +61,7 @@ import type {
 } from "@/lib/type";
 import { exportToCSV } from "@/lib/utils";
 import { usePageSearch } from "@/providers/searchProvider";
+import { notify } from "@/lib/toast";
 
 const MESSAGES_PAGE_SIZE = 100;
 
@@ -172,11 +173,16 @@ export default function WhatsappCampaignDetail({
       queryClient.invalidateQueries({
         queryKey: ["whatsapp-campaign-messages", id],
       });
+      notify.success("Campaign cancelled");
     },
+    onError: (err) => notify.error(err, "Could not cancel campaign"),
   });
 
   const handleExport = () => {
-    if (!campaign || messages.length === 0) return;
+    if (!campaign || messages.length === 0) {
+      notify.error("No recipients to export yet");
+      return;
+    }
     exportToCSV<WhatsappCampaignMessage>({
       data: messages,
       filename: `campaign-${campaign.id}-${campaign.campaignName.replace(/\s+/g, "-")}-recipients.csv`,
@@ -202,6 +208,7 @@ export default function WhatsappCampaignDetail({
         { header: "Failure Reason", accessor: "failureReason" },
       ],
     });
+    notify.success("Recipients exported");
   };
 
   if (campaignQuery.isLoading || !campaign) {
@@ -479,6 +486,7 @@ export default function WhatsappCampaignDetail({
                               onSelect={() => {
                                 if (typeof navigator !== "undefined" && m.wamid) {
                                   navigator.clipboard?.writeText(m.wamid);
+                                  notify.success("WAMID copied");
                                 }
                               }}
                             >
@@ -489,6 +497,7 @@ export default function WhatsappCampaignDetail({
                             onSelect={() => {
                               if (typeof navigator !== "undefined") {
                                 navigator.clipboard?.writeText(m.recipientPhone);
+                                notify.success("Phone number copied");
                               }
                             }}
                           >

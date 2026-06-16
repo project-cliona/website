@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { notify } from '@/lib/toast'
 
 interface FileUploadProps {
   onFileUpload: (file: File) => void
@@ -15,12 +16,12 @@ export function FileUpload({ onFileUpload }: FileUploadProps) {
     const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase()
     
     if (!validTypes.includes(fileExtension)) {
-      alert('Please upload a CSV, TXT, or Excel file')
+      notify.error('Please upload a CSV, TXT, or Excel file')
       return false
     }
-    
+
     if (file.size > 10 * 1024 * 1024) { // 10MB
-      alert('File size should be less than 10MB')
+      notify.error('File size should be less than 10MB')
       return false
     }
     

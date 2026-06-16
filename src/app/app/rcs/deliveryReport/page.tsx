@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { notify } from '@/lib/toast'
 import { Button } from '@/components/ui/Button'
 
 export default function DeliveryReports() {
@@ -76,12 +77,12 @@ export default function DeliveryReports() {
 
   const exportToExcel = () => {
     console.log('Exporting to Excel...', { filters, deliveryData, deliveryDetails })
-    alert('Export to Excel initiated!')
+    notify.success('Export to Excel initiated')
   }
 
   const downloadReport = () => {
     console.log('Downloading report...', { filters, deliveryData, deliveryDetails })
-    alert('Report download initiated!')
+    notify.success('Report download initiated')
   }
 
   const getDeliveryRate = () => {

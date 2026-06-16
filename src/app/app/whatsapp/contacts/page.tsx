@@ -29,6 +29,7 @@ import { AddContactModal } from "@/components/whatsapp/AddContactModal";
 import { EditContactModal } from "@/components/whatsapp/EditContactModal";
 import { CsvImportModal } from "@/components/whatsapp/CsvImportModal";
 import { usePageSearch } from "@/providers/searchProvider";
+import { notify } from "@/lib/toast";
 import type { WhatsappContact } from "@/lib/type";
 
 type View = { kind: "all" } | { kind: "list"; listId: number };
@@ -80,7 +81,9 @@ export default function WhatsappContactsPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["whatsapp-lists"] });
       qc.invalidateQueries({ queryKey: ["whatsapp-contacts"] });
+      notify.success("Added to list");
     },
+    onError: (err) => notify.error(err, "Could not add contacts to list"),
   });
 
   const removeFromListMut = useMutation({
@@ -89,16 +92,26 @@ export default function WhatsappContactsPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["whatsapp-lists"] });
       qc.invalidateQueries({ queryKey: ["whatsapp-contacts"] });
+      notify.success("Removed from list");
     },
+    onError: (err) => notify.error(err, "Could not remove contacts from list"),
   });
 
   const bulkDeleteMut = useMutation({
     mutationFn: bulkDeleteContacts,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["whatsapp-contacts"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["whatsapp-contacts"] });
+      notify.success("Contacts deleted");
+    },
+    onError: (err) => notify.error(err, "Could not delete contacts"),
   });
 
   const exportCsv = (ids: number[]) => {
     const rows = contactsData?.contacts.filter((c) => ids.includes(c.id)) ?? [];
+    if (rows.length === 0) {
+      notify.error("No contacts selected to export");
+      return;
+    }
     const csv = [
       "phone,name,email,tags",
       ...rows.map((c) =>
@@ -114,6 +127,7 @@ export default function WhatsappContactsPage() {
     a.download = "contacts.csv";
     a.click();
     URL.revokeObjectURL(url);
+    notify.success(`Exported ${rows.length} contact${rows.length === 1 ? "" : "s"}`);
   };
 
   return (

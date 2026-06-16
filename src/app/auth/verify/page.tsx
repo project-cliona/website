@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/Label'
 import { Button } from '@/components/ui/Button'
 import { apiClient } from '@/lib/axios'
 import { useUser } from '@/providers/userProvider'
+import { notify } from '@/lib/toast'
 
 function VerifyEmailForm() {
     const searchParams = useSearchParams()
@@ -25,8 +26,9 @@ function VerifyEmailForm() {
             }
             await apiClient().post('/auth/passwordlesslogin', { email: Email })
             setOtpSent(true)
+            notify.success('OTP sent to your email')
         } catch (err) {
-            console.error(err)
+            notify.error(err, 'Could not send OTP')
         } finally {
             setLoading(false)
         }
@@ -41,8 +43,9 @@ function VerifyEmailForm() {
             })
             localStorage.setItem('accessToken', response.data.result.accessToken)
             await Promise.all([refetchUser(), refetchProfile()])
+            notify.success('Logged in successfully')
         } catch (err) {
-            console.error(err)
+            notify.error(err, 'Invalid or expired OTP')
         } finally {
             setLoading(false)
         }

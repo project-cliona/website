@@ -17,6 +17,7 @@ import {
 } from "@/lib/api/whatsapp/onboarding";
 import { launchEmbeddedSignup } from "@/lib/facebook-sdk";
 import { useUser } from "@/providers/userProvider";
+import { notify } from "@/lib/toast";
 
 export default function Dashboard() {
   const { profile } = useUser();
@@ -38,6 +39,7 @@ export default function Dashboard() {
     mutationFn: exchangeWhatsappCode,
     onSuccess: () => {
       setConnectError(null);
+      notify.success("WhatsApp account connected");
       queryClient.invalidateQueries({ queryKey: ["whatsapp-connection-status"] });
       queryClient.invalidateQueries({ queryKey: ["whatsapp-dashboard"] });
     },
@@ -52,8 +54,11 @@ export default function Dashboard() {
   const disconnectMutation = useMutation({
     mutationFn: disconnectWhatsapp,
     onSuccess: () => {
+      notify.success("WhatsApp account disconnected");
       queryClient.invalidateQueries({ queryKey: ["whatsapp-connection-status"] });
     },
+    onError: (error: unknown) =>
+      notify.error(error, "Could not disconnect WhatsApp account"),
   });
 
   const handleConnect = async () => {
