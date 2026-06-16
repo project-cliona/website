@@ -125,7 +125,7 @@ export default function CreateWhatsappTemplate() {
         </h2>
         {wabaId ? (
           <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
-            <div className="h-2 w-2 rounded-full bg-green-500" />
+            <div className="h-2 w-2 rounded-full bg-success" />
             <div>
               <p className="text-sm font-medium text-gray-900">
                 WABA ID: <span className="font-mono">{wabaId}</span>

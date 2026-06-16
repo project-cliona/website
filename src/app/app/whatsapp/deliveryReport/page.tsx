@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DatePicker } from "@/components/ui/DatePicker";
 import { exportToCSV } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { Mail, Send, CheckCircle, Eye, XCircle, DownloadIcon } from "lucide-react";
 import { StatsCard } from "@/components/ui/StatsCard";
 const statusVariantMap: Record<
@@ -129,7 +130,7 @@ export default function WhatsappDeliveryReports() {
       />
 
       {/* Filters */}
-      <div className="bg-white border border-gray-100 rounded-xl p-6">
+      <Card className="p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
         <div className="flex flex-wrap items-center gap-4">
           <div>
@@ -210,72 +211,69 @@ export default function WhatsappDeliveryReports() {
             </Select>
           </div>
         </div>
-      </div>
+      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <StatsCard
-          title="Total Messages"
+          label="Total Messages"
           value={summary.totalSubmitted.toLocaleString()}
-          icon={<Mail className="text-blue-600 w-5 h-5" />}
-          tooltip="Total number of messages submitted"
+          icon={<Mail className="h-4 w-4" />}
         />
 
         <StatsCard
-          title="Sent"
+          label="Sent"
           value={summary.sent.toLocaleString()}
-          icon={<Send className="text-green-600 w-5 h-5" />}
-          trend={summary.sent > 0
-            ? `${getRate(summary.sent)}%`
-            : undefined}
-          trendUp={true}
-          tooltip="Messages successfully sent"
-        />
-
-        <StatsCard
-          title="Delivered"
-          value={summary.delivered.toLocaleString()}
-          icon={<CheckCircle className="text-blue-600 w-5 h-5" />}
-          trend={summary.delivered > 0
-            ? `${getRate(summary.delivered)}%`
-            : undefined}
-          trendUp={true}
-          tooltip="Messages delivered to recipients"
-        />
-
-        <StatsCard
-          title="Read"
-          value={summary.read.toLocaleString()}
-          icon={<Eye className="text-purple-600 w-5 h-5" />}
-          trend={summary.read > 0
-            ? `${getRate(summary.read)}%`
-            : undefined}
-          trendUp={true}
-          tooltip="Messages read by users"
-        />
-
-        <StatsCard
-          title="Failed"
-          value={summary.failed.toLocaleString()}
-          icon={<XCircle className="text-red-600 w-5 h-5" />}
+          icon={<Send className="h-4 w-4" />}
           trend={
-            summary.failed > 0
-              ? `${getRate(summary.failed)}%`
+            summary.sent > 0
+              ? { value: `${getRate(summary.sent)}%`, positive: true }
               : undefined
           }
-          trendUp={false}
-          tooltip="Messages that failed to send"
+        />
+
+        <StatsCard
+          label="Delivered"
+          value={summary.delivered.toLocaleString()}
+          icon={<CheckCircle className="h-4 w-4" />}
+          trend={
+            summary.delivered > 0
+              ? { value: `${getRate(summary.delivered)}%`, positive: true }
+              : undefined
+          }
+        />
+
+        <StatsCard
+          label="Read"
+          value={summary.read.toLocaleString()}
+          icon={<Eye className="h-4 w-4" />}
+          trend={
+            summary.read > 0
+              ? { value: `${getRate(summary.read)}%`, positive: true }
+              : undefined
+          }
+        />
+
+        <StatsCard
+          label="Failed"
+          value={summary.failed.toLocaleString()}
+          icon={<XCircle className="h-4 w-4" />}
+          trend={
+            summary.failed > 0
+              ? { value: `${getRate(summary.failed)}%`, positive: false }
+              : undefined
+          }
         />
       </div>
 
       {/* Delivery Funnel */}
-      <div className="bg-white rounded-xl border border-gray-100 p-6">
+      <Card className="p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
           Delivery Funnel
         </h2>
         <div className="space-y-3">
           {[
             { label: "Submitted", value: summary.totalSubmitted, color: "bg-blue-500" },
-            { label: "Sent", value: summary.sent, color: "bg-green-500" },
+            { label: "Sent", value: summary.sent, color: "bg-success" },
             { label: "Delivered", value: summary.delivered, color: "bg-blue-500" },
             { label: "Read", value: summary.read, color: "bg-purple-500" },
           ].map((item) => (
@@ -298,10 +296,10 @@ export default function WhatsappDeliveryReports() {
             </div>
           ))}
         </div>
-      </div>
+      </Card>
 
       {/* Detailed Reports Table */}
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <Card className="overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
           <h2 className="text-lg font-semibold text-gray-900">
             Message Details
@@ -412,7 +410,7 @@ export default function WhatsappDeliveryReports() {
             </div>
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

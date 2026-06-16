@@ -1,59 +1,58 @@
-import { StatsCardProps } from "@/lib/type";
-import { Info } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
+"use client";
+
+import { MoreVertical, TrendingUp, TrendingDown } from "lucide-react";
+import type { StatsCardProps } from "@/lib/type";
+import { cn } from "@/lib/utils";
 
 export function StatsCard({
-  title,
-  value,
   icon,
+  iconBg,
+  label,
+  value,
   trend,
-  trendUp,
-  tooltip,
+  accent,
+  onMenuOpen,
 }: StatsCardProps) {
   return (
-    <div className="bg-white border border-gray-100 rounded-xl">
-      <div className="p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex-1">
-            <div className="flex gap-2 items-center">
-              <div>{icon}</div>
-              <p className="text-sm font-medium text-gray-600">{title}</p>
-              <Tooltip >
-                <TooltipTrigger><Info className="text-gray-400 h-3 w-3" /></TooltipTrigger>
-                <TooltipContent sideOffset={8}>
-                  {tooltip}
-                </TooltipContent>
-              </Tooltip>
+    <div
+      className={cn(
+        "rounded-lg border bg-card p-5 border-gray-200",
+        accent && "border-primary-200 bg-primary-50/40",
+      )}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-2.5 min-w-0">
+          {icon && (
+            <div className={cn("h-8 w-8 rounded-md flex items-center justify-center shrink-0", iconBg ?? "bg-primary-50 text-primary-700")}>
+              {icon}
             </div>
-            <div className="flex justify-between mt-2">
-              <p className="text-2xl font-semibold text-gray-900 mt-1">
-                {value}
-              </p>
-              {trend && (
-                <div
-                  className={`flex items-center mt-2 text-sm font-medium ${
-                    trendUp ? "text-green-600" : "text-red-600"
-                  }`}
-                >
-                  <svg
-                    className={`w-4 h-4 mr-1 ${trendUp ? "" : "rotate-180"}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M7 17l9.2-9.2M17 17V7H7"
-                    />
-                  </svg>
-                  {trend}
-                </div>
-              )}
-            </div>
-          </div>
+          )}
+          <span className="text-caption text-muted-foreground truncate">{label}</span>
         </div>
+        <button
+          type="button"
+          aria-label="More"
+          onClick={onMenuOpen}
+          className="h-7 w-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-secondary focus-ring"
+        >
+          <MoreVertical className="h-4 w-4" />
+        </button>
+      </div>
+      <div className="mt-3 flex items-baseline justify-between gap-3">
+        <p className="text-[32px] leading-none font-bold tabular-nums text-foreground">{value}</p>
+        {trend && (
+          <span
+            className={cn(
+              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold",
+              trend.positive
+                ? "bg-success/15 text-success"
+                : "bg-destructive/15 text-destructive",
+            )}
+          >
+            {trend.positive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+            {trend.value}
+          </span>
+        )}
       </div>
     </div>
   );

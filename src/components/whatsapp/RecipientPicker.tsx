@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import { fetchLists } from "@/lib/api/whatsapp/lists";
 import { fetchTags } from "@/lib/api/whatsapp/contacts";
 import { previewAudience } from "@/lib/api/whatsapp/audience";
@@ -16,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/Select";
 import { Users } from "lucide-react";
+import { Card } from "@/components/ui/Card";
 import type { AudiencePreview } from "@/lib/type";
 
 export type RecipientSelection =
@@ -95,7 +97,7 @@ export function RecipientPicker({ onChange }: Props) {
   }, [tab, contactsMode, listId, tags, pastedPhones, previewQuery.data]);
 
   return (
-    <div className="bg-white border border-gray-100 rounded-xl p-6">
+    <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Recipients</h2>
         {previewQuery.data && (
@@ -106,19 +108,28 @@ export function RecipientPicker({ onChange }: Props) {
         )}
       </div>
 
-      <div className="flex gap-1 mb-4 border-b">
+      <div className="flex gap-1 mb-4 border-b border-border">
         {(["contacts", "paste"] as const).map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm -mb-px border-b-2 ${
-              tab === t
-                ? "border-blue-600 text-blue-700 font-medium"
-                : "border-transparent text-gray-500"
-            }`}
+            className="relative px-4 py-2 text-sm font-medium transition-colors"
           >
-            {t === "contacts" ? "From Contacts" : "Paste numbers"}
+            <span
+              className={
+                tab === t ? "text-foreground" : "text-muted-foreground"
+              }
+            >
+              {t === "contacts" ? "From Contacts" : "Paste numbers"}
+            </span>
+            {tab === t && (
+              <motion.div
+                layoutId="recipient-picker-underline"
+                className="absolute left-0 right-0 -bottom-px h-0.5 bg-primary-600"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
           </button>
         ))}
       </div>
@@ -219,6 +230,6 @@ export function RecipientPicker({ onChange }: Props) {
           )}
         </div>
       )}
-    </div>
+    </Card>
   );
 }

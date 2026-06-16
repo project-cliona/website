@@ -390,7 +390,7 @@ export default function CreateAgent() {
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
                 />
                 {agentlogo && (
-                  <p className="text-sm text-green-600 mt-2">
+                  <p className="text-sm text-success mt-2">
                     ✅ Logo uploaded: {agentlogo.name}
                   </p>
                 )}
@@ -408,7 +408,7 @@ export default function CreateAgent() {
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"
                 />
                 {agentheroimageURL && (
-                  <p className="text-sm text-green-600 mt-2">
+                  <p className="text-sm text-success mt-2">
                     ✅ Banner uploaded: {agentheroimageURL.name}
                   </p>
                 )}

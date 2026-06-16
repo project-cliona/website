@@ -1,40 +1,33 @@
 import { PageHeading } from "@/components/ui/PageHeading";
+import { Card } from "@/components/ui/Card";
 import { StatsCard } from "../../../components/ui/StatsCard";
-import { BarChart, Send, CheckCircle, Users, LucideProps } from 'lucide-react';
+import { BarChart, Send, CheckCircle, Users } from 'lucide-react';
 
 const statsData = [
   {
-    title: "Total Campaigns",
+    label: "Total Campaigns",
     value: "24",
-    icon: <BarChart color="#3b82f6" /> as React.ReactElement<LucideProps>,
-    trend: "+12%",
-    trendUp: true,
-    tooltip: "Total number of campaigns created"
+    icon: <BarChart className="h-4 w-4" />,
+    trend: { value: "+12%", positive: true },
   },
   {
-    title: "RCS Sent",
+    label: "RCS Sent",
     value: "1,247",
-    icon: <Send color="#4f46e5" /> as React.ReactElement<LucideProps>,
-    trend: "+8%",
-    trendUp: true,
-    tooltip: "Total messages sent across all campaigns",
+    icon: <Send className="h-4 w-4" />,
+    trend: { value: "+8%", positive: true },
   },
   {
-    title: "Delivery Rate",
+    label: "Delivery Rate",
     value: "94.2%",
-    icon: <CheckCircle color="#22c55e" /> as React.ReactElement<LucideProps>,
-    trend: "+2.1%",
-    trendUp: true,
-    tooltip: "Percentage of messages successfully delivered"
+    icon: <CheckCircle className="h-4 w-4" />,
+    trend: { value: "+2.1%", positive: true },
   },
   {
-    title: "Active Agents",
+    label: "Active Agents",
     value: "8",
-    icon: <Users color="#f59e0b" /> as React.ReactElement<LucideProps>,
-    trend: "+1",
-    trendUp: true,
-    tooltip: "Number of agents currently active"
-  }
+    icon: <Users className="h-4 w-4" />,
+    trend: { value: "+1", positive: true },
+  },
 ];
 
 
@@ -51,18 +44,16 @@ export default function Dashboard() {
         {statsData.map((item, index) => (
           <StatsCard
             key={index}
-            title={item.title}
+            label={item.label}
             value={item.value}
             icon={item.icon}
             trend={item.trend}
-            trendUp={item.trendUp}
-            tooltip={item.tooltip}
           />
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white border border-gray-100 rounded-xl p-6">
+        <Card className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-6">
             Recent Campaigns
           </h3>
@@ -101,7 +92,7 @@ export default function Dashboard() {
                 </div>
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-medium ${campaign.status === "Delivered"
-                      ? "bg-green-50 text-green-700"
+                      ? "bg-success/15 text-success"
                       : campaign.status === "Sending"
                         ? "bg-blue-50 text-blue-700"
                         : "bg-gray-50 text-gray-700"
@@ -112,9 +103,9 @@ export default function Dashboard() {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
 
-        <div className="bg-white border border-gray-100 rounded-xl p-6">
+        <Card className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-6">
             Quick Actions
           </h3>
@@ -132,7 +123,7 @@ export default function Dashboard() {
               Add New Agent
             </button>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );

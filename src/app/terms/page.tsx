@@ -116,8 +116,8 @@ export default function Terms() {
           </p>
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">8. Service Level Agreement</h2>
-          <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
-            <ul className="text-green-800 list-disc pl-6">
+          <div className="bg-success/10 border border-success/30 rounded-lg p-6 mb-6">
+            <ul className="text-success list-disc pl-6">
               <li><strong>Uptime:</strong> 99.9% monthly uptime guarantee</li>
               <li><strong>Support:</strong> 24/7 technical support for paid plans</li>
               <li><strong>Response Time:</strong> Critical issues addressed within 2 hours</li>

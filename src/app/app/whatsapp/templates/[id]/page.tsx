@@ -289,7 +289,7 @@ export default function WhatsappTemplateDetail() {
                                 </span>
                               )}
                               {btn.phone_number && (
-                                <span className="text-xs text-green-600">
+                                <span className="text-xs text-success">
                                   {btn.phone_number}
                                 </span>
                               )}

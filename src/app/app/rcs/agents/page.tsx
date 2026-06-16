@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { TableSkeleton } from "@/components/ui/skeleton/table";
 import { VariantProps } from "class-variance-authority";
 import { Agent } from "@/lib/type";
+import { useUser } from "@/providers/userProvider";
 
 const multiColumnFilterFn: FilterFn<Agent> = (row, value) => {
   const search = value.toLowerCase();
@@ -101,11 +102,13 @@ const columns: ColumnDef<Agent>[] = [
 ];
 
 export default function UsersTable() {
-  const userId = 2;
+  const { user } = useUser();
+  const userId = user?.userId;
 
   const { data: agentData, isLoading } = useQuery<Agent[]>({
     queryKey: ["agents", userId],
-    queryFn: () => fetchAgents(userId),
+    queryFn: () => fetchAgents(userId!),
+    enabled: !!userId,
   });
 
   if (isLoading) {

@@ -1,0 +1,11 @@
+{
+  "name": "Squalto",
+  "short_name": "Squalto",
+  "icons": [
+    { "src": "/logo-mark.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "theme_color": "#4F46E5",
+  "background_color": "#FFFFFF",
+  "display": "standalone"
+}

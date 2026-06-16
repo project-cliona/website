@@ -1,43 +1,103 @@
-'use client';
+"use client";
 
-import { motion, AnimatePresence } from 'framer-motion';
+import * as Dialog from "@radix-ui/react-dialog";
+import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
 
-type ModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
+const sizeClass: Record<string, string> = {
+  sm: "max-w-[400px]",
+  md: "max-w-[500px]",
+  lg: "max-w-[640px]",
+  xl: "max-w-[800px]",
 };
 
-export function Modal({ isOpen, onClose, children }: ModalProps) {
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Overlay */}
-          <motion.div
-            className="fixed inset-0 bg-black/50 z-40"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-          />
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  size?: keyof typeof sizeClass;
+  children: ReactNode;
+  className?: string;
+}
 
-          {/* Modal Content */}
-          <motion.div
-            className="fixed inset-0 flex items-center justify-center z-50"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-          >
-            <div
-              className="bg-white dark:bg-zinc-900 rounded-xl w-[700px] max-h-[80vh] overflow-y-auto p-6 shadow-xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {children}
-            </div>
-          </motion.div>
-        </>
+export function Modal({ isOpen, onClose, size = "md", children, className }: ModalProps) {
+  return (
+    <Dialog.Root open={isOpen} onOpenChange={(o) => !o && onClose()}>
+      <AnimatePresence>
+        {isOpen && (
+          <Dialog.Portal forceMount>
+            <Dialog.Overlay asChild>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.18 }}
+                className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+              />
+            </Dialog.Overlay>
+            <Dialog.Content asChild>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                className={cn(
+                  "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100%-2rem)] rounded-lg bg-card text-card-foreground shadow-e3 border border-border",
+                  sizeClass[size],
+                  className,
+                )}
+              >
+                {children}
+                <Dialog.Close
+                  className="absolute right-4 top-4 rounded-md text-muted-foreground hover:text-foreground focus-ring p-1"
+                  aria-label="Close"
+                >
+                  <X className="h-4 w-4" />
+                </Dialog.Close>
+              </motion.div>
+            </Dialog.Content>
+          </Dialog.Portal>
+        )}
+      </AnimatePresence>
+    </Dialog.Root>
+  );
+}
+
+export function ModalHeader({
+  title,
+  description,
+  className,
+}: {
+  title: string;
+  description?: string;
+  className?: string;
+}) {
+  return (
+    <div className={cn("px-6 pt-6 pb-4 border-b border-border", className)}>
+      <Dialog.Title className="text-h2 text-foreground">{title}</Dialog.Title>
+      {description && (
+        <Dialog.Description className="text-small text-muted-foreground mt-1">
+          {description}
+        </Dialog.Description>
       )}
-    </AnimatePresence>
+    </div>
+  );
+}
+
+export function ModalBody({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cn("px-6 py-4", className)}>{children}</div>;
+}
+
+export function ModalFooter({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div
+      className={cn(
+        "flex items-center justify-end gap-2 px-6 py-4 border-t border-border bg-muted/40 rounded-b-lg",
+        className,
+      )}
+    >
+      {children}
+    </div>
   );
 }

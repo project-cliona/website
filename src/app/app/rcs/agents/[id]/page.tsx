@@ -89,9 +89,9 @@ export default function CreateAgent() {
               className={`inline-flex items-center rounded-full px-4 py-1 text-xs font-semibold
                 ${
                   agentData.status === 'Active'
-                    ? 'bg-green-100 text-green-700'
+                    ? 'bg-success/15 text-success'
                     : agentData.status === 'Rejected'
-                    ? 'bg-red-100 text-red-700'
+                    ? 'bg-destructive/15 text-destructive'
                     : 'bg-yellow-100 text-yellow-700'
                 }
               `}

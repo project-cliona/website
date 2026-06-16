@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/pagination";
+import { PaginationNav, PaginationContent, PaginationItem } from "@/components/ui/pagination";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
     Select,
@@ -553,7 +553,7 @@ export const DataTable = <TData extends { id: string | number },>({
 
                 {/* Pagination buttons */}
                 <div>
-                    <Pagination>
+                    <PaginationNav>
                         <PaginationContent>
                             {/* First page button */}
                             <PaginationItem>
@@ -608,7 +608,7 @@ export const DataTable = <TData extends { id: string | number },>({
                                 </Button>
                             </PaginationItem>
                         </PaginationContent>
-                    </Pagination>
+                    </PaginationNav>
                 </div>
             </div>
         </div >
