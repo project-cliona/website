@@ -281,7 +281,8 @@ export interface WhatsappMessage {
   templateName: string | null;
   templateLanguage: string | null;
   content: Record<string, unknown> | null;
-  status: "accepted" | "sent" | "delivered" | "read" | "failed";
+  status: "accepted" | "sent" | "delivered" | "read" | "failed" | "received";
+  isRead: boolean;
   failureReason: string | null;
   pricing: Record<string, unknown> | null;
   sentAt: string | null;
@@ -297,6 +298,18 @@ export interface WhatsappMessagesResponse {
   total: number;
   page: number;
   limit: number;
+}
+
+// --- WhatsApp Conversations / Inbox ---
+
+export interface ConversationSummary {
+  contactPhone: string;
+  contactName: string | null;
+  lastMessageAt: string | null;
+  lastMessagePreview: string;
+  lastMessageType: string;
+  lastMessageDirection: "inbound" | "outbound";
+  unreadCount: number;
 }
 
 export interface WhatsappSendTemplatePayload {
