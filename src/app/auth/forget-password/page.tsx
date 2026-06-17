@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
 import { Button } from '@/components/ui/Button'
 import { apiClient } from '@/lib/axios'
+import { notify } from '@/lib/toast'
 
 function ForgetPasswordForm() {
     const router = useRouter()
@@ -27,8 +28,9 @@ function ForgetPasswordForm() {
             }
             await apiClient().post('/auth/forgetPassword', { email: Email })
             setOtpSent(true)
+            notify.success('OTP sent to your email')
         } catch (err) {
-            console.error(err)
+            notify.error(err, 'Could not send reset OTP')
         } finally {
             setLoading(false)
         }
@@ -37,21 +39,21 @@ function ForgetPasswordForm() {
     const verifyOtp = async () => {
         try {
             if (Password !== confirmPassword) {
-                alert("Passwords do not match")
+                notify.error("Passwords do not match")
                 return
             }
 
             setLoading(true)
 
-            const response = await apiClient().post('/auth/resetPassword', {
+            await apiClient().post('/auth/resetPassword', {
                 email: Email,
                 otp,
                 password: Password
             })
-            console.log(response)
+            notify.success('Password reset successfully. Please log in.')
             router.push('/auth/login')
         } catch (err) {
-            console.error(err)
+            notify.error(err, 'Could not reset password')
         } finally {
             setLoading(false)
         }

@@ -33,6 +33,7 @@ import {
 } from "@/components/whatsapp/RecipientPicker";
 import { useUser } from "@/providers/userProvider";
 import { usePageSearch } from "@/providers/searchProvider";
+import { notify } from "@/lib/toast";
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { ArrowRight, Send, CheckCircle2 } from "lucide-react";
@@ -42,7 +43,6 @@ export default function SendWhatsappMessage() {
   const { user } = useUser();
   const userId = user?.userId;
   const reduceMotion = useReducedMotion();
-  const [submitError, setSubmitError] = useState<string | null>(null);
   const [sentResult, setSentResult] = useState<{
     count: number;
     campaignId: number;
@@ -212,7 +212,6 @@ export default function SendWhatsappMessage() {
       });
     },
     onSuccess: (result) => {
-      setSubmitError(null);
       // Replace the previous router.push with a celebration overlay — the
       // user clicks through to the live report from the modal CTA.
       setSentResult({
@@ -220,17 +219,12 @@ export default function SendWhatsappMessage() {
         count: result.totalRecipients ?? recipientCount,
       });
     },
-    onError: (error: Error & { response?: { data?: { message?: string } } }) => {
-      const msg =
-        error?.response?.data?.message ||
-        error?.message ||
-        "Failed to create campaign";
-      setSubmitError(msg);
+    onError: (error: unknown) => {
+      notify.error(error, "Failed to create campaign");
     },
   });
 
   const onSubmit = (data: SendWhatsappCampaignForm) => {
-    setSubmitError(null);
     mutation.mutate(data);
   };
 
@@ -363,12 +357,6 @@ export default function SendWhatsappMessage() {
                 setPreview(p);
               }}
             />
-
-            {submitError && (
-              <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4 text-sm text-destructive">
-                {submitError}
-              </div>
-            )}
           </div>
 
           <div className="lg:col-span-1">

@@ -10,6 +10,7 @@ import { UserCheck, Home, Briefcase, ArrowRight } from "lucide-react";
 import { KycFormType, kycSchema } from "@/lib/schema/common.schema";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/providers/userProvider";
+import { notify } from "@/lib/toast";
 
 export default function KycPage() {
   const router = useRouter();
@@ -36,11 +37,11 @@ export default function KycPage() {
   const onSubmit = async (data: KycFormType) => {
     try {
       const payload = {...data, userId: user?.userId}
-      const res = await authenticatedApiClient().post(`/common/profile`, payload);
-      console.log(res.data);
+      await authenticatedApiClient().post(`/common/profile`, payload);
       reset();
+      notify.success("Profile saved");
     } catch (err) {
-      console.error(err);
+      notify.error(err, "Could not save your details");
     } finally {
       router.push("/app");
     }

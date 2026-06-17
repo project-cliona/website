@@ -6,6 +6,7 @@ import { Switch } from '@/components/ui/Switch';
 import { useMutation } from '@tanstack/react-query';
 import { useUser } from '@/providers/userProvider';
 import { updateProfileServices } from '@/lib/api/common';
+import { notify } from '@/lib/toast';
 import { X } from 'lucide-react';
 
 const services = [
@@ -32,8 +33,12 @@ export function ServiceModalContent({ onClose }: { onClose: () => void }) {
 
     const mutation = useMutation({
         mutationFn: (payload: any[]) => updateProfileServices(profile!.profileId, payload),
-        onSuccess: async () => { await refetchProfile(); onClose(); },
-        onError: (err) => { console.error("Service update failed", err) },
+        onSuccess: async () => {
+            await refetchProfile();
+            notify.success("Services updated");
+            onClose();
+        },
+        onError: (err) => notify.error(err, "Could not update services"),
     });
 
     const handleSave = () => {

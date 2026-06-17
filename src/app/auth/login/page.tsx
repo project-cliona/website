@@ -13,11 +13,10 @@ import { AuthLayout } from '@/components/auth/AuthLayout'
 import { apiClient } from '@/lib/axios'
 import { supabase } from '@/lib/supabase/client'
 import { useUser } from '@/providers/userProvider'
-import axios from 'axios'
+import { notify } from '@/lib/toast'
 
 export default function Login() {
   const [loading, setLoading] = useState(false)
-  const [apiError, setApiError] = useState('')
   const { refetchUser, refetchProfile, userAuthLoading } = useUser()
   const {
     control,
@@ -35,7 +34,6 @@ export default function Login() {
   const onSubmit = async (data: LoginForm) => {
     try {
       setLoading(true)
-      setApiError('')
 
       const response = await apiClient().post('/auth/login', {
         email: data.email,
@@ -44,14 +42,9 @@ export default function Login() {
 
       localStorage.setItem('accessToken', response.data.result.accessToken)
       await Promise.all([refetchUser(), refetchProfile()])
+      notify.success('Logged in successfully')
     } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        setApiError(
-          error.response?.data?.message || 'Invalid email or password'
-        )
-      } else {
-        setApiError('Something went wrong')
-      }
+      notify.error(error, 'Invalid email or password')
     } finally {
       setLoading(false)
     }
@@ -66,9 +59,9 @@ export default function Login() {
         },
       })
 
-      if (error) console.error(error.message)
+      if (error) notify.error(error.message)
     } catch (err) {
-      console.error(err)
+      notify.error(err, 'Could not sign in with Google')
     }
   }
 
@@ -126,10 +119,6 @@ export default function Login() {
 
       {/* Email/password form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        {apiError && (
-          <p className="text-sm text-destructive">{apiError}</p>
-        )}
-
         <div className="space-y-1.5">
           <Label htmlFor="email">Email</Label>
           <Controller

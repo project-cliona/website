@@ -11,6 +11,7 @@ import Link from "next/link";
 import { VariantProps } from "class-variance-authority";
 import { ArrowLeft, Copy, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { notify } from "@/lib/toast";
 
 const categoryVariantMap: Record<
   string,
@@ -147,7 +148,10 @@ export default function WhatsappTemplateDetail() {
           {template.metaTemplateId}
           <button
             type="button"
-            onClick={() => navigator.clipboard.writeText(template.metaTemplateId)}
+            onClick={() => {
+              navigator.clipboard.writeText(template.metaTemplateId);
+              notify.success("Template ID copied");
+            }}
             className="text-gray-400 hover:text-gray-600"
           >
             <Copy className="w-3 h-3" />

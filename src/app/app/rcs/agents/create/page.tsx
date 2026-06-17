@@ -12,6 +12,7 @@ import { PageHeading } from '@/components/ui/PageHeading';
 import { Info, Palette, Phone, Scale, UserCheck } from 'lucide-react';
 import SubHeading from '@/components/ui/SubHeading';
 import { authenticatedApiClient } from '@/lib/axios';
+import { notify } from '@/lib/toast';
 
 export default function CreateAgent() {
   const {
@@ -98,8 +99,9 @@ export default function CreateAgent() {
       const res = await authenticatedApiClient().post('/rcs/agent', payload)
       console.log(res.data);
       reset();
+      notify.success('Agent created');
     } catch (error) {
-      console.log(error);
+      notify.error(error, 'Could not create agent');
     }
   }
 

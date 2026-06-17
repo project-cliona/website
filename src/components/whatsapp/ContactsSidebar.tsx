@@ -14,6 +14,7 @@ import {
 } from "@/lib/api/whatsapp/lists";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { notify } from "@/lib/toast";
 import { ListMenu } from "./ListMenu";
 
 type SelectedView =
@@ -48,7 +49,9 @@ export function ContactsSidebar({
       qc.invalidateQueries({ queryKey: ["whatsapp-lists"] });
       setCreating(false);
       setCreateName("");
+      notify.success("List created");
     },
+    onError: (err) => notify.error(err, "Could not create list"),
   });
 
   const renameMut = useMutation({
@@ -57,12 +60,18 @@ export function ContactsSidebar({
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["whatsapp-lists"] });
       setRenamingId(null);
+      notify.success("List renamed");
     },
+    onError: (err) => notify.error(err, "Could not rename list"),
   });
 
   const deleteMut = useMutation({
     mutationFn: (id: number) => deleteList(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["whatsapp-lists"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["whatsapp-lists"] });
+      notify.success("List deleted");
+    },
+    onError: (err) => notify.error(err, "Could not delete list"),
   });
 
   const isSel = (v: SelectedView) =>

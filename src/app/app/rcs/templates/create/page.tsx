@@ -16,6 +16,7 @@ import SubHeading from '@/components/ui/SubHeading'
 import { useQuery } from '@tanstack/react-query'
 import { fetchAgents } from '@/lib/api/rcs/agents'
 import { authenticatedApiClient } from '@/lib/axios'
+import { notify } from '@/lib/toast'
 import { useSearchParams } from 'next/navigation'
 import { getTemplateById } from '@/lib/api/rcs/templates'
 import { Agent, RCSTemplate } from '@/lib/type'
@@ -156,10 +157,9 @@ export default function CreateTemplate() {
 
       const res = await authenticatedApiClient().post('/rcs/template', payload)
       console.log(res.data)
-      alert('Template created successfully ✅')
+      notify.success('Template created successfully')
     } catch (error) {
-      console.error('Template creation failed:', error)
-      alert('Failed to create template ❌')
+      notify.error(error, 'Failed to create template')
     }
   }
 
@@ -314,7 +314,7 @@ export default function CreateTemplate() {
                       if (file && (file.type.startsWith('image/') || file.type.startsWith('video/'))) {
                         field.onChange(file) // set file in RHF state
                       } else {
-                        alert('Please upload an image or video file')
+                        notify.error('Please upload an image or video file')
                       }
                     }}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-700"

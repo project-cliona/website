@@ -11,6 +11,7 @@ import { updateContact } from "@/lib/api/whatsapp/contacts";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
+import { notify } from "@/lib/toast";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { WhatsappContact } from "@/lib/type";
@@ -24,7 +25,6 @@ interface Props {
 export function EditContactModal({ open, contact, onClose }: Props) {
   const qc = useQueryClient();
   const [tagInput, setTagInput] = useState("");
-  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
@@ -61,9 +61,10 @@ export function EditContactModal({ open, contact, onClose }: Props) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["whatsapp-contacts"] });
       qc.invalidateQueries({ queryKey: ["whatsapp-tags"] });
+      notify.success("Contact updated");
       onClose();
     },
-    onError: (e: Error) => setSubmitError(e.message),
+    onError: (e) => notify.error(e, "Could not update contact"),
   });
 
   if (!open || !contact) return null;
@@ -94,10 +95,7 @@ export function EditContactModal({ open, contact, onClose }: Props) {
           </button>
         </div>
         <form
-          onSubmit={form.handleSubmit((v) => {
-            setSubmitError(null);
-            updateMut.mutate(v);
-          })}
+          onSubmit={form.handleSubmit((v) => updateMut.mutate(v))}
           className="p-6 space-y-4"
         >
           <div>
@@ -167,12 +165,6 @@ export function EditContactModal({ open, contact, onClose }: Props) {
               }}
             />
           </div>
-
-          {submitError && (
-            <div className="bg-red-50 border border-red-200 rounded p-3 text-sm text-red-700">
-              {submitError}
-            </div>
-          )}
 
           <div className="flex gap-3 justify-end pt-2">
             <Button type="button" variant="outline" onClick={onClose}>

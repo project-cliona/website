@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { apiClient } from '@/lib/axios'
 import { useUser } from '@/providers/userProvider'
+import { notify } from '@/lib/toast'
 
 export default function OAuthCallback() {
   const router = useRouter()
@@ -20,12 +21,14 @@ export default function OAuthCallback() {
         } = await supabase.auth.getSession()
 
         if (sessionError) {
+          notify.error('Authentication failed. Please log in again.')
           setError('Authentication failed. Redirecting to login...')
           setTimeout(() => router.replace('/auth/login'), 2000)
           return
         }
 
         if (!session) {
+          notify.error('No session found. Please log in again.')
           setError('No session found. Redirecting to login...')
           setTimeout(() => router.replace('/auth/login'), 2000)
           return
@@ -45,7 +48,7 @@ export default function OAuthCallback() {
         // UserProvider's useEffect handles navigation to /kyc or /app
         // based on profileStatus. No manual router.push needed here.
       } catch (err: unknown) {
-        console.log(err)
+        notify.error(err, 'Login failed. Please log in again.')
         setError('Login failed. Redirecting to login...')
         setTimeout(() => router.replace('/auth/login'), 2000)
       }

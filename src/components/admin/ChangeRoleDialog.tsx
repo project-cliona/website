@@ -3,7 +3,7 @@
 import { useMemo, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
+import { notify } from "@/lib/toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   AlertDialog,
@@ -77,13 +77,11 @@ export function ChangeRoleDialog({ open, onOpenChange, row, allUsers }: ChangeRo
     mutationFn: (body: ChangeRoleInput) => updateUserRole(row.userId, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminUsers"] });
-      toast.success(`${row.email}: role updated`);
+      notify.success(`${row.email}: role updated`);
       onOpenChange(false);
     },
     onError: (err: unknown) => {
-      const e = err as { response?: { data?: { message?: string } } };
-      const msg = e?.response?.data?.message ?? "Could not update role";
-      toast.error(msg);
+      notify.error(err, "Could not update role");
     },
   });
 

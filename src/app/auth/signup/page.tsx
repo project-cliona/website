@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/Button'
 import { AuthLayout } from '@/components/auth/AuthLayout'
 import { apiClient } from '@/lib/axios'
 import { supabase } from '@/lib/supabase/client'
+import { notify } from '@/lib/toast'
 
 export default function Signup() {
   const router = useRouter()
@@ -43,9 +44,10 @@ export default function Signup() {
         password: data.password
       })
       reset()
+      notify.success('Account created! Check your email for the OTP.')
       router.push(`/auth/verify?email=${encodeURIComponent(data.email)}`)
     } catch (error) {
-      console.log(error)
+      notify.error(error, 'Could not create account')
     } finally {
       setLoading(false)
     }
@@ -60,9 +62,9 @@ export default function Signup() {
         },
       })
 
-      if (error) console.error('Social login error:', error.message)
+      if (error) notify.error(error.message)
     } catch (err) {
-      console.error(err)
+      notify.error(err, 'Could not sign up with Google')
     }
   }
 

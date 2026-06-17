@@ -40,10 +40,10 @@ import {
   type DefaultBuilderForm,
   WHATSAPP_LANGUAGES,
 } from "@/lib/schema/whatsapp.schema";
-import axios from "axios";
 import { authenticatedApiClient } from "@/lib/axios";
 import { updateWhatsappTemplate } from "@/lib/api/whatsapp/templates";
 import { useUser } from "@/providers/userProvider";
+import { notify, getErrorMessage } from "@/lib/toast";
 import { WhatsappTemplate } from "@/lib/type";
 
 // ---------------------------------------------------------------------------
@@ -502,10 +502,7 @@ export default function TemplateDefaultBuilder({
       setMediaHandle(handle);
       setUploadedFileName(file.name);
     } catch (err: unknown) {
-      const backendMessage = axios.isAxiosError(err) ? err.response?.data?.message : undefined;
-      const message = backendMessage
-        ?? (err instanceof Error ? err.message : "Upload failed. Please try again.");
-      setUploadError(message);
+      setUploadError(getErrorMessage(err, "Upload failed. Please try again."));
     } finally {
       setUploading(false);
     }
@@ -682,12 +679,13 @@ export default function TemplateDefaultBuilder({
       } else {
         await authenticatedApiClient().post("/whatsApp/template", payload);
       }
+      notify.success(isEditMode ? "Template updated" : "Template created");
       router.push("/app/whatsapp/templates");
     } catch (err: unknown) {
-      const backendMessage = axios.isAxiosError(err) ? err.response?.data?.message : undefined;
-      const fallback = isEditMode ? "Failed to update template." : "Failed to create template.";
-      const message = backendMessage ?? (err instanceof Error ? err.message : fallback);
-      setSubmitError(message);
+      notify.error(
+        err,
+        isEditMode ? "Failed to update template." : "Failed to create template."
+      );
     } finally {
       setSubmitting(false);
     }

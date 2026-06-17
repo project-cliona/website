@@ -28,6 +28,7 @@ import {
 import { authenticatedApiClient } from "@/lib/axios";
 import { updateWhatsappTemplate } from "@/lib/api/whatsapp/templates";
 import { useUser } from "@/providers/userProvider";
+import { notify } from "@/lib/toast";
 import { WhatsappTemplate } from "@/lib/type";
 
 // ---------------------------------------------------------------------------
@@ -94,7 +95,6 @@ export default function TemplateAuthBuilder({ wabaId, onPreviewChange, initialDa
   const { user } = useUser();
   const isEditMode = !!initialData;
 
-  const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   // -------------------------------------------------------------------------
@@ -146,8 +146,6 @@ export default function TemplateAuthBuilder({ wabaId, onPreviewChange, initialDa
   // -------------------------------------------------------------------------
 
   const onSubmit = async (data: AuthBuilderForm) => {
-    setSubmitError(null);
-
     try {
       setSubmitting(true);
 
@@ -190,11 +188,13 @@ export default function TemplateAuthBuilder({ wabaId, onPreviewChange, initialDa
       } else {
         await authenticatedApiClient().post("/whatsApp/template", payload);
       }
+      notify.success(isEditMode ? "Template updated" : "Template created");
       router.push("/app/whatsapp/templates");
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : isEditMode ? "Failed to update template." : "Failed to create template.";
-      setSubmitError(message);
+      notify.error(
+        err,
+        isEditMode ? "Failed to update template." : "Failed to create template."
+      );
     } finally {
       setSubmitting(false);
     }
@@ -206,13 +206,6 @@ export default function TemplateAuthBuilder({ wabaId, onPreviewChange, initialDa
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-      {/* Error banner */}
-      {submitError && (
-        <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-          {submitError}
-        </div>
-      )}
-
       {/* ---- Section 1: Template Info ---- */}
       <section className="space-y-4">
         <SubHeading title="Template Info" Icon={Info} />

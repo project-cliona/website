@@ -1,15 +1,12 @@
 import axios, { AxiosHeaders, type AxiosInstance } from 'axios';
-import { toast } from 'sonner';
+import { notify } from '@/lib/toast';
 
 function attachForbiddenInterceptor(instance: AxiosInstance) {
   instance.interceptors.response.use(
     (response) => response,
     (error) => {
       if (error?.response?.status === 403) {
-        const message =
-          error?.response?.data?.message ??
-          "You don't have permission for that action.";
-        toast.error(message);
+        notify.error(error, "You don't have permission for that action.");
       }
       return Promise.reject(error);
     }
