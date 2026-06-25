@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   MessageSquare,
   Zap,
@@ -9,13 +8,11 @@ import {
   BarChart2,
   Link2,
   CheckCircle2,
-  Menu,
-  X,
   ChevronRight,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { PhoneFrame } from "@/components/ui/PhoneFrame";
+import { MarketingNav } from "@/components/marketing/MarketingNav";
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const C = {
@@ -26,82 +23,6 @@ const C = {
   accentHover: "#4338CA",
   accentLight: "#E0E7FF",
 };
-
-// ─── Navbar ───────────────────────────────────────────────────────────────────
-function Navbar() {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <nav className="sticky top-0 z-50 bg-white border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <Image
-            src="/logo-wordmark.svg"
-            alt="Squalto"
-            width={120}
-            height={28}
-          />
-        </Link>
-
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-8">
-          <a href="/features" className="text-sm text-gray-600 hover:text-[#0F1117] transition-colors">Features</a>
-          <a href="#pricing" className="text-sm text-gray-600 hover:text-[#0F1117] transition-colors">Pricing</a>
-          <a href="#about" className="text-sm text-gray-600 hover:text-[#0F1117] transition-colors">About</a>
-          <a href="#contact" className="text-sm text-gray-600 hover:text-[#0F1117] transition-colors">Contact</a>
-        </div>
-
-        {/* Desktop CTAs */}
-        <div className="hidden md:flex items-center gap-3">
-          <a
-            href="/auth/login"
-            className="text-sm font-medium text-gray-600 hover:text-[#0F1117] transition-colors px-4 py-2"
-          >
-            Sign In
-          </a>
-          <a
-            href="/auth/signup"
-            className="text-sm font-medium text-white px-5 py-2 rounded-full transition-colors"
-            style={{ backgroundColor: C.accent }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = C.accentHover)}
-            onMouseLeave={e => (e.currentTarget.style.backgroundColor = C.accent)}
-          >
-            Get Started
-          </a>
-        </div>
-
-        {/* Mobile hamburger */}
-        <button
-          className="md:hidden p-2 text-gray-600"
-          onClick={() => setOpen(!open)}
-          aria-label="Toggle menu"
-        >
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </div>
-
-      {/* Mobile drawer */}
-      {open && (
-        <div className="md:hidden bg-white border-t border-gray-100 px-6 py-4 flex flex-col gap-4">
-          <a href="/features" className="text-sm text-gray-600" onClick={() => setOpen(false)}>Features</a>
-          <a href="#pricing" className="text-sm text-gray-600" onClick={() => setOpen(false)}>Pricing</a>
-          <a href="#about" className="text-sm text-gray-600" onClick={() => setOpen(false)}>About</a>
-          <a href="#contact" className="text-sm text-gray-600" onClick={() => setOpen(false)}>Contact</a>
-          <hr className="border-gray-100" />
-          <a href="/auth/login" className="text-sm font-medium text-gray-600">Sign In</a>
-          <a
-            href="/auth/signup"
-            className="text-sm font-medium text-white text-center px-5 py-2 rounded-full"
-            style={{ backgroundColor: C.accent }}
-          >
-            Get Started
-          </a>
-        </div>
-      )}
-    </nav>
-  );
-}
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 function Hero() {
@@ -693,7 +614,7 @@ function Footer() {
 export default function Home() {
   return (
     <>
-      <Navbar />
+      <MarketingNav />
       <main>
         <Hero />
         <Features />
