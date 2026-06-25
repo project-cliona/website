@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   MessageSquare,
   Zap,
@@ -9,13 +8,11 @@ import {
   BarChart2,
   Link2,
   CheckCircle2,
-  Menu,
-  X,
   ChevronRight,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { PhoneFrame } from "@/components/ui/PhoneFrame";
+import { MarketingNav } from "@/components/marketing/MarketingNav";
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const C = {
@@ -26,82 +23,6 @@ const C = {
   accentHover: "#4338CA",
   accentLight: "#E0E7FF",
 };
-
-// ─── Navbar ───────────────────────────────────────────────────────────────────
-function Navbar() {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <nav className="sticky top-0 z-50 bg-white border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <Image
-            src="/logo-wordmark.svg"
-            alt="Squalto"
-            width={120}
-            height={28}
-          />
-        </Link>
-
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-8">
-          <a href="#features" className="text-sm text-gray-600 hover:text-[#0F1117] transition-colors">Features</a>
-          <a href="#pricing" className="text-sm text-gray-600 hover:text-[#0F1117] transition-colors">Pricing</a>
-          <a href="#about" className="text-sm text-gray-600 hover:text-[#0F1117] transition-colors">About</a>
-          <a href="#contact" className="text-sm text-gray-600 hover:text-[#0F1117] transition-colors">Contact</a>
-        </div>
-
-        {/* Desktop CTAs */}
-        <div className="hidden md:flex items-center gap-3">
-          <a
-            href="/auth/login"
-            className="text-sm font-medium text-gray-600 hover:text-[#0F1117] transition-colors px-4 py-2"
-          >
-            Sign In
-          </a>
-          <a
-            href="/auth/signup"
-            className="text-sm font-medium text-white px-5 py-2 rounded-full transition-colors"
-            style={{ backgroundColor: C.accent }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = C.accentHover)}
-            onMouseLeave={e => (e.currentTarget.style.backgroundColor = C.accent)}
-          >
-            Get Started
-          </a>
-        </div>
-
-        {/* Mobile hamburger */}
-        <button
-          className="md:hidden p-2 text-gray-600"
-          onClick={() => setOpen(!open)}
-          aria-label="Toggle menu"
-        >
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </div>
-
-      {/* Mobile drawer */}
-      {open && (
-        <div className="md:hidden bg-white border-t border-gray-100 px-6 py-4 flex flex-col gap-4">
-          <a href="#features" className="text-sm text-gray-600" onClick={() => setOpen(false)}>Features</a>
-          <a href="#pricing" className="text-sm text-gray-600" onClick={() => setOpen(false)}>Pricing</a>
-          <a href="#about" className="text-sm text-gray-600" onClick={() => setOpen(false)}>About</a>
-          <a href="#contact" className="text-sm text-gray-600" onClick={() => setOpen(false)}>Contact</a>
-          <hr className="border-gray-100" />
-          <a href="/auth/login" className="text-sm font-medium text-gray-600">Sign In</a>
-          <a
-            href="/auth/signup"
-            className="text-sm font-medium text-white text-center px-5 py-2 rounded-full"
-            style={{ backgroundColor: C.accent }}
-          >
-            Get Started
-          </a>
-        </div>
-      )}
-    </nav>
-  );
-}
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 function Hero() {
@@ -396,150 +317,6 @@ function Benefits() {
   );
 }
 
-// ─── Pricing ──────────────────────────────────────────────────────────────────
-const plans = [
-  {
-    name: "Starter",
-    price: "₹2,999",
-    period: "/mo",
-    description: "Perfect for small businesses getting started with WhatsApp.",
-    highlight: false,
-    features: [
-      "Up to 10,000 messages/month",
-      "1 agent seat",
-      "Basic analytics dashboard",
-      "WhatsApp Business API",
-      "Email support",
-    ],
-    cta: "Get Started",
-    ctaHref: "/auth/signup",
-  },
-  {
-    name: "Growth",
-    price: "₹7,999",
-    period: "/mo",
-    description: "For growing teams that need automation and deeper insights.",
-    highlight: true,
-    badge: "Most Popular",
-    features: [
-      "Up to 100,000 messages/month",
-      "5 agent seats",
-      "AI Chatbot Builder",
-      "Advanced analytics",
-      "CRM integrations",
-      "Priority support",
-    ],
-    cta: "Get Started",
-    ctaHref: "/auth/signup",
-  },
-  {
-    name: "Enterprise",
-    price: "Custom",
-    period: "",
-    description: "Unlimited scale with dedicated infrastructure and support.",
-    highlight: false,
-    features: [
-      "Unlimited messages",
-      "Unlimited agent seats",
-      "Dedicated account manager",
-      "Custom integrations",
-      "SLA guarantee",
-      "24/7 phone support",
-    ],
-    cta: "Contact Sales",
-    ctaHref: "#contact",
-  },
-];
-
-function Pricing() {
-  return (
-    <section id="pricing" className="px-6 py-20" style={{ backgroundColor: C.darkBg }}>
-      <div className="max-w-7xl mx-auto">
-        <p className="text-xs font-semibold tracking-widest uppercase mb-4 text-center" style={{ color: C.accent }}>
-          Pricing
-        </p>
-        <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-3">
-          Tailored Plans for Your Business Scale
-        </h2>
-        <p className="text-gray-400 text-sm text-center mb-12 max-w-lg mx-auto">
-          Start free, scale as you grow. No hidden fees.
-        </p>
-
-        <div className="grid md:grid-cols-3 gap-6">
-          {plans.map(plan => (
-            <div
-              key={plan.name}
-              className="relative flex flex-col rounded-2xl p-7 border transition-all"
-              style={{
-                backgroundColor: plan.highlight ? C.accent : C.darkCard,
-                borderColor: plan.highlight ? C.accent : C.darkBorder,
-              }}
-            >
-              {plan.badge && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white text-[#0F1117] text-xs font-bold px-3 py-1 rounded-full shadow">
-                  {plan.badge}
-                </span>
-              )}
-
-              <div className="mb-6">
-                <h3 className={`text-lg font-bold mb-1 ${plan.highlight ? "text-white" : "text-white"}`}>
-                  {plan.name}
-                </h3>
-                <p className={`text-sm mb-4 ${plan.highlight ? "text-white/80" : "text-gray-400"}`}>
-                  {plan.description}
-                </p>
-                <div className="flex items-end gap-1">
-                  <span className={`text-4xl font-extrabold ${plan.highlight ? "text-white" : "text-white"}`}>
-                    {plan.price}
-                  </span>
-                  {plan.period && (
-                    <span className={`text-sm mb-1.5 ${plan.highlight ? "text-white/70" : "text-gray-400"}`}>
-                      {plan.period}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <ul className="flex flex-col gap-3 mb-8 flex-1">
-                {plan.features.map(feat => (
-                  <li key={feat} className="flex items-start gap-2.5">
-                    <CheckCircle2
-                      size={15}
-                      className="mt-0.5 shrink-0"
-                      style={{ color: plan.highlight ? "white" : C.accent }}
-                    />
-                    <span className={`text-sm ${plan.highlight ? "text-white/90" : "text-gray-300"}`}>
-                      {feat}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-
-              <a
-                href={plan.ctaHref}
-                className="text-center text-sm font-semibold px-5 py-3 rounded-full transition-colors"
-                style={
-                  plan.highlight
-                    ? { backgroundColor: "white", color: C.accent }
-                    : { backgroundColor: C.accent, color: "white" }
-                }
-                onMouseEnter={e => {
-                  if (!plan.highlight) e.currentTarget.style.backgroundColor = C.accentHover;
-                }}
-                onMouseLeave={e => {
-                  if (!plan.highlight) e.currentTarget.style.backgroundColor = C.accent;
-                }}
-              >
-                {plan.cta}
-              </a>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 // ─── Integrations ─────────────────────────────────────────────────────────────
 const integrations = [
   "Shopify",
@@ -693,12 +470,11 @@ function Footer() {
 export default function Home() {
   return (
     <>
-      <Navbar />
+      <MarketingNav />
       <main>
         <Hero />
         <Features />
         <Benefits />
-        <Pricing />
         <Integrations />
         <FinalCTA />
       </main>
