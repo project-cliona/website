@@ -8,7 +8,7 @@ import { C, FEATURES } from "@/lib/marketing";
 
 // Non-dropdown links (Features is rendered separately with its dropdown).
 const NAV_LINKS = [
-  { label: "Pricing", href: "/#pricing" },
+  { label: "Pricing", href: "/pricing" },
   { label: "About", href: "/#about" },
   { label: "Contact", href: "/#contact" },
 ];

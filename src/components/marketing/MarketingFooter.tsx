@@ -6,7 +6,7 @@ const footerLinks: Record<string, { label: string; href: string }[]> = {
   Features: FEATURES.map((f) => ({ label: f.navTitle, href: `/features/${f.slug}` })),
   Company: [
     { label: "About", href: "/#about" },
-    { label: "Pricing", href: "/#pricing" },
+    { label: "Pricing", href: "/pricing" },
     { label: "Contact", href: "/#contact" },
   ],
   Resources: [
