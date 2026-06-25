@@ -46,7 +46,7 @@ function Navbar() {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">
-          <a href="#features" className="text-sm text-gray-600 hover:text-[#0F1117] transition-colors">Features</a>
+          <a href="/features" className="text-sm text-gray-600 hover:text-[#0F1117] transition-colors">Features</a>
           <a href="#pricing" className="text-sm text-gray-600 hover:text-[#0F1117] transition-colors">Pricing</a>
           <a href="#about" className="text-sm text-gray-600 hover:text-[#0F1117] transition-colors">About</a>
           <a href="#contact" className="text-sm text-gray-600 hover:text-[#0F1117] transition-colors">Contact</a>
@@ -84,7 +84,7 @@ function Navbar() {
       {/* Mobile drawer */}
       {open && (
         <div className="md:hidden bg-white border-t border-gray-100 px-6 py-4 flex flex-col gap-4">
-          <a href="#features" className="text-sm text-gray-600" onClick={() => setOpen(false)}>Features</a>
+          <a href="/features" className="text-sm text-gray-600" onClick={() => setOpen(false)}>Features</a>
           <a href="#pricing" className="text-sm text-gray-600" onClick={() => setOpen(false)}>Pricing</a>
           <a href="#about" className="text-sm text-gray-600" onClick={() => setOpen(false)}>About</a>
           <a href="#contact" className="text-sm text-gray-600" onClick={() => setOpen(false)}>Contact</a>
