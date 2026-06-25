@@ -10,6 +10,7 @@ const footerLinks: Record<string, { label: string; href: string }[]> = {
     { label: "Contact", href: "/#contact" },
   ],
   Resources: [
+    { label: "Blog", href: "/blog" },
     { label: "Documentation", href: "#" },
     { label: "API Reference", href: "#" },
     { label: "Status", href: "#" },
