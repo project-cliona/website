@@ -2,6 +2,7 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { gsap } from "gsap";
 import { C } from "@/lib/marketing";
@@ -10,13 +11,16 @@ import { BLOG_CATEGORIES, formatBlogDate, type BlogPost } from "@/lib/blog";
 function Cover({ post, large = false }: { post: BlogPost; large?: boolean }) {
   return (
     <div
-      className={`relative flex items-center justify-center overflow-hidden ${large ? "h-56 md:h-full min-h-[14rem]" : "h-44"}`}
-      style={{
-        backgroundImage: `linear-gradient(135deg, ${post.gradient[0]}, ${post.gradient[1]})`,
-      }}
+      className={`relative overflow-hidden bg-gray-100 ${large ? "h-56 md:h-full min-h-[14rem]" : "h-44"}`}
     >
-      <span className={large ? "text-7xl" : "text-5xl"}>{post.glyph}</span>
-      <span className="absolute top-3 left-3 text-[11px] font-semibold text-white/90 bg-black/20 backdrop-blur px-2.5 py-1 rounded-full">
+      <Image
+        src={`/blog/${post.slug}.jpg`}
+        alt={post.title}
+        fill
+        className="object-cover transition-transform duration-500 group-hover:scale-105"
+        sizes={large ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
+      />
+      <span className="absolute top-3 left-3 z-10 text-[11px] font-semibold text-white bg-black/40 backdrop-blur px-2.5 py-1 rounded-full">
         {post.category}
       </span>
     </div>

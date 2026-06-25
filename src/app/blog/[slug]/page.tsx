@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import { MarketingNav } from "@/components/marketing/MarketingNav";
@@ -71,13 +72,15 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
 
         {/* Cover */}
         <section className="px-6 pb-12">
-          <div
-            className="max-w-4xl mx-auto h-64 md:h-80 rounded-3xl flex items-center justify-center"
-            style={{
-              backgroundImage: `linear-gradient(135deg, ${post.gradient[0]}, ${post.gradient[1]})`,
-            }}
-          >
-            <span className="text-8xl md:text-9xl">{post.glyph}</span>
+          <div className="relative max-w-4xl mx-auto h-64 md:h-96 rounded-3xl overflow-hidden bg-gray-100">
+            <Image
+              src={`/blog/${post.slug}.jpg`}
+              alt={post.title}
+              fill
+              priority
+              className="object-cover"
+              sizes="(max-width: 896px) 100vw, 896px"
+            />
           </div>
         </section>
 
@@ -135,13 +138,14 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
                     href={`/blog/${rp.slug}`}
                     className="group flex flex-col rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow h-full"
                   >
-                    <div
-                      className="h-36 flex items-center justify-center"
-                      style={{
-                        backgroundImage: `linear-gradient(135deg, ${rp.gradient[0]}, ${rp.gradient[1]})`,
-                      }}
-                    >
-                      <span className="text-5xl">{rp.glyph}</span>
+                    <div className="relative h-36 overflow-hidden bg-gray-100">
+                      <Image
+                        src={`/blog/${rp.slug}.jpg`}
+                        alt={rp.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 640px) 100vw, 33vw"
+                      />
                     </div>
                     <div className="flex flex-col gap-2 p-5 flex-1">
                       <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: C.accent }}>
