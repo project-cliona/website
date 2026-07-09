@@ -14,6 +14,7 @@ import {
   Boxes,
   Users,
   Workflow,
+  MessagesSquare,
 } from "lucide-react";
 
 export const appLinks = [
@@ -36,6 +37,7 @@ export const rcsLinks = [
 export const whatsappLinks = [
   { label: "Dashboard", href: "/app", icon: <LayoutDashboard /> },
   { label: "Send Message", href: "/app/whatsapp/sendMessage", icon: <Send /> },
+  { label: "Conversations", href: "/app/whatsapp/conversations", icon: <MessagesSquare /> },
   { label: "Automations", href: "/app/whatsapp/automations", icon: <Workflow /> },
   { label: "Analytics", href: "/app/whatsapp/analytics", icon: <BarChart3 /> },
   { label: "Templates", href: "/app/whatsapp/templates", icon: <Book /> },
