@@ -15,6 +15,7 @@ import {
   Users,
   Workflow,
   MessagesSquare,
+  Code2,
 } from "lucide-react";
 
 export const appLinks = [
@@ -44,4 +45,5 @@ export const whatsappLinks = [
   { label: "Contacts", href: "/app/whatsapp/contacts", icon: <Users /> },
   { label: "Delivery Reports", href: "/app/whatsapp/deliveryReport", icon: <ChartBar /> },
   { label: "Campaign Reports", href: "/app/whatsapp/campaignReport", icon: <ChartNoAxesColumnDecreasing /> },
+  { label: "Developers", href: "/app/whatsapp/developers", icon: <Code2 /> },
 ];
