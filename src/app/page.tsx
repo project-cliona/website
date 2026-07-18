@@ -7,6 +7,7 @@ import {
   Inbox,
   BarChart2,
   Link2,
+  Code2,
   CheckCircle2,
   ChevronRight,
 } from "lucide-react";
@@ -186,6 +187,12 @@ const features = [
     title: "CRM Integration",
     desc: "Sync contacts and conversation history with your existing CRM, ERP, or e-commerce platform.",
   },
+  {
+    icon: Code2,
+    title: "Node.js SDK",
+    desc: "Ship faster with our typed, zero-dependency Node.js SDK — auth, retries, auto-pagination, and webhooks built in.",
+    href: "/docs/sdk",
+  },
 ];
 
 function Features() {
@@ -205,24 +212,39 @@ function Features() {
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {features.map(f => (
-            <div
-              key={f.title}
-              className="flex flex-col gap-4 p-6 rounded-xl border transition-all hover:border-[#4F46E5]/40"
-              style={{ backgroundColor: C.darkCard, borderColor: C.darkBorder }}
-            >
-              <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center"
-                style={{ backgroundColor: "#4F46E520" }}
-              >
-                <f.icon size={18} style={{ color: C.accent }} />
+          {features.map(f => {
+            const inner = (
+              <>
+                <div
+                  className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  style={{ backgroundColor: "#4F46E520" }}
+                >
+                  <f.icon size={18} style={{ color: C.accent }} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-white mb-1">{f.title}</h3>
+                  <p className="text-sm text-gray-400 leading-relaxed">{f.desc}</p>
+                  {"href" in f && f.href && (
+                    <span className="inline-flex items-center gap-1 mt-3 text-xs font-semibold" style={{ color: C.accent }}>
+                      Read the docs
+                      <ChevronRight size={12} />
+                    </span>
+                  )}
+                </div>
+              </>
+            );
+            const cls =
+              "flex flex-col gap-4 p-6 rounded-xl border transition-all hover:border-[#4F46E5]/40";
+            return "href" in f && f.href ? (
+              <a key={f.title} href={f.href} className={cls} style={{ backgroundColor: C.darkCard, borderColor: C.darkBorder }}>
+                {inner}
+              </a>
+            ) : (
+              <div key={f.title} className={cls} style={{ backgroundColor: C.darkCard, borderColor: C.darkBorder }}>
+                {inner}
               </div>
-              <div>
-                <h3 className="text-sm font-semibold text-white mb-1">{f.title}</h3>
-                <p className="text-sm text-gray-400 leading-relaxed">{f.desc}</p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

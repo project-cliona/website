@@ -11,8 +11,9 @@ const footerLinks: Record<string, { label: string; href: string }[]> = {
   ],
   Resources: [
     { label: "Blog", href: "/blog" },
-    { label: "Documentation", href: "#" },
-    { label: "API Reference", href: "#" },
+    { label: "Documentation", href: "/docs/sdk" },
+    { label: "Node.js SDK", href: "/docs/sdk" },
+    { label: "API Reference", href: "/docs/sdk#api-reference" },
     { label: "Status", href: "#" },
   ],
   Legal: [
