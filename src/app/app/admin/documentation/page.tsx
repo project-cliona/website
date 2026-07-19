@@ -23,7 +23,7 @@ function formatDate(iso: string) {
 function DocCard({ doc }: { doc: DocMeta }) {
   const Icon = CATEGORY_ICON[doc.category] ?? BookOpen;
   return (
-    <Link href={`/app/documentation/${doc.slug}`} className="block focus-ring rounded-lg">
+    <Link href={`/app/admin/documentation/${doc.slug}`} className="block focus-ring rounded-lg">
       <Card variant="interactive" className="h-full p-5 flex flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
           <span className="flex h-10 w-10 items-center justify-center rounded-md bg-primary-50 text-primary-700">

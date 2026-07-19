@@ -1,5 +1,5 @@
 // Self-contained HTML document for the "WhatsApp Integration" internal doc.
-// Rendered inside an isolated <iframe srcDoc> on /app/documentation/[slug],
+// Rendered inside an isolated <iframe srcDoc> on /app/admin/documentation/[slug],
 // so its styles never collide with the app's Tailwind theme.
 //
 // To add a new doc: create a sibling file here exporting `html`, then register

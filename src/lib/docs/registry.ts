@@ -1,6 +1,6 @@
 // Internal documentation registry (admin-only).
 //
-// This powers the /app/documentation hub. Each entry is one self-contained doc.
+// This powers the /app/admin/documentation hub. Each entry is one self-contained doc.
 //
 // ─── To add a new doc ──────────────────────────────────────────────────────
 //   1. Create  src/lib/docs/content/<slug>.ts  exporting a full, self-contained

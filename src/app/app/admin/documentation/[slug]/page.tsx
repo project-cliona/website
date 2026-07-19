@@ -67,7 +67,7 @@ function NotFound() {
         This guide doesn&apos;t exist or has been removed.
       </p>
       <Link
-        href="/app/documentation"
+        href="/app/admin/documentation"
         className="text-small text-primary-700 hover:underline mt-4 inline-block focus-ring rounded"
       >
         Back to documentation
@@ -103,7 +103,7 @@ export default function DocumentationDetailPage() {
     <RequireRole roles={[ROLE_ADMIN]}>
       <div className="space-y-5">
         <Link
-          href="/app/documentation"
+          href="/app/admin/documentation"
           className="inline-flex items-center gap-1.5 text-small text-muted-foreground hover:text-foreground transition-colors focus-ring rounded"
         >
           <ArrowLeft className="h-4 w-4" />
