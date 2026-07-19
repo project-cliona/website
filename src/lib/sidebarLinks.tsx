@@ -15,6 +15,7 @@ import {
   Users,
   Workflow,
   MessagesSquare,
+  BookOpen,
   Code2,
 } from "lucide-react";
 
@@ -39,11 +40,16 @@ export const whatsappLinks = [
   { label: "Dashboard", href: "/app", icon: <LayoutDashboard /> },
   { label: "Send Message", href: "/app/whatsapp/sendMessage", icon: <Send /> },
   { label: "Conversations", href: "/app/whatsapp/conversations", icon: <MessagesSquare /> },
-  { label: "Automations", href: "/app/whatsapp/automations", icon: <Workflow /> },
+  { label: "Flow Builder", href: "/app/whatsapp/flows", icon: <Workflow /> },
   { label: "Analytics", href: "/app/whatsapp/analytics", icon: <BarChart3 /> },
   { label: "Templates", href: "/app/whatsapp/templates", icon: <Book /> },
   { label: "Contacts", href: "/app/whatsapp/contacts", icon: <Users /> },
   { label: "Delivery Reports", href: "/app/whatsapp/deliveryReport", icon: <ChartBar /> },
   { label: "Campaign Reports", href: "/app/whatsapp/campaignReport", icon: <ChartNoAxesColumnDecreasing /> },
   { label: "Developers", href: "/app/whatsapp/developers", icon: <Code2 /> },
+];
+
+// Admin-only links — rendered behind a RoleGate (ROLE_ADMIN) in the sidebar.
+export const adminLinks = [
+  { label: "Documentation", href: "/app/documentation", icon: <BookOpen /> },
 ];
