@@ -8,8 +8,10 @@ import {
   SidebarSection,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { whatsappLinks } from "@/lib/sidebarLinks";
+import { whatsappLinks, adminLinks } from "@/lib/sidebarLinks";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import { RoleGate } from "@/components/auth/RoleGate";
+import { ROLE_ADMIN } from "@/lib/rbac";
 import { UserDock } from "@/components/ui/UserDock";
 import { TopBar } from "@/components/ui/TopBar";
 import { SearchProvider } from "@/providers/searchProvider";
@@ -25,6 +27,13 @@ function SidebarInner() {
           <SidebarLink key={link.href} link={link} />
         ))}
       </SidebarSection>
+      <RoleGate roles={[ROLE_ADMIN]}>
+        <SidebarSection title="Admin">
+          {adminLinks.map((link) => (
+            <SidebarLink key={link.href} link={link} />
+          ))}
+        </SidebarSection>
+      </RoleGate>
       <div className="flex-1" />
       <div className="pt-3 border-t border-border mt-3">
         <UserDock collapsed={collapsed} />
