@@ -25,12 +25,46 @@ export interface DocMeta {
 }
 
 export const docs: DocMeta[] = [
+  // ── Architecture ──────────────────────────────────────────────────────────
   {
     slug: "meta-whatsapp-saas-foundation",
     title: "Meta WhatsApp SaaS Foundation",
     description:
       "The core Meta concepts for a multi-tenant WhatsApp SaaS: developer account, Business Manager, Meta App, WhatsApp product, Embedded Signup, the three access-token stages, onboarding flow, and per-tenant asset ownership.",
     category: "Architecture",
+    updatedAt: "2026-07-20",
+  },
+  {
+    slug: "meta-ecosystem",
+    title: "Meta Ecosystem",
+    description:
+      "The Meta platform hierarchy for a multi-tenant WhatsApp SaaS — developer account, Business Manager, Meta App, WABAs, phone numbers, system users, tokens, and onboarding.",
+    category: "Architecture",
+    updatedAt: "2026-07-20",
+  },
+  // ── Integrations ──────────────────────────────────────────────────────────
+  {
+    slug: "authentication-and-access-tokens",
+    title: "Authentication & Access Tokens",
+    description:
+      "Every access token in a WhatsApp SaaS — who issues it, who owns it, when it's used, and how your backend authenticates with Meta.",
+    category: "Integrations",
+    updatedAt: "2026-07-20",
+  },
+  {
+    slug: "embedded-signup",
+    title: "Embedded Signup",
+    description:
+      "How Meta's Embedded Signup lets a customer connect their WhatsApp Business Account to your SaaS — the OAuth flow, asset ownership, and what the backend stores.",
+    category: "Integrations",
+    updatedAt: "2026-07-20",
+  },
+  {
+    slug: "customer-onboarding-flow",
+    title: "Customer Onboarding Flow",
+    description:
+      "How a multi-tenant WhatsApp SaaS takes a customer from signup through Embedded Signup and provisioning to their first sent message.",
+    category: "Integrations",
     updatedAt: "2026-07-20",
   },
   {
@@ -41,14 +75,31 @@ export const docs: DocMeta[] = [
     category: "Integrations",
     updatedAt: "2026-06-30",
   },
+  // ── Operations ────────────────────────────────────────────────────────────
+  {
+    slug: "billing-and-pricing",
+    title: "Billing & Pricing",
+    description:
+      "How to monetize a multi-tenant WhatsApp SaaS — costs, revenue models, pricing strategies, usage tracking, and a scalable billing architecture.",
+    category: "Operations",
+    updatedAt: "2026-07-20",
+  },
 ];
 
 /** Lazy loaders for each doc's HTML, keyed by slug (code-split per doc). */
 export const docLoaders: Record<string, () => Promise<string>> = {
   "meta-whatsapp-saas-foundation": () =>
     import("./content/meta-whatsapp-saas-foundation").then((m) => m.html),
+  "meta-ecosystem": () => import("./content/meta-ecosystem").then((m) => m.html),
+  "authentication-and-access-tokens": () =>
+    import("./content/authentication-and-access-tokens").then((m) => m.html),
+  "embedded-signup": () => import("./content/embedded-signup").then((m) => m.html),
+  "customer-onboarding-flow": () =>
+    import("./content/customer-onboarding-flow").then((m) => m.html),
   "whatsapp-integration": () =>
     import("./content/whatsapp-integration").then((m) => m.html),
+  "billing-and-pricing": () =>
+    import("./content/billing-and-pricing").then((m) => m.html),
 };
 
 export function getDocMeta(slug: string): DocMeta | null {
