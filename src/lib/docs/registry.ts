@@ -26,6 +26,14 @@ export interface DocMeta {
 
 export const docs: DocMeta[] = [
   {
+    slug: "meta-whatsapp-saas-foundation",
+    title: "Meta WhatsApp SaaS Foundation",
+    description:
+      "The core Meta concepts for a multi-tenant WhatsApp SaaS: developer account, Business Manager, Meta App, WhatsApp product, Embedded Signup, the three access-token stages, onboarding flow, and per-tenant asset ownership.",
+    category: "Architecture",
+    updatedAt: "2026-07-20",
+  },
+  {
     slug: "whatsapp-integration",
     title: "WhatsApp Integration",
     description:
@@ -37,6 +45,8 @@ export const docs: DocMeta[] = [
 
 /** Lazy loaders for each doc's HTML, keyed by slug (code-split per doc). */
 export const docLoaders: Record<string, () => Promise<string>> = {
+  "meta-whatsapp-saas-foundation": () =>
+    import("./content/meta-whatsapp-saas-foundation").then((m) => m.html),
   "whatsapp-integration": () =>
     import("./content/whatsapp-integration").then((m) => m.html),
 };
