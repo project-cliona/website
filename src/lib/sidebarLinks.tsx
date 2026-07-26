@@ -51,5 +51,5 @@ export const whatsappLinks = [
 
 // Admin-only links — rendered behind a RoleGate (ROLE_ADMIN) in the sidebar.
 export const adminLinks = [
-  { label: "Documentation", href: "/app/documentation", icon: <BookOpen /> },
+  { label: "Documentation", href: "/app/admin/documentation", icon: <BookOpen /> },
 ];
