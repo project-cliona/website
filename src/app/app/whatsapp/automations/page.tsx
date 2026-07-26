@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Plus, Workflow, Mail, MoreHorizontal } from "lucide-react";
 import {
   DropdownMenu,
@@ -59,8 +60,10 @@ export default function AutomationsPage() {
         title="Automations"
         subtitle="Manage your automated message flows"
         actions={
-          <Button className="bg-ai-gradient text-white shadow-e2 hover:shadow-e3">
-            <Plus className="h-4 w-4" /> New Automation
+          <Button asChild className="bg-ai-gradient text-white shadow-e2 hover:shadow-e3">
+            <Link href="/app/whatsapp/flows">
+              <Plus className="h-4 w-4" /> New Flow
+            </Link>
           </Button>
         }
       />
@@ -139,7 +142,7 @@ export default function AutomationsPage() {
             icon={Workflow}
             title="Visual Automation Builder"
             description="Build awesome automations easily with our drag-and-drop editor."
-            cta={{ label: "Build Automation", href: "#" }}
+            cta={{ label: "Open Flow Builder", href: "/app/whatsapp/flows" }}
           />
         </aside>
       </div>

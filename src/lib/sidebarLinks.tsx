@@ -15,8 +15,8 @@ import {
   Users,
   Workflow,
   MessagesSquare,
-  Code2,
   BookOpen,
+  Code2,
 } from "lucide-react";
 
 export const appLinks = [
@@ -40,7 +40,7 @@ export const whatsappLinks = [
   { label: "Dashboard", href: "/app", icon: <LayoutDashboard /> },
   { label: "Send Message", href: "/app/whatsapp/sendMessage", icon: <Send /> },
   { label: "Conversations", href: "/app/whatsapp/conversations", icon: <MessagesSquare /> },
-  { label: "Automations", href: "/app/whatsapp/automations", icon: <Workflow /> },
+  { label: "Flow Builder", href: "/app/whatsapp/flows", icon: <Workflow /> },
   { label: "Analytics", href: "/app/whatsapp/analytics", icon: <BarChart3 /> },
   { label: "Templates", href: "/app/whatsapp/templates", icon: <Book /> },
   { label: "Contacts", href: "/app/whatsapp/contacts", icon: <Users /> },
