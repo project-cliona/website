@@ -17,6 +17,7 @@ import {
   MessagesSquare,
   Code2,
   BookOpen,
+  ShieldCheck,
 } from "lucide-react";
 
 export const appLinks = [
@@ -52,4 +53,5 @@ export const whatsappLinks = [
 // Admin-only links — rendered behind a RoleGate (ROLE_ADMIN) in the sidebar.
 export const adminLinks = [
   { label: "Documentation", href: "/app/admin/documentation", icon: <BookOpen /> },
+  { label: "Accounts Health", href: "/app/whatsapp/accounts-health", icon: <ShieldCheck /> },
 ];
