@@ -49,8 +49,8 @@ export const notify = {
    * thrown values the human-readable message is extracted (axios-aware),
    * falling back to `fallback`.
    */
-  error: (error: unknown, fallback?: string) =>
-    toast.error(getErrorMessage(error, fallback)),
+  error: (error: unknown, fallback?: string, opts?: ToastOptions) =>
+    toast.error(getErrorMessage(error, fallback), opts),
 
   /** Informational toast. */
   info: (message: string, opts?: ToastOptions) => toast.info(message, opts),
