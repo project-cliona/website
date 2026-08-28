@@ -382,3 +382,130 @@ export interface AdminUserRow {
   profileStatus: "active" | "incomplete" | "suspended" | "inactive";
   createdAt: string;
 }
+
+/* ------------------------------------------------------------------ *
+ * Notifications
+ * ------------------------------------------------------------------ */
+
+export type NotificationSeverity = "critical" | "warning" | "info";
+
+export interface AppNotification {
+  id: number;
+  userId: number;
+  type: string;
+  severity: NotificationSeverity;
+  title: string;
+  body: string;
+  link: string | null;
+  metadata: Record<string, unknown> | null;
+  readAt: string | null;
+  createdAt: string;
+}
+
+export interface NotificationListResponse {
+  items: AppNotification[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+/* ------------------------------------------------------------------ *
+ * WhatsApp accounts health (account_update webhook analytics)
+ * ------------------------------------------------------------------ */
+
+export interface WabaRestriction {
+  restriction_type: string;
+  expiration?: number;
+  remediation?: string;
+}
+
+export interface NameValue {
+  name: string;
+  value: number;
+}
+
+export interface AccountsHealthAtRiskRow {
+  wabaId: string;
+  businessName: string | null;
+  displayPhoneNumber: string;
+  connectionState: string;
+  banState: string | null;
+  restrictions: WabaRestriction[] | null;
+  violationType: string | null;
+  lastAccountEventAt: string | null;
+  ownerId: number;
+  ownerEmail: string;
+  ownerName: string | null;
+  ownerCompany: string | null;
+}
+
+export interface AccountsHealthOverview {
+  summary: {
+    totalAccounts: number;
+    accountsTrend: string;
+    healthy: number;
+    healthyPercent: string;
+    banned: number;
+    restricted: number;
+    disconnected: number;
+    atRiskTrend: string;
+  };
+  connectionBreakdown: NameValue[];
+  restrictionBreakdown: NameValue[];
+  violationBreakdown: NameValue[];
+  verificationFunnel: NameValue[];
+  rejectionReasons: NameValue[];
+  pricingTiers: Array<{
+    category: string | null;
+    tier: string | null;
+    region: string | null;
+    value: number;
+  }>;
+  authIntl: { eligible: number; withExceptions: number };
+  eventSeries: Array<{
+    day: string;
+    critical: number;
+    warning: number;
+    info: number;
+  }>;
+  eventMix: NameValue[];
+  atRisk: AccountsHealthAtRiskRow[];
+}
+
+export interface AccountHealthEvent {
+  id: number;
+  event: string;
+  severity: NotificationSeverity;
+  payload: Record<string, unknown>;
+  webhookTimestamp: string;
+  createdAt: string;
+}
+
+export interface AccountHealthDetail {
+  account: {
+    wabaId: string;
+    userId: number;
+    businessName: string | null;
+    displayPhoneNumber: string;
+    status: string;
+    qualityRating: string | null;
+    connectionState: string;
+    banState: string | null;
+    banDate: string | null;
+    restrictions: WabaRestriction[] | null;
+    violationType: string | null;
+    pricingTier: Record<string, string> | null;
+    authIntlEligibility: Record<string, unknown> | null;
+    primaryLocationCountry: string | null;
+    partnerVerificationStatus: string | null;
+    partnerVerificationRejectionReasons: string[] | null;
+    disconnectionReason: string | null;
+    disconnectionInitiatedBy: string | null;
+    lastAccountEventAt: string | null;
+    createdAt: string;
+    ownerEmail: string;
+    ownerName: string | null;
+    ownerCompany: string | null;
+  };
+  timeline: AccountHealthEvent[];
+}
