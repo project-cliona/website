@@ -179,9 +179,13 @@ export const useAnalyticsFilters = () => {
     [patch]
   );
 
+  const setTab = useCallback((tab: string) => patch({ tab }), [patch]);
+
+  /** Reset clears the filters but keeps the tab — you're resetting a view, not leaving it. */
   const reset = useCallback(() => {
-    router.replace(pathname, { scroll: false });
-  }, [pathname, router]);
+    const tab = searchParams.get("tab");
+    router.replace(tab ? `${pathname}?tab=${tab}` : pathname, { scroll: false });
+  }, [pathname, router, searchParams]);
 
   const isDefault =
     filters.preset === DEFAULT_PRESET &&
@@ -192,6 +196,8 @@ export const useAnalyticsFilters = () => {
 
   return {
     filters,
+    tab: searchParams.get("tab") ?? "overview",
+    setTab,
     setPreset,
     setCustomRange,
     setGranularity,

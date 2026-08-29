@@ -25,6 +25,8 @@ interface Props {
   filters: AnalyticsFilterState;
   options: AnalyticsFilterOptions | null;
   showAccountFilter: boolean;
+  showCategoryFilter: boolean;
+  showCompare: boolean;
   onPreset: (preset: RangePresetId) => void;
   onCustomRange: (from: Date, to: Date) => void;
   onGranularity: (g: AnalyticsGranularity) => void;
@@ -61,6 +63,8 @@ export function AnalyticsFilterBar({
   filters,
   options,
   showAccountFilter,
+  showCategoryFilter,
+  showCompare,
   onPreset,
   onCustomRange,
   onGranularity,
@@ -207,17 +211,21 @@ export function AnalyticsFilterBar({
           />
         )}
 
-        <MultiSelect
-          options={categoryOptions}
-          selected={filters.categories}
-          onChange={onCategories}
-          allLabel="All categories"
-        />
+        {showCategoryFilter && (
+          <MultiSelect
+            options={categoryOptions}
+            selected={filters.categories}
+            onChange={onCategories}
+            allLabel="All categories"
+          />
+        )}
 
-        <label className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
-          Compare to previous period
-          <Switch enabled={filters.compare} onChange={onCompare} />
-        </label>
+        {showCompare && (
+          <label className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
+            Compare to previous period
+            <Switch enabled={filters.compare} onChange={onCompare} />
+          </label>
+        )}
       </div>
 
       {/* Active filters — silent filtering is how an analytics page lies to you. */}

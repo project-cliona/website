@@ -577,3 +577,32 @@ export interface AnalyticsOverview {
   categoryMix: AnalyticsNameValue[];
   accounts: AnalyticsAccountRow[];
 }
+
+export interface AnalyticsAccountPerformance {
+  wabaId: string;
+  businessName: string | null;
+  displayPhoneNumber: string | null;
+  sent: number;
+  delivered: number;
+  read: number;
+  failed: number;
+  deliveryRate: number;
+  readRate: number;
+}
+
+export interface AnalyticsHeatmapCell {
+  weekday: number;
+  hour: number;
+  attempted: number;
+  delivered: number;
+  deliveryRate: number;
+}
+
+export interface AnalyticsMessaging {
+  countries: AnalyticsNameValue[];
+  accounts: AnalyticsAccountPerformance[];
+  types: AnalyticsNameValue[];
+  latency: AnalyticsNameValue[];
+  medianDeliverySeconds: number | null;
+  heatmap: AnalyticsHeatmapCell[];
+}
