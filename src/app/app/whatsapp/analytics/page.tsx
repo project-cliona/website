@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { AnalyticsFilterBar } from "./_components/AnalyticsFilterBar";
 import { OverviewTab } from "./_components/OverviewTab";
 import { MessagingTab } from "./_components/MessagingTab";
+import { ConversationsTab } from "./_components/ConversationsTab";
 import { ComingSoon } from "./_components/ComingSoon";
 import { useAnalyticsFilters } from "./_components/useAnalyticsFilters";
 import {
@@ -94,17 +95,7 @@ function AnalyticsPageInner() {
       {tab === "overview" && <OverviewTab filters={filters} />}
       {tab === "messaging" && <MessagingTab filters={filters} />}
 
-      {tab === "conversations" && (
-        <ComingSoon
-          title="Conversations & Cost"
-          reason="These come from Meta's conversation analytics — we track individual messages, not 24-hour conversation windows, so they can't be computed from delivery receipts."
-          metrics={[
-            "Conversation volume by category, type and direction",
-            "Cost per conversation and spend over time",
-            "Conversations and spend by country",
-          ]}
-        />
-      )}
+      {tab === "conversations" && <ConversationsTab filters={filters} />}
 
       {tab === "pricing" && (
         <ComingSoon

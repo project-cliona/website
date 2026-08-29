@@ -4,6 +4,7 @@ import type {
   AnalyticsFilterOptions,
   AnalyticsOverview,
   AnalyticsMessaging,
+  AnalyticsConversations,
 } from "@/lib/type";
 
 /** Serialise filter state into the query params the backend expects. */
@@ -56,6 +57,21 @@ export const fetchAnalyticsMessaging = async (
     return res.data.result;
   } catch (error) {
     console.log("Error fetching analytics messaging:", error);
+    return null;
+  }
+};
+
+export const fetchAnalyticsConversations = async (
+  filters: AnalyticsFilters
+): Promise<AnalyticsConversations | null> => {
+  try {
+    const res = await authenticatedApiClient().get(
+      "/whatsApp/analytics/conversations",
+      { params: analyticsQueryParams(filters) }
+    );
+    return res.data.result;
+  } catch (error) {
+    console.log("Error fetching analytics conversations:", error);
     return null;
   }
 };

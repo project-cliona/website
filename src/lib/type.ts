@@ -606,3 +606,29 @@ export interface AnalyticsMessaging {
   medianDeliverySeconds: number | null;
   heatmap: AnalyticsHeatmapCell[];
 }
+
+export type MetaAnalyticsFailure =
+  | "cost_withheld"
+  | "insights_not_enabled"
+  | "region_unsupported"
+  | "token_invalid"
+  | "unavailable";
+
+export interface AnalyticsAccountFetchStatus {
+  wabaId: string;
+  businessName: string | null;
+  ok: boolean;
+  failure?: MetaAnalyticsFailure;
+  message?: string;
+}
+
+export interface AnalyticsConversations {
+  series: Array<{ bucket: string; conversations: number }>;
+  byCategory: AnalyticsNameValue[];
+  byType: AnalyticsNameValue[];
+  byDirection: AnalyticsNameValue[];
+  byCountry: AnalyticsNameValue[];
+  totalConversations: number;
+  costAvailable: boolean;
+  accounts: AnalyticsAccountFetchStatus[];
+}

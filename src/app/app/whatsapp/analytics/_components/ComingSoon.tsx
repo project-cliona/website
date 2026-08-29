@@ -1,11 +1,12 @@
 "use client";
 
-import { Lock } from "lucide-react";
+import { Hammer } from "lucide-react";
 
 /**
- * Placeholder for the three Graph-backed tabs. States plainly what the tab will
- * show and why it isn't here yet — an empty tab with no explanation reads as a
- * bug, and these metrics genuinely cannot be computed from our own tables.
+ * Placeholder for a tab that isn't built yet. States plainly what it will show
+ * and why it isn't here — an empty tab with no explanation reads as a bug.
+ * Deliberately not a padlock: nothing here is gated on permission or plan, and
+ * a padlock would read as "upgrade to unlock".
  */
 export function ComingSoon({
   title,
@@ -20,7 +21,7 @@ export function ComingSoon({
     <div className="rounded-lg border border-dashed border-gray-300 bg-card p-8">
       <div className="mx-auto max-w-lg text-center">
         <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
-          <Lock className="h-5 w-5 text-muted-foreground" />
+          <Hammer className="h-5 w-5 text-muted-foreground" />
         </div>
         <h3 className="text-sm font-semibold text-foreground">{title}</h3>
         <p className="mt-1.5 text-sm text-muted-foreground">{reason}</p>
