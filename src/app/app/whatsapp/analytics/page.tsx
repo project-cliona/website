@@ -1,151 +1,378 @@
 "use client";
 
-import { Mail, Eye, MousePointerClick, DollarSign, MoreHorizontal } from "lucide-react";
+import { Suspense } from "react";
+import Link from "next/link";
+import { format, parseISO } from "date-fns";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Send,
+  CheckCheck,
+  Eye,
+  XCircle,
+  Percent,
+  BookOpenCheck,
+  ShieldAlert,
+  ArrowRight,
+} from "lucide-react";
 import { PageHeading } from "@/components/ui/PageHeading";
 import { StatsCard } from "@/components/ui/StatsCard";
 import {
-  LineChart,
+  AreaChart,
   DonutChart,
-  BarChart,
   HorizontalBarChart,
+  CHART_COLORS,
 } from "@/components/ui/chart";
 import {
-  Table,
-  TableActions,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  fetchAnalyticsOverview,
+  fetchAnalyticsFilterOptions,
+} from "@/lib/api/whatsapp/analytics";
+import { analyticsQueryParams } from "@/lib/api/whatsapp/analytics";
+import { useUser } from "@/providers/userProvider";
+import { cn } from "@/lib/utils";
+import { AnalyticsFilterBar } from "./_components/AnalyticsFilterBar";
+import { DeliveryFunnel } from "./_components/DeliveryFunnel";
+import { useAnalyticsFilters } from "./_components/useAnalyticsFilters";
 
-interface CampaignRow {
-  name: string;
-  opens: number;
-  clicks: number;
-  openRate: string;
+const CATEGORY_COLORS = ["#4F46E5", "#A5B4FC", "#FB923C", "#16A34A", "#94A3B8"];
+
+/** A trend string like "-4.2%" or "+0" is positive unless it starts with a minus. */
+const isPositive = (trend: string) => !trend.startsWith("-");
+
+function Panel({
+  title,
+  subtitle,
+  children,
+  className,
+  action,
+}: {
+  title: string;
+  subtitle?: string;
+  children: React.ReactNode;
+  className?: string;
+  action?: React.ReactNode;
+}) {
+  return (
+    <div className={cn("rounded-lg border border-gray-200 bg-card p-5", className)}>
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+          {subtitle && (
+            <p className="mt-0.5 text-caption text-muted-foreground">{subtitle}</p>
+          )}
+        </div>
+        {action}
+      </div>
+      {children}
+    </div>
+  );
 }
 
-const TOP_CAMPAIGNS: CampaignRow[] = [
-  { name: "Spring Sale Launch", opens: 2184, clicks: 876, openRate: "44.4%" },
-  { name: "Welcome Series", opens: 1890, clicks: 756, openRate: "42.8%" },
-  { name: "Product Update", opens: 1576, clicks: 630, openRate: "41.2%" },
-  { name: "Newsletter #12", opens: 1340, clicks: 536, openRate: "39.9%" },
-];
+function Empty({ label }: { label: string }) {
+  return <p className="py-10 text-center text-sm text-muted-foreground">{label}</p>;
+}
 
-export default function AnalyticsPage() {
-  const hourlyData = [
-    { hour: "3am", opens: 200 },
-    { hour: "6am", opens: 400 },
-    { hour: "9am", opens: 750 },
-    { hour: "12pm", opens: 600 },
-    { hour: "3pm", opens: 500 },
-  ];
-  const geoData = [
-    { label: "USA", value: 2200 },
-    { label: "CAN", value: 1500 },
-    { label: "GER", value: 9500 },
-    { label: "ITA", value: 1800 },
-    { label: "JAP", value: 1100 },
-  ];
-  const growthData = [
-    { month: "Oct", value: 5800 },
-    { month: "Nov", value: 7200 },
-    { month: "Dec", value: 9800 },
-    { month: "Jan", value: 6500 },
-    { month: "Feb", value: 7800 },
-  ];
-  const deviceData = [
-    { name: "Desktop", value: 45, color: "#4F46E5" },
-    { name: "Mobile", value: 35, color: "#A5B4FC" },
-    { name: "Tablet", value: 20, color: "#E2E8F0" },
-  ];
+function AnalyticsPageInner() {
+  const { isClient } = useUser();
+  const {
+    filters,
+    setPreset,
+    setCustomRange,
+    setGranularity,
+    setWabaIds,
+    setCategories,
+    setCompare,
+    reset,
+    isDefault,
+  } = useAnalyticsFilters();
+
+  const { data: options } = useQuery({
+    queryKey: ["whatsapp", "analytics", "filters"],
+    queryFn: fetchAnalyticsFilterOptions,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const { data, isLoading, isFetching } = useQuery({
+    // Key on the serialised params, not the Date objects — Dates are never
+    // referentially equal and would refetch on every render.
+    queryKey: ["whatsapp", "analytics", "overview", analyticsQueryParams(filters)],
+    queryFn: () => fetchAnalyticsOverview(filters),
+    staleTime: 1000 * 60,
+    placeholderData: keepPreviousData,
+  });
+
+  // A client with a single account has nothing to choose between.
+  const showAccountFilter = !isClient || (options?.accounts.length ?? 0) > 1;
+
+  const tiles = data?.tiles;
+  const bucketFormat =
+    filters.granularity === "half_hour"
+      ? "HH:mm"
+      : filters.granularity === "month"
+        ? "MMM yy"
+        : "d MMM";
+
+  const series =
+    data?.series.map((point) => ({
+      ...point,
+      label: format(parseISO(String(point.bucket)), bucketFormat),
+    })) ?? [];
 
   return (
     <div className="space-y-6">
-      <PageHeading title="Analytics" subtitle="Deep dive into your messaging performance" />
+      <PageHeading
+        title="Analytics"
+        subtitle="Messaging performance across your WhatsApp accounts"
+      />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard icon={<Mail className="h-4 w-4" />} label="Emails Sent" value="24,589" trend={{ value: "+18%", positive: true }} />
-        <StatsCard icon={<Eye className="h-4 w-4" />} label="Total Opens" value="10,524" trend={{ value: "+12%", positive: true }} />
-        <StatsCard icon={<MousePointerClick className="h-4 w-4" />} label="Total Clicks" value="4,210" trend={{ value: "+8%", positive: true }} />
-        <StatsCard icon={<DollarSign className="h-4 w-4" />} label="Revenue" value="$34,890" trend={{ value: "+24%", positive: true }} accent />
-      </div>
+      <AnalyticsFilterBar
+        filters={filters}
+        options={options ?? null}
+        showAccountFilter={showAccountFilter}
+        onPreset={setPreset}
+        onCustomRange={setCustomRange}
+        onGranularity={setGranularity}
+        onWabaIds={setWabaIds}
+        onCategories={setCategories}
+        onCompare={setCompare}
+        onReset={reset}
+        isDefault={isDefault}
+      />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <div className="lg:col-span-8 rounded-lg border border-border bg-card p-5 shadow-e1">
-          <h3 className="text-h3 mb-4">Top Performing Campaigns</h3>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Campaign</TableHead>
-                <TableHead>Opens</TableHead>
-                <TableHead>Clicks</TableHead>
-                <TableHead>Open Rate</TableHead>
-                <TableHead className="text-right">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {TOP_CAMPAIGNS.map((c) => (
-                <TableRow key={c.name}>
-                  <TableCell className="font-semibold">{c.name}</TableCell>
-                  <TableCell className="tabular-nums">{c.opens.toLocaleString()}</TableCell>
-                  <TableCell className="tabular-nums">{c.clicks.toLocaleString()}</TableCell>
-                  <TableCell className="tabular-nums">{c.openRate}</TableCell>
-                  <TableCell>
-                    <TableActions>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button
-                            type="button"
-                            className="h-8 w-8 rounded-md flex items-center justify-center text-muted-foreground hover:bg-secondary focus-ring"
-                            aria-label="More"
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem disabled>View details</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableActions>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+      <div
+        className={cn(
+          "space-y-6 transition-opacity",
+          isFetching && !isLoading && "opacity-60"
+        )}
+      >
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <StatsCard
+            icon={<Send className="h-4 w-4" />}
+            label="Sent"
+            value={(tiles?.sent ?? 0).toLocaleString()}
+            trend={
+              tiles ? { value: tiles.sentTrend, positive: isPositive(tiles.sentTrend) } : undefined
+            }
+          />
+          <StatsCard
+            icon={<CheckCheck className="h-4 w-4" />}
+            label="Delivered"
+            value={(tiles?.delivered ?? 0).toLocaleString()}
+            trend={
+              tiles
+                ? { value: tiles.deliveredTrend, positive: isPositive(tiles.deliveredTrend) }
+                : undefined
+            }
+          />
+          <StatsCard
+            icon={<Eye className="h-4 w-4" />}
+            label="Read"
+            value={(tiles?.read ?? 0).toLocaleString()}
+            trend={
+              tiles ? { value: tiles.readTrend, positive: isPositive(tiles.readTrend) } : undefined
+            }
+          />
+          <StatsCard
+            icon={<XCircle className="h-4 w-4" />}
+            label="Failed"
+            value={(tiles?.failed ?? 0).toLocaleString()}
+            // Fewer failures is the good direction, so the sign is inverted here.
+            trend={
+              tiles
+                ? { value: tiles.failedTrend, positive: !isPositive(tiles.failedTrend) }
+                : undefined
+            }
+          />
+          <StatsCard
+            icon={<Percent className="h-4 w-4" />}
+            label="Delivery rate"
+            value={tiles?.deliveryRate ?? "0.0%"}
+            trend={
+              tiles
+                ? {
+                    value: tiles.deliveryRateTrend,
+                    positive: isPositive(tiles.deliveryRateTrend),
+                  }
+                : undefined
+            }
+          />
+          <StatsCard
+            icon={<BookOpenCheck className="h-4 w-4" />}
+            label="Read rate"
+            value={tiles?.readRate ?? "0.0%"}
+            trend={
+              tiles
+                ? { value: tiles.readRateTrend, positive: isPositive(tiles.readRateTrend) }
+                : undefined
+            }
+            accent
+          />
         </div>
 
-        <div className="lg:col-span-4 rounded-lg border border-border bg-card p-5 shadow-e1">
-          <h3 className="text-h3 mb-1">Device Breakdown</h3>
-          <p className="text-caption text-muted-foreground mb-4">Opens by device type</p>
-          <DonutChart data={deviceData} centerLabel={{ primary: "45%", secondary: "Desktop" }} />
-        </div>
-      </div>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+          <Panel
+            title="Volume over time"
+            subtitle="Outbound messages by outcome"
+            className="lg:col-span-8"
+          >
+            {series.length === 0 ? (
+              <Empty label={isLoading ? "Loading…" : "No messages in this period."} />
+            ) : (
+              <AreaChart
+                data={series}
+                xKey="label"
+                series={[
+                  { key: "sent", label: "Sent", color: CHART_COLORS[0] },
+                  { key: "delivered", label: "Delivered", color: CHART_COLORS[1] },
+                  { key: "read", label: "Read", color: "#16A34A" },
+                  { key: "failed", label: "Failed", color: "#DC2626" },
+                ]}
+                height={280}
+              />
+            )}
+          </Panel>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="rounded-lg border border-border bg-card p-5 shadow-e1">
-          <h3 className="text-h3 mb-1">Hourly Engagement</h3>
-          <p className="text-caption text-muted-foreground mb-4">Opens by hour</p>
-          <LineChart data={hourlyData} xKey="hour" series={[{ key: "opens", label: "Opens" }]} />
+          <Panel
+            title="Delivery funnel"
+            subtitle="Drop-off at each stage"
+            className="lg:col-span-4"
+          >
+            <DeliveryFunnel stages={data?.funnel ?? []} />
+          </Panel>
         </div>
-        <div className="rounded-lg border border-border bg-card p-5 shadow-e1">
-          <h3 className="text-h3 mb-1">Geographic Performance</h3>
-          <p className="text-caption text-muted-foreground mb-4">Revenue by country</p>
-          <HorizontalBarChart data={geoData} />
+
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+          <Panel
+            title="Why messages failed"
+            subtitle="Top reasons in this period"
+            className="lg:col-span-7"
+            action={
+              <Link
+                href="/app/whatsapp/deliveryReport"
+                className="flex items-center gap-1 text-caption text-primary-700 hover:underline"
+              >
+                Delivery report <ArrowRight className="h-3 w-3" />
+              </Link>
+            }
+          >
+            {(data?.failureReasons.length ?? 0) === 0 ? (
+              <Empty label="No failures in this period." />
+            ) : (
+              <HorizontalBarChart
+                data={(data?.failureReasons ?? []).map((r) => ({
+                  label: r.name,
+                  value: r.value,
+                }))}
+                height={240}
+              />
+            )}
+          </Panel>
+
+          <Panel
+            title="Category mix"
+            subtitle="Delivered messages by pricing category"
+            className="lg:col-span-5"
+          >
+            {(data?.categoryMix.length ?? 0) === 0 ? (
+              <Empty label="No categorised messages yet." />
+            ) : (
+              <DonutChart
+                data={(data?.categoryMix ?? []).map((c, i) => ({
+                  name: c.name,
+                  value: c.value,
+                  color: CATEGORY_COLORS[i % CATEGORY_COLORS.length],
+                }))}
+                height={240}
+              />
+            )}
+          </Panel>
         </div>
-        <div className="rounded-lg border border-border bg-card p-5 shadow-e1">
-          <h3 className="text-h3 mb-1">Subscriber Growth</h3>
-          <p className="text-caption text-muted-foreground mb-4">Monthly growth</p>
-          <BarChart data={growthData} xKey="month" yKey="value" highlightIndex={2} />
-        </div>
+
+        <Panel
+          title="Account health"
+          subtitle="Quality and standing of the accounts behind these numbers"
+          action={
+            <Link
+              href="/app/whatsapp/accounts-health"
+              className="flex items-center gap-1 text-caption text-primary-700 hover:underline"
+            >
+              Accounts health <ArrowRight className="h-3 w-3" />
+            </Link>
+          }
+        >
+          {(data?.accounts.length ?? 0) === 0 ? (
+            <Empty label="No WhatsApp accounts connected." />
+          ) : (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {data?.accounts.map((a) => {
+                const banned =
+                  a.banState === "DISABLE" || a.banState === "SCHEDULE_FOR_DISABLE";
+                const unhealthy =
+                  banned || a.restrictionCount > 0 || a.connectionState !== "connected";
+                return (
+                  <Link
+                    key={a.wabaId}
+                    href={`/app/whatsapp/accounts-health/${a.wabaId}`}
+                    className={cn(
+                      "rounded-md border p-3 transition-colors hover:bg-secondary/50",
+                      unhealthy ? "border-amber-300 bg-amber-50/40" : "border-gray-200"
+                    )}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium text-foreground">
+                          {a.businessName ?? a.wabaId}
+                        </p>
+                        <p className="text-caption text-muted-foreground">
+                          {a.displayPhoneNumber}
+                        </p>
+                      </div>
+                      {unhealthy && (
+                        <ShieldAlert className="h-4 w-4 shrink-0 text-amber-600" />
+                      )}
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-1.5 text-[11px]">
+                      <span className="rounded-full bg-secondary px-2 py-0.5 text-muted-foreground">
+                        Quality: {a.qualityRating ?? "unknown"}
+                      </span>
+                      {banned && (
+                        <span className="rounded-full bg-red-50 px-2 py-0.5 text-red-700">
+                          {a.banState}
+                        </span>
+                      )}
+                      {a.restrictionCount > 0 && (
+                        <span className="rounded-full bg-amber-50 px-2 py-0.5 text-amber-700">
+                          {a.restrictionCount} restriction
+                          {a.restrictionCount === 1 ? "" : "s"}
+                        </span>
+                      )}
+                      {a.connectionState !== "connected" && (
+                        <span className="rounded-full bg-orange-50 px-2 py-0.5 text-orange-700">
+                          {a.connectionState}
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </Panel>
+
+        <p className="text-caption text-muted-foreground">
+          Computed from delivery receipts recorded by this platform. Conversation
+          counts, cost and template button clicks come from Meta and arrive in a
+          later release.
+        </p>
       </div>
     </div>
+  );
+}
+
+/** useSearchParams needs a Suspense boundary in the App Router. */
+export default function AnalyticsPage() {
+  return (
+    <Suspense fallback={<PageHeading title="Analytics" subtitle="Loading…" />}>
+      <AnalyticsPageInner />
+    </Suspense>
   );
 }
