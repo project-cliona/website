@@ -509,3 +509,71 @@ export interface AccountHealthDetail {
   };
   timeline: AccountHealthEvent[];
 }
+
+// --- WhatsApp analytics ----------------------------------------------------
+
+export type AnalyticsGranularity = "half_hour" | "day" | "month";
+
+/** Shared filter state for the Analytics page. Mirrors the backend query params. */
+export interface AnalyticsFilters {
+  from: Date;
+  to: Date;
+  granularity: AnalyticsGranularity;
+  wabaIds: string[];
+  categories: string[];
+  compare: boolean;
+}
+
+export interface AnalyticsFilterOptions {
+  accounts: Array<{
+    wabaId: string;
+    businessName: string | null;
+    displayPhoneNumber: string;
+  }>;
+  categories: string[];
+}
+
+export interface AnalyticsFunnelStage {
+  stage: string;
+  value: number;
+  pctOfTotal: number;
+  dropOff: number;
+}
+
+export interface AnalyticsNameValue {
+  name: string;
+  value: number;
+}
+
+export interface AnalyticsAccountRow {
+  wabaId: string;
+  businessName: string | null;
+  displayPhoneNumber: string;
+  qualityRating: string | null;
+  banState: string | null;
+  connectionState: string;
+  restrictionCount: number;
+}
+
+export interface AnalyticsOverview {
+  range: { from: string; to: string; granularity: AnalyticsGranularity };
+  tiles: {
+    sent: number;
+    sentTrend: string;
+    delivered: number;
+    deliveredTrend: string;
+    read: number;
+    readTrend: string;
+    failed: number;
+    failedTrend: string;
+    deliveryRate: string;
+    deliveryRateTrend: string;
+    readRate: string;
+    readRateTrend: string;
+  };
+  series: Array<Record<string, string | number>>;
+  funnel: AnalyticsFunnelStage[];
+  failureReasons: AnalyticsNameValue[];
+  categoryMix: AnalyticsNameValue[];
+  accounts: AnalyticsAccountRow[];
+}
