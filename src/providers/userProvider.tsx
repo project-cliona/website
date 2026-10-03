@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect } from "react";
 import { QueryObserverResult, useQuery, useQueryClient } from "@tanstack/react-query";
 import { User, UserProfile } from "@/lib/type";
 import { getCurrentUser, getUserProfile, logoutUser } from "@/lib/api/auth";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import { ROLE_ADMIN, ROLE_RESELLER, ROLE_CLIENT, type Role } from "@/lib/rbac";
 
@@ -26,6 +26,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const router = useRouter();
+    const pathname = usePathname();
     const queryClient = useQueryClient();
 
     const {
@@ -91,10 +92,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
             return;
         }
 
-        if (profile?.profileStatus === "active") {
+        // Only bounce users who are sitting outside the app shell. This used
+        // to redirect unconditionally, which made every /app/* route other
+        // than /app itself impossible to stay on.
+        if (profile?.profileStatus === "active" && !pathname?.startsWith("/app")) {
             router.replace("/app");
         }
-    }, [user, profile, userAuthLoading, router]);
+    }, [user, profile, userAuthLoading, router, pathname]);
 
     return (
         <UserContext.Provider

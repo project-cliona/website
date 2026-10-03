@@ -8,6 +8,7 @@ import { useSearch } from "@/providers/searchProvider";
 import { buildBreadcrumb } from "@/lib/breadcrumbMap";
 import { AIInsightModal } from "@/components/ui/AIInsightModal";
 import { NotificationBell } from "@/components/ui/NotificationBell";
+import { WabaSwitcher } from "@/components/ui/WabaSwitcher";
 
 export function TopBar() {
   const pathname = usePathname();
@@ -52,6 +53,8 @@ export function TopBar() {
             className="h-10 w-full rounded-full border border-input bg-background pl-9 pr-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:opacity-60 disabled:cursor-not-allowed transition-[box-shadow,border-color] duration-[var(--motion-fast)]"
           />
         </div>
+
+        <WabaSwitcher />
 
         <NotificationBell />
 

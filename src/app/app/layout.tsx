@@ -15,13 +15,18 @@ import { ROLE_ADMIN } from "@/lib/rbac";
 import { UserDock } from "@/components/ui/UserDock";
 import { TopBar } from "@/components/ui/TopBar";
 import { SearchProvider } from "@/providers/searchProvider";
+import { WabaProvider } from "@/providers/wabaProvider";
+import { WabaReadOnlyBanner } from "@/components/whatsapp/WabaReadOnlyBanner";
 
 function SidebarInner() {
   const { collapsed, setCollapsed } = useSidebar();
 
   return (
     <div className="flex flex-col h-full">
-      <SidebarBrand collapsed={collapsed} onToggleCollapse={() => setCollapsed(!collapsed)} />
+      <SidebarBrand
+        collapsed={collapsed}
+        onToggleCollapse={() => setCollapsed(!collapsed)}
+      />
       <SidebarSection>
         {whatsappLinks.map((link) => (
           <SidebarLink key={link.href} link={link} />
@@ -45,19 +50,24 @@ function SidebarInner() {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute>
-      <SearchProvider>
-        <Sidebar>
-          <div className="md:flex">
-            <SidebarBody>
-              <SidebarInner />
-            </SidebarBody>
-            <div className="flex-1 min-w-0 flex flex-col">
-              <TopBar />
-              <main className="flex-1 w-full px-6 py-6">{children}</main>
+      {/* Inside ProtectedRoute: the account list is an authenticated fetch,
+          and mounting it any higher would 401 on every public route. */}
+      <WabaProvider>
+        <SearchProvider>
+          <Sidebar>
+            <div className="md:flex">
+              <SidebarBody>
+                <SidebarInner />
+              </SidebarBody>
+              <div className="flex-1 min-w-0 flex flex-col">
+                <TopBar />
+                <WabaReadOnlyBanner />
+                <main className="flex-1 w-full px-6 py-6">{children}</main>
+              </div>
             </div>
-          </div>
-        </Sidebar>
-      </SearchProvider>
+          </Sidebar>
+        </SearchProvider>
+      </WabaProvider>
     </ProtectedRoute>
   );
 }
