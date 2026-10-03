@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { BarChart3, Send, CheckCircle, Book, Plus, Users, FileText } from "lucide-react";
 import { PageHeading } from "@/components/ui/PageHeading";
@@ -10,76 +9,20 @@ import { StatsCard } from "@/components/ui/StatsCard";
 import { Card } from "@/components/ui/Card";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { fetchWhatsappDashboard } from "@/lib/api/whatsapp/dashboard";
-import {
-  exchangeWhatsappCode,
-  getWhatsappConnectionStatus,
-  disconnectWhatsapp,
-} from "@/lib/api/whatsapp/onboarding";
-import { launchEmbeddedSignup } from "@/lib/facebook-sdk";
+import { ConnectWabaCard } from "@/components/whatsapp/ConnectWabaCard";
+import { useWaba } from "@/providers/wabaProvider";
 import { useUser } from "@/providers/userProvider";
-import { notify } from "@/lib/toast";
 
 export default function Dashboard() {
   const { profile } = useUser();
   const firstName = profile?.fullName?.split(" ")[0] ?? "there";
-  const queryClient = useQueryClient();
-  const [connectError, setConnectError] = useState<string | null>(null);
+
+  const { hasWaba, isLoading: wabaLoading } = useWaba();
 
   const { data, isLoading } = useQuery({
     queryKey: ["whatsapp-dashboard"],
     queryFn: fetchWhatsappDashboard,
   });
-
-  const { data: connectionStatus, isLoading: statusLoading } = useQuery({
-    queryKey: ["whatsapp-connection-status"],
-    queryFn: getWhatsappConnectionStatus,
-  });
-
-  const exchangeMutation = useMutation({
-    mutationFn: exchangeWhatsappCode,
-    onSuccess: () => {
-      setConnectError(null);
-      notify.success("WhatsApp account connected");
-      queryClient.invalidateQueries({ queryKey: ["whatsapp-connection-status"] });
-      queryClient.invalidateQueries({ queryKey: ["whatsapp-dashboard"] });
-    },
-    onError: (error: Error & { response?: { data?: { message?: string } } }) => {
-      setConnectError(
-        error?.response?.data?.message ??
-          "Failed to connect WhatsApp account. Please try again.",
-      );
-    },
-  });
-
-  const disconnectMutation = useMutation({
-    mutationFn: disconnectWhatsapp,
-    onSuccess: () => {
-      notify.success("WhatsApp account disconnected");
-      queryClient.invalidateQueries({ queryKey: ["whatsapp-connection-status"] });
-    },
-    onError: (error: unknown) =>
-      notify.error(error, "Could not disconnect WhatsApp account"),
-  });
-
-  const handleConnect = async () => {
-    setConnectError(null);
-    const result = await launchEmbeddedSignup();
-    if (result.status === "success") {
-      exchangeMutation.mutate({
-        code: result.code,
-        wabaId: result.wabaId,
-        phoneNumberId: result.phoneNumberId,
-      });
-    } else if (result.status === "error") {
-      setConnectError(result.message);
-    }
-  };
-
-  const handleDisconnect = () => {
-    if (window.confirm("Are you sure you want to disconnect your WhatsApp account?")) {
-      disconnectMutation.mutate();
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -101,45 +44,9 @@ export default function Dashboard() {
         }
       />
 
-      {!statusLoading && connectionStatus?.connected === false && (
-        <Card className="p-6">
-          <h3 className="text-h3 mb-2">Connect Your WhatsApp Business Account</h3>
-          <p className="text-small text-muted-foreground mb-4">
-            Connect your WABA to start sending campaigns, managing templates, and tracking delivery reports.
-          </p>
-          <Button onClick={handleConnect} loading={exchangeMutation.isPending}>
-            Connect WhatsApp
-          </Button>
-          {connectError && (
-            <div className="mt-3 px-3 py-2 bg-destructive/10 border border-destructive/30 rounded-md text-sm text-destructive">
-              {connectError}
-            </div>
-          )}
-        </Card>
-      )}
-
-      {!statusLoading && connectionStatus?.connected === true && connectionStatus.account && (
-        <Card className="p-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="inline-block w-2.5 h-2.5 rounded-full bg-success" />
-              <div>
-                <p className="text-sm font-semibold text-foreground">
-                  {connectionStatus.account.displayPhoneNumber}
-                </p>
-                {connectionStatus.account.businessName && (
-                  <p className="text-caption text-muted-foreground">
-                    {connectionStatus.account.businessName}
-                  </p>
-                )}
-              </div>
-            </div>
-            <Button variant="outline" onClick={handleDisconnect} loading={disconnectMutation.isPending}>
-              Disconnect
-            </Button>
-          </div>
-        </Card>
-      )}
+      {/* The connected-account card that used to sit here is gone: the top
+          bar now shows the selected account permanently. */}
+      {!wabaLoading && !hasWaba && <ConnectWabaCard />}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard

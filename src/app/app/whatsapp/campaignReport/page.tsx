@@ -51,6 +51,8 @@ import { fetchCampaigns } from "@/lib/api/whatsapp/campaigns";
 import type { WhatsappCampaign, WhatsappCampaignStatus } from "@/lib/type";
 import { exportToCSV } from "@/lib/utils";
 import { usePageSearch } from "@/providers/searchProvider";
+import { useWaba } from "@/providers/wabaProvider";
+import { wabaKeys } from "@/lib/queryKeys";
 
 const PAGE_SIZE = 20;
 
@@ -108,11 +110,14 @@ export default function WhatsappCampaignReports() {
     [status, search, dateType, startDate, endDate, page]
   );
 
+  const { selectedWabaId } = useWaba();
+
   const { data, isLoading } = useQuery({
     // Poll a bit so in-progress campaigns show fresh counters in the list view.
     refetchInterval: 10_000,
-    queryKey: ["whatsapp-campaigns", filters],
-    queryFn: () => fetchCampaigns(filters),
+    queryKey: wabaKeys.campaigns(selectedWabaId ?? "", filters),
+    queryFn: () => fetchCampaigns(selectedWabaId!, filters),
+    enabled: !!selectedWabaId,
   });
 
   const campaigns = data?.campaigns ?? [];

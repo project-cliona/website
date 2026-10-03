@@ -110,6 +110,11 @@ export interface UserProfile {
   userService?: {
     services: UserService[];
   };
+  /** Every WhatsApp account the user owns; see GET /common/profile. */
+  whatsapp?: {
+    accounts: WabaAccount[];
+    defaultWabaId: string | null;
+  };
 }
 
 export type serviceStatus = "active" | "inactive" | "suspended" | "deleted";

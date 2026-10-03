@@ -18,6 +18,9 @@ export type CampaignAudience =
   | { source: "paste"; phones: string[] };
 
 export interface CreateCampaignPayload {
+  /** The account to send from. Required: letting the server fall back to a
+   *  default is how campaigns went out from the wrong number. */
+  wabaId: string;
   campaignName: string;
   templateName: string;
   templateLanguage: string;
@@ -58,14 +61,19 @@ function toQueryString(params: Record<string, unknown> | object): string {
 export const createCampaign = async (
   payload: CreateCampaignPayload
 ): Promise<WhatsappCampaignCreateResult> => {
-  const res = await authenticatedApiClient().post("/whatsApp/campaign", payload);
+  const { wabaId, ...body } = payload;
+  const res = await authenticatedApiClient().post(
+    `/whatsApp/campaign?wabaId=${encodeURIComponent(wabaId)}`,
+    body
+  );
   return res.data.result;
 };
 
 export const fetchCampaigns = async (
+  wabaId: string,
   filters: ListCampaignsFilters = {}
 ): Promise<WhatsappCampaignListResponse> => {
-  const qs = toQueryString(filters);
+  const qs = toQueryString({ wabaId, ...filters });
   const res = await authenticatedApiClient().get(`/whatsApp/campaign${qs}`);
   return res.data.result;
 };

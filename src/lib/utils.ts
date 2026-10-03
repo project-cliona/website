@@ -134,3 +134,17 @@ export function exportToCSV<T>({
   link.click();
   document.body.removeChild(link);
 }
+
+/** Avatar initials from a name, falling back to the email's first letter. */
+export function getInitials(
+  fullName: string | null | undefined,
+  email?: string | null | undefined
+): string {
+  if (fullName && fullName.trim().length > 0) {
+    const parts = fullName.trim().split(/\s+/);
+    const first = parts[0]?.[0] ?? "";
+    const last = parts.length > 1 ? parts[parts.length - 1][0] : "";
+    return (first + last).toUpperCase() || "U";
+  }
+  return (email?.[0] ?? "U").toUpperCase();
+}

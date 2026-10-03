@@ -32,6 +32,8 @@ import {
   type RecipientSelection,
 } from "@/components/whatsapp/RecipientPicker";
 import { useUser } from "@/providers/userProvider";
+import { useWaba } from "@/providers/wabaProvider";
+import { wabaKeys } from "@/lib/queryKeys";
 import { usePageSearch } from "@/providers/searchProvider";
 import { notify } from "@/lib/toast";
 import { useState, useMemo } from "react";
@@ -76,10 +78,14 @@ export default function SendWhatsappMessage() {
   const [selection, setSelection] = useState<RecipientSelection | null>(null);
   const [preview, setPreview] = useState<AudiencePreview | null>(null);
 
+  const { selectedWabaId, selected, isReadOnly, readOnlyReason } = useWaba();
+
   const { data: templates } = useQuery<WhatsappTemplate[]>({
-    queryKey: ["whatsapp-template", userId],
-    queryFn: () => fetchWhatsappTemplates(Number(userId)),
-    enabled: !!userId,
+    // Keyed per account and distinct from the single-template key, which
+    // this previously collided with.
+    queryKey: wabaKeys.templates(selectedWabaId ?? ""),
+    queryFn: () => fetchWhatsappTemplates(selectedWabaId!),
+    enabled: !!selectedWabaId,
   });
 
   const selectedTemplate = templates?.find(
@@ -162,6 +168,13 @@ export default function SendWhatsappMessage() {
           "Choose a list, tag filter, or paste numbers to send to"
         );
       }
+      // The disabled button is a hint; this is the enforcement. The server
+      // rejects it too -- this just produces a better message, sooner.
+      if (!selectedWabaId || isReadOnly) {
+        throw new Error(
+          readOnlyReason ?? "This WhatsApp account cannot send messages"
+        );
+      }
 
       const sharedComponents = buildSharedComponents();
 
@@ -186,6 +199,7 @@ export default function SendWhatsappMessage() {
             : { source: "tags", tags: selection.tags };
 
         return await createCampaign({
+          wabaId: selectedWabaId!,
           campaignName: data.campaignName,
           templateName: selectedTemplate.name,
           templateLanguage: selectedTemplate.language,
@@ -204,6 +218,7 @@ export default function SendWhatsappMessage() {
       );
 
       return await createCampaign({
+        wabaId: selectedWabaId!,
         campaignName: data.campaignName,
         templateName: selectedTemplate.name,
         templateLanguage: selectedTemplate.language,
@@ -233,7 +248,7 @@ export default function SendWhatsappMessage() {
   );
 
   const sendDisabled =
-    mutation.isPending || !selection || recipientCount === 0;
+    mutation.isPending || !selection || recipientCount === 0 || isReadOnly;
 
   return (
     <div className="space-y-8">
