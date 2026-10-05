@@ -30,8 +30,19 @@ export function canSend(account: WabaAccount | null): boolean {
   return !!account && account.sendable;
 }
 
+/**
+ * What to call this account in the UI.
+ *
+ * Falls through to the phone number before the raw id: accounts onboarded
+ * before Meta's verified name was captured have no business name, and a
+ * 15-digit id identifies nothing to a human.
+ */
 export function wabaLabel(account: WabaAccount): string {
-  return account.businessName?.trim() || account.wabaId;
+  return (
+    account.businessName?.trim() ||
+    account.displayPhoneNumber?.trim() ||
+    account.wabaId
+  );
 }
 
 export function wabaStatusLabel(account: WabaAccount): string {

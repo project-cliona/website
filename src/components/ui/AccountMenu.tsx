@@ -7,7 +7,6 @@ import {
   LogOut,
   Plus,
   RefreshCw,
-  Repeat,
   Settings,
   ShieldCheck,
   User as UserIcon,
@@ -17,8 +16,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -174,31 +171,43 @@ export function AccountMenu() {
             </DropdownMenuLabel>
 
             {hasWaba ? (
-              <DropdownMenuRadioGroup
-                value={selectedWabaId ?? ""}
-                onValueChange={handleSelect}
-              >
-                {accounts.map((account) => (
-                  <DropdownMenuRadioItem
-                    key={account.wabaId}
-                    value={account.wabaId}
-                  >
-                    <span className="flex items-center gap-2.5 min-w-0 w-full">
+              // Tinted and inset so the list reads as a distinct region of
+              // the menu rather than more menu items. Capped at four rows,
+              // then scrolls -- an unbounded list would run off the viewport.
+              <div className="mx-1 mb-1 rounded-md bg-secondary/60 p-1 max-h-[216px] overflow-y-auto">
+                {accounts.map((account) => {
+                  const isActive = account.wabaId === selectedWabaId;
+                  return (
+                    <button
+                      key={account.wabaId}
+                      type="button"
+                      onClick={() => handleSelect(account.wabaId)}
+                      aria-current={isActive}
+                      className={`w-full flex items-center gap-2.5 rounded-md px-2 py-2 text-left transition-colors duration-[var(--motion-fast)] focus-ring ${
+                        isActive
+                          ? "bg-primary-100 text-primary-700"
+                          : "hover:bg-background"
+                      }`}
+                    >
                       <HealthDot account={account} />
                       <span className="flex flex-col min-w-0 flex-1 leading-tight">
-                        <span className="text-sm font-medium truncate">
+                        <span
+                          className={`text-sm truncate ${
+                            isActive ? "font-semibold" : "font-medium"
+                          }`}
+                        >
                           {wabaLabel(account)}
                         </span>
-                        <span className="text-caption text-muted-foreground truncate">
-                          {account.displayPhoneNumber ?? account.wabaId}
-                          {wabaHealth(account) !== "healthy" &&
-                            ` · ${wabaStatusLabel(account)}`}
-                        </span>
+                        {wabaHealth(account) !== "healthy" && (
+                          <span className="text-caption text-muted-foreground truncate">
+                            {wabaStatusLabel(account)}
+                          </span>
+                        )}
                       </span>
-                    </span>
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
+                    </button>
+                  );
+                })}
+              </div>
             ) : (
               <p className="px-2 py-1.5 text-caption text-muted-foreground">
                 No WhatsApp account connected yet.
@@ -231,11 +240,6 @@ export function AccountMenu() {
         <DropdownMenuItem asChild>
           <Link href="/app/settings">
             <Settings className="h-4 w-4 mr-2" /> Settings
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/app">
-            <Repeat className="h-4 w-4 mr-2" /> Switch service
           </Link>
         </DropdownMenuItem>
         <RoleGate roles={[ROLE_ADMIN]}>
