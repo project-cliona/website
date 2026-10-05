@@ -2,6 +2,8 @@
 
 import { useCallback, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useWaba } from "@/providers/wabaProvider";
+import { wabaKeys } from "@/lib/queryKeys";
 import { MessageSquarePlus, MessagesSquare } from "lucide-react";
 import { PageHeading } from "@/components/ui/PageHeading";
 import { Button } from "@/components/ui/Button";
@@ -25,37 +27,41 @@ export default function WhatsappConversationsPage() {
   const [search, setSearch] = useState("");
   const [newChatOpen, setNewChatOpen] = useState(false);
 
+  const { selectedWabaId, isReadOnly } = useWaba();
+
   const { data: conversations = [], isLoading: loadingList } = useQuery({
-    queryKey: ["wa-conversations"],
-    queryFn: fetchConversations,
+    queryKey: wabaKeys.conversations(selectedWabaId ?? ""),
+    queryFn: () => fetchConversations(selectedWabaId!),
+    enabled: !!selectedWabaId,
   });
 
   const { data: messages = [], isLoading: loadingThread } = useQuery({
-    queryKey: ["wa-thread", selectedPhone],
-    queryFn: () => fetchThread(selectedPhone as string),
+    queryKey: wabaKeys.thread(selectedWabaId ?? "", selectedPhone ?? ""),
+    queryFn: () => fetchThread(selectedPhone as string, selectedWabaId!),
     enabled: !!selectedPhone,
   });
 
   // Realtime: any inbound/outbound message refreshes the list and the open thread.
   const onSocketMessage = useCallback(
     (msg: WhatsappMessage) => {
-      qc.invalidateQueries({ queryKey: ["wa-conversations"] });
-      qc.invalidateQueries({ queryKey: ["wa-thread", msg.recipientPhone] });
+      qc.invalidateQueries({ queryKey: wabaKeys.conversations(selectedWabaId ?? "") });
+      qc.invalidateQueries({ queryKey: wabaKeys.thread(selectedWabaId ?? "", msg.recipientPhone) });
     },
     [qc],
   );
   useWhatsappSocket(onSocketMessage);
 
   const markReadMut = useMutation({
-    mutationFn: markConversationRead,
+    mutationFn: (phone: string) => markConversationRead(phone, selectedWabaId!),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["wa-conversations"] }),
   });
 
   const replyMut = useMutation({
-    mutationFn: (text: string) => sendTextReply({ to: selectedPhone as string, text }),
+    mutationFn: (text: string) =>
+      sendTextReply({ to: selectedPhone as string, text, wabaId: selectedWabaId! }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["wa-thread", selectedPhone] });
-      qc.invalidateQueries({ queryKey: ["wa-conversations"] });
+      qc.invalidateQueries({ queryKey: wabaKeys.thread(selectedWabaId ?? "", selectedPhone ?? "") });
+      qc.invalidateQueries({ queryKey: wabaKeys.conversations(selectedWabaId ?? "") });
     },
     onError: (err) => notify.error(err, "Could not send message"),
   });

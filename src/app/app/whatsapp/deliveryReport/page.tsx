@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Mail, Send, CheckCircle, Eye, XCircle, DownloadIcon } from "lucide-react";
 import { StatsCard } from "@/components/ui/StatsCard";
+import { useWaba } from "@/providers/wabaProvider";
+import { wabaKeys } from "@/lib/queryKeys";
 const statusVariantMap: Record<
   string,
   VariantProps<typeof badgeVariants>["variant"]
@@ -36,10 +38,13 @@ export default function WhatsappDeliveryReports() {
     page: 1,
   });
 
+  const { selectedWabaId } = useWaba();
+
   const { data, isLoading } = useQuery({
-    queryKey: ["whatsapp-dlr", filters],
+    queryKey: wabaKeys.dlr(selectedWabaId ?? "", filters),
+    enabled: !!selectedWabaId,
     queryFn: () =>
-      fetchMessages({
+      fetchMessages(selectedWabaId!, {
         status: filters.status === "all" ? undefined : filters.status,
         from: filters.startDate,
         to: filters.dateType === "Range" ? filters.endDate : filters.startDate,

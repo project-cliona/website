@@ -110,9 +110,23 @@ export function WabaProvider({ children }: { children: React.ReactNode }) {
       // account's data while the refetch is in flight, so for a moment the
       // user reads one account's campaigns under another account's name.
       // Removing sends every mounted query to its loading state instead.
+      // Matched by predicate rather than by key prefix. A prefix of
+      // ["whatsapp"] only matches keys whose first element is exactly
+      // "whatsapp", so legacy keys like ["whatsapp-dlr"] and ["wa-thread"]
+      // slipped through and kept serving the previous account's data.
       queryClient.removeQueries({
-        queryKey: ["whatsapp"],
-        predicate: (query) => query.queryKey[1] !== "accounts",
+        predicate: (query) => {
+          const [head] = query.queryKey;
+          if (typeof head !== "string") return false;
+          // The account list itself must survive, or the switcher drops back
+          // into its loading state on every switch.
+          if (query.queryKey[1] === "accounts") return false;
+          return (
+            head === "whatsapp" ||
+            head.startsWith("whatsapp-") ||
+            head.startsWith("wa-")
+          );
+        },
       });
     },
     [queryClient, selectedWabaId]

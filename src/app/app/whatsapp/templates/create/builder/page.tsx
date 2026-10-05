@@ -11,6 +11,7 @@ import TemplateAuthBuilder from "@/components/whatsapp/TemplateAuthBuilder";
 import TemplateCarouselBuilder from "@/components/whatsapp/TemplateCarouselBuilder";
 import { getWhatsappTemplateById } from "@/lib/api/whatsapp/templates";
 import { WhatsappTemplate } from "@/lib/type";
+import { wabaKeys } from "@/lib/queryKeys";
 
 // ---------------------------------------------------------------------------
 // Inner component that reads search params (requires Suspense boundary)
@@ -41,7 +42,9 @@ function BuilderContent() {
 
   // Fetch template data when editing
   const { data: editTemplateResult, isLoading: editLoading } = useQuery({
-    queryKey: ["whatsapp-template", editId],
+    // Keyed on the URL's account, not the live selection: the builder stays
+    // bound to the account it was opened for, even if the user switches.
+    queryKey: wabaKeys.template(wabaId, editId ?? ""),
     queryFn: () => getWhatsappTemplateById(editId!),
     enabled: isEditMode,
   });

@@ -12,6 +12,8 @@ import { VariantProps } from "class-variance-authority";
 import { ArrowLeft, Copy, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { notify } from "@/lib/toast";
+import { useWaba } from "@/providers/wabaProvider";
+import { wabaKeys } from "@/lib/queryKeys";
 
 const categoryVariantMap: Record<
   string,
@@ -37,12 +39,13 @@ const statusVariantMap: Record<
 const EDITABLE_STATUSES = ["APPROVED", "REJECTED", "PAUSED"];
 
 export default function WhatsappTemplateDetail() {
+  const { selectedWabaId } = useWaba();
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
 
   const { data: templateResult, isLoading } = useQuery({
-    queryKey: ["whatsapp-template", id],
+    queryKey: wabaKeys.template(selectedWabaId ?? "", id),
     queryFn: () => getWhatsappTemplateById(id),
     enabled: !!id,
   });

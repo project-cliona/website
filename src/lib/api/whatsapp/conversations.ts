@@ -2,28 +2,36 @@ import { authenticatedApiClient } from "@/lib/axios";
 import type { ConversationSummary, WhatsappMessage } from "@/lib/type";
 
 /** List every contact the user has exchanged messages with, newest first. */
-export const fetchConversations = async (): Promise<ConversationSummary[]> => {
-  const res = await authenticatedApiClient().get("/whatsApp/conversations");
+export const fetchConversations = async (
+  wabaId: string
+): Promise<ConversationSummary[]> => {
+  const res = await authenticatedApiClient().get(
+    `/whatsApp/conversations?wabaId=${encodeURIComponent(wabaId)}`
+  );
   return res.data.result;
 };
 
 /** Full message thread with one contact phone, oldest-first. */
 export const fetchThread = async (
   phone: string,
+  wabaId: string,
   limit = 100
 ): Promise<WhatsappMessage[]> => {
+  // Scoped, so two of the user's numbers talking to the same customer do not
+  // interleave into one thread.
   const res = await authenticatedApiClient().get(
-    `/whatsApp/conversations/${encodeURIComponent(phone)}/messages?limit=${limit}`
+    `/whatsApp/conversations/${encodeURIComponent(phone)}/messages?limit=${limit}&wabaId=${encodeURIComponent(wabaId)}`
   );
   return res.data.result;
 };
 
 /** Mark all unread inbound messages from a contact as read. */
 export const markConversationRead = async (
-  phone: string
+  phone: string,
+  wabaId: string
 ): Promise<{ markedCount: number }> => {
   const res = await authenticatedApiClient().post(
-    `/whatsApp/conversations/${encodeURIComponent(phone)}/read`,
+    `/whatsApp/conversations/${encodeURIComponent(phone)}/read?wabaId=${encodeURIComponent(wabaId)}`,
     {}
   );
   return res.data.result;
@@ -33,11 +41,15 @@ export const markConversationRead = async (
 export const sendTextReply = async (input: {
   to: string;
   text: string;
+  wabaId: string;
 }): Promise<unknown> => {
-  const res = await authenticatedApiClient().post("/whatsApp/message/text", {
-    to: input.to,
-    text: input.text,
-  });
+  const res = await authenticatedApiClient().post(
+    `/whatsApp/message/text?wabaId=${encodeURIComponent(input.wabaId)}`,
+    {
+      to: input.to,
+      text: input.text,
+    }
+  );
   return res.data.result;
 };
 

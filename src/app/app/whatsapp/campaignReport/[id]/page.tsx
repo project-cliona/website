@@ -62,6 +62,8 @@ import type {
 import { exportToCSV } from "@/lib/utils";
 import { usePageSearch } from "@/providers/searchProvider";
 import { notify } from "@/lib/toast";
+import { useWaba } from "@/providers/wabaProvider";
+import { wabaKeys } from "@/lib/queryKeys";
 
 const MESSAGES_PAGE_SIZE = 100;
 
@@ -108,6 +110,7 @@ export default function WhatsappCampaignDetail({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { selectedWabaId } = useWaba();
   const { id } = use(params);
   const queryClient = useQueryClient();
   const [statusFilter, setStatusFilter] = useState<string>("");
@@ -123,7 +126,7 @@ export default function WhatsappCampaignDetail({
   });
 
   const campaignQuery = useQuery<WhatsappCampaign>({
-    queryKey: ["whatsapp-campaign", id],
+    queryKey: wabaKeys.campaign(selectedWabaId ?? "", id),
     queryFn: () => fetchCampaignById(id),
     refetchInterval: (query) => {
       const c = query.state.data;
@@ -147,7 +150,7 @@ export default function WhatsappCampaignDetail({
   );
 
   const messagesQuery = useQuery({
-    queryKey: ["whatsapp-campaign-messages", id, messagesFilters],
+    queryKey: wabaKeys.campaignMessages(selectedWabaId ?? "", id, messagesFilters),
     queryFn: () => fetchCampaignMessages(id, messagesFilters),
     // Keep polling messages while the campaign is still moving so the per-recipient statuses update live.
     refetchInterval: isTerminal ? false : 5000,
@@ -169,9 +172,9 @@ export default function WhatsappCampaignDetail({
   const cancelMutation = useMutation({
     mutationFn: () => cancelCampaign(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["whatsapp-campaign", id] });
+      queryClient.invalidateQueries({ queryKey: wabaKeys.campaign(selectedWabaId ?? "", id) });
       queryClient.invalidateQueries({
-        queryKey: ["whatsapp-campaign-messages", id],
+        queryKey: ["whatsapp", selectedWabaId ?? "", "campaign", String(id), "messages"],
       });
       notify.success("Campaign cancelled");
     },

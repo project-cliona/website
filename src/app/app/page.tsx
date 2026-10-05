@@ -11,17 +11,19 @@ import { StatusPill } from "@/components/ui/StatusPill";
 import { fetchWhatsappDashboard } from "@/lib/api/whatsapp/dashboard";
 import { ConnectWabaCard } from "@/components/whatsapp/ConnectWabaCard";
 import { useWaba } from "@/providers/wabaProvider";
+import { wabaKeys } from "@/lib/queryKeys";
 import { useUser } from "@/providers/userProvider";
 
 export default function Dashboard() {
   const { profile } = useUser();
   const firstName = profile?.fullName?.split(" ")[0] ?? "there";
 
-  const { hasWaba, isLoading: wabaLoading } = useWaba();
+  const { hasWaba, isLoading: wabaLoading, selectedWabaId } = useWaba();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["whatsapp-dashboard"],
-    queryFn: fetchWhatsappDashboard,
+    queryKey: wabaKeys.dashboard(selectedWabaId ?? ""),
+    queryFn: () => fetchWhatsappDashboard(selectedWabaId!),
+    enabled: !!selectedWabaId,
   });
 
   return (
