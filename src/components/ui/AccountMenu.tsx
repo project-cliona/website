@@ -3,7 +3,6 @@
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  ChevronDown,
   LogOut,
   Plus,
   RefreshCw,
@@ -90,21 +89,53 @@ export function AccountMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
+        {/* Collapsed to just the avatar. The account name rolls out to the
+            left on hover -- leftward because the control is anchored to the
+            right edge, so growing the other way would push the bar around. */}
         <button
           type="button"
-          className="h-11 flex items-center gap-2.5 rounded-full border border-input pl-1 pr-2.5 hover:bg-secondary focus-ring text-left max-w-[240px] transition-colors duration-[var(--motion-fast)]"
+          className="group h-11 inline-flex items-center justify-end rounded-full p-1 hover:bg-secondary focus-ring text-left transition-colors duration-[var(--motion-fast)]"
           title={
             selected
               ? `${displayName} · ${wabaLabel(selected)} (${selected.wabaId})`
               : displayName
           }
         >
+          <span
+            className={
+              // max-width rather than width: the label is variable-length, and
+              // this animates without having to measure it. Opens on keyboard
+              // focus too, so it is not hover-only.
+              "overflow-hidden whitespace-nowrap max-w-0 opacity-0 " +
+              "group-hover:max-w-[200px] group-hover:opacity-100 " +
+              "group-focus-visible:max-w-[200px] group-focus-visible:opacity-100 " +
+              // Radix marks the button, not this span, so the open state has to
+              // be read through the group -- keeps the label out while the menu is.
+              "group-data-[state=open]:max-w-[200px] group-data-[state=open]:opacity-100 " +
+              "transition-[max-width,opacity] duration-[var(--motion-base)] ease-[var(--ease-out-default)]"
+            }
+          >
+            <span className="flex flex-col items-end pl-3 pr-2 leading-tight">
+              <span className="text-sm font-semibold text-foreground truncate max-w-[180px]">
+                {selected ? wabaLabel(selected) : displayName}
+              </span>
+              <span className="text-caption text-muted-foreground truncate max-w-[180px]">
+                {selected
+                  ? wabaStatusLabel(selected)
+                  : isError
+                    ? "Accounts unavailable"
+                    : "No account connected"}
+              </span>
+            </span>
+          </span>
+
           <span className="relative shrink-0">
             <span className="h-9 w-9 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-semibold">
               {initials}
             </span>
-            {/* The account's health rides on the avatar so it stays visible
-                when the label is hidden on narrow screens. */}
+            {/* Health rides on the avatar, which is the only thing visible at
+                rest -- otherwise a disconnected account would look fine until
+                hovered. */}
             {selected && (
               <span
                 className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full ring-2 ring-background ${
@@ -113,30 +144,6 @@ export function AccountMenu() {
               />
             )}
           </span>
-
-          <span className="hidden lg:flex flex-col min-w-0 leading-tight">
-            {selected ? (
-              <>
-                <span className="text-sm font-semibold text-foreground truncate">
-                  {wabaLabel(selected)}
-                </span>
-                <span className="text-caption text-muted-foreground truncate">
-                  {selected.displayPhoneNumber ?? "No phone number"}
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="text-sm font-semibold text-foreground truncate">
-                  {displayName}
-                </span>
-                <span className="text-caption text-muted-foreground truncate">
-                  {isError ? "Accounts unavailable" : "No account connected"}
-                </span>
-              </>
-            )}
-          </span>
-
-          <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
         </button>
       </DropdownMenuTrigger>
 
