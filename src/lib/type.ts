@@ -342,6 +342,11 @@ export interface WhatsappContact {
   name: string | null;
   email: string | null;
   tags: string[];
+  /** Returned by the API all along, just never typed. */
+  optInStatus: string | null;
+  optInAt: string | null;
+  optOutAt: string | null;
+  lastMessageAt: string | null;
   createdAt: string;
   updatedAt: string;
 }

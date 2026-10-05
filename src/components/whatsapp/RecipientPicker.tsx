@@ -171,17 +171,31 @@ export function RecipientPicker({ onChange }: Props) {
                   <SelectValue placeholder="Choose a list" />
                 </SelectTrigger>
                 <SelectContent>
-                  {lists.map((l) => (
-                    <SelectItem key={l.id} value={l.id.toString()}>
-                      {l.name} ({l.memberCount})
-                    </SelectItem>
-                  ))}
+                  {lists.length === 0 ? (
+                    <p className="px-2 py-1.5 text-xs text-muted-foreground/70">
+                      No lists yet.
+                    </p>
+                  ) : (
+                    lists.map((l) => (
+                      <SelectItem key={l.id} value={l.id.toString()}>
+                        {l.name} ({l.memberCount})
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
             </div>
           ) : (
             <div>
               <Label className="mb-1 block">Tags (OR semantics)</Label>
+              {tagOpts.length === 0 && (
+                // Previously rendered an empty div, which looked like the tag
+                // feature was broken rather than unused.
+                <p className="text-xs leading-relaxed text-muted-foreground/70">
+                  No tags yet. Add them when creating a contact, or in the tags
+                  column of a CSV import.
+                </p>
+              )}
               <div className="flex flex-wrap gap-2">
                 {tagOpts.map((t) => {
                   const active = tags.includes(t.tag);

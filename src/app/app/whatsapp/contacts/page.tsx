@@ -1,19 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Users,
   UserCheck,
   UserX,
-  TrendingUp,
+  Tag as TagIcon,
   Plus,
   Upload,
   Download,
+  X,
 } from "lucide-react";
 import {
   fetchContacts,
   bulkDeleteContacts,
+  fetchTags,
 } from "@/lib/api/whatsapp/contacts";
 import {
   addContactsToList,
@@ -36,9 +38,9 @@ type View = { kind: "all" } | { kind: "list"; listId: number };
 
 export default function WhatsappContactsPage() {
   const qc = useQueryClient();
-  const [view] = useState<View>({ kind: "all" });
+  const [view, setView] = useState<View>({ kind: "all" });
   const [q, setQ] = useState("");
-  const [tagFilter] = useState<string[]>([]);
+  const [tagFilter, setTagFilter] = useState<string[]>([]);
   const [addOpen, setAddOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [editing, setEditing] = useState<WhatsappContact | null>(null);
@@ -69,11 +71,34 @@ export default function WhatsappContactsPage() {
     queryFn: fetchLists,
   });
 
+  const { data: tagOpts = [] } = useQuery({
+    queryKey: ["whatsapp-tags"],
+    queryFn: fetchTags,
+  });
+
+  const toggleTag = (tag: string) =>
+    setTagFilter((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+
   const totalContacts = allForCounts?.total ?? 0;
-  // Stub: backend doesn't yet return subscribe/unsubscribe split.
-  const subscribed = totalContacts;
-  const unsubscribed = 0;
-  const engagementRate = "68.5%";
+
+  // optInStatus has been on every contact the API returns all along; the
+  // split was only ever stubbed because nothing read it.
+  const { subscribed, unsubscribed, tagged } = useMemo(() => {
+    const rows = allForCounts?.contacts ?? [];
+    let optedOut = 0;
+    let withTags = 0;
+    for (const c of rows) {
+      if (c.optInStatus?.toLowerCase() === "opted_out") optedOut += 1;
+      if (c.tags?.length) withTags += 1;
+    }
+    return {
+      subscribed: rows.length - optedOut,
+      unsubscribed: optedOut,
+      tagged: withTags,
+    };
+  }, [allForCounts]);
 
   const addToListMut = useMutation({
     mutationFn: (p: { contactIds: number[]; listId: number }) =>
@@ -147,34 +172,33 @@ export default function WhatsappContactsPage() {
         }
       />
 
+      {/* Trends were hardcoded percentages next to real counts, which read
+          as measured movement and was not. Dropped until something computes
+          them. */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
           icon={<Users className="h-4 w-4" />}
           label="Total Contacts"
           info="Everyone in your phonebook, shared across all accounts."
           value={totalContacts.toLocaleString()}
-          trend={{ value: "+12%", positive: true }}
         />
         <StatsCard
           icon={<UserCheck className="h-4 w-4" />}
           label="Subscribed"
-          info="Contacts who have opted in to receive messages."
+          info="Contacts who have not opted out; campaigns can reach them."
           value={subscribed.toLocaleString()}
-          trend={{ value: "+23%", positive: true }}
         />
         <StatsCard
           icon={<UserX className="h-4 w-4" />}
           label="Unsubscribed"
           info="Contacts who opted out; campaigns skip them."
           value={unsubscribed.toLocaleString()}
-          trend={{ value: "-5%", positive: false }}
         />
         <StatsCard
-          icon={<TrendingUp className="h-4 w-4" />}
-          label="Engagement Rate"
-          info="Sample figure — not yet calculated from real activity."
-          value={engagementRate}
-          trend={{ value: "+5.2%", positive: true }}
+          icon={<TagIcon className="h-4 w-4" />}
+          label="Tagged"
+          info="Contacts carrying at least one tag, so they can be targeted by tag."
+          value={tagged.toLocaleString()}
           accent
         />
       </div>
@@ -204,33 +228,91 @@ export default function WhatsappContactsPage() {
           />
         </div>
 
-        <aside className="lg:col-span-4 space-y-3">
-          <div className="flex items-center justify-between px-1">
-            <h3 className="text-h3">Segments</h3>
-            <button className="text-sm text-primary-700 hover:underline" type="button">
-              Create New
-            </button>
+        <aside className="lg:col-span-4 space-y-4">
+          {/* These were four hardcoded cards -- "Active Customers", "VIP
+              Members" and "Inactive Users" with invented counts. Replaced
+              with the lists and tags that actually exist, which also gives
+              the filters on this page something to drive them. */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between px-1">
+              <h3 className="text-h3">Lists</h3>
+              <button
+                type="button"
+                onClick={() => setImportOpen(true)}
+                className="text-sm text-primary-700 hover:underline"
+              >
+                Import contacts
+              </button>
+            </div>
+
+            <SegmentCard
+              label="All contacts"
+              value={totalContacts.toLocaleString()}
+              onClick={() => setView({ kind: "all" })}
+              className={view.kind === "all" ? "border-primary-300 bg-primary-50/40" : undefined}
+            />
+            {lists.map((l) => (
+              <SegmentCard
+                key={l.id}
+                label={l.name}
+                value={l.memberCount.toLocaleString()}
+                onClick={() => setView({ kind: "list", listId: l.id })}
+                className={
+                  view.kind === "list" && view.listId === l.id
+                    ? "border-primary-300 bg-primary-50/40"
+                    : undefined
+                }
+              />
+            ))}
+            {lists.length === 0 && (
+              <p className="px-1 text-xs leading-relaxed text-muted-foreground/70">
+                No lists yet. Import contacts to create one.
+              </p>
+            )}
           </div>
-          <SegmentCard
-            label="All Subscribers"
-            value={totalContacts.toLocaleString()}
-            trend={{ value: "+12%", positive: true }}
-          />
-          <SegmentCard
-            label="Active Customers"
-            value="2,450"
-            trend={{ value: "+8%", positive: true }}
-          />
-          <SegmentCard
-            label="VIP Members"
-            value="890"
-            trend={{ value: "+15%", positive: true }}
-          />
-          <SegmentCard
-            label="Inactive Users"
-            value="1,234"
-            trend={{ value: "-5%", positive: false }}
-          />
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between px-1">
+              <h3 className="text-h3">Tags</h3>
+              {tagFilter.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setTagFilter([])}
+                  className="inline-flex items-center gap-1 text-sm text-primary-700 hover:underline"
+                >
+                  <X className="h-3.5 w-3.5" /> Clear
+                </button>
+              )}
+            </div>
+
+            {tagOpts.length === 0 ? (
+              <p className="px-1 text-xs leading-relaxed text-muted-foreground/70">
+                No tags yet. Add them when creating a contact, or in the{" "}
+                <code className="text-[11px]">tags</code> column of a CSV import.
+              </p>
+            ) : (
+              <div className="flex flex-wrap gap-2 px-1">
+                {tagOpts.map((t) => {
+                  const active = tagFilter.includes(t.tag);
+                  return (
+                    <button
+                      key={t.tag}
+                      type="button"
+                      onClick={() => toggleTag(t.tag)}
+                      aria-pressed={active}
+                      className={`rounded-full border px-3 py-1 text-sm transition-colors duration-[var(--motion-fast)] focus-ring ${
+                        active
+                          ? "border-primary-300 bg-primary-100 text-primary-700"
+                          : "border-border bg-card hover:bg-secondary"
+                      }`}
+                    >
+                      {t.tag} ({t.contactCount})
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </aside>
       </div>
 
