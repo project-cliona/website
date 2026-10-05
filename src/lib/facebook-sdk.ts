@@ -90,9 +90,17 @@ export async function launchEmbeddedSignup(): Promise<EmbeddedSignupResult> {
           typeof event.data === "string" ? JSON.parse(event.data) : event.data;
 
         if (data.type === "WA_EMBEDDED_SIGNUP") {
-          if (data.event === "FINISH") {
-            sessionWabaId = data.data.waba_id ?? "";
-            sessionPhoneNumberId = data.data.phone_number_id ?? "";
+          if (process.env.NODE_ENV !== "production") {
+            console.log("WA_EMBEDDED_SIGNUP event:", data);
+          }
+
+          // Meta emits several terminal events depending on how far the
+          // customer got: FINISH (WABA + phone number), FINISH_ONLY_WABA
+          // (no phone number yet), and FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING
+          // (coexistence). Treat any FINISH* as a completed flow.
+          if (typeof data.event === "string" && data.event.startsWith("FINISH")) {
+            sessionWabaId = data.data?.waba_id ?? "";
+            sessionPhoneNumberId = data.data?.phone_number_id ?? "";
           } else if (data.event === "CANCEL") {
             // User cancelled inside the popup — FB.login callback will handle this
           }
@@ -110,11 +118,11 @@ export async function launchEmbeddedSignup(): Promise<EmbeddedSignupResult> {
         window.removeEventListener("message", sessionInfoListener);
 
         if (response.authResponse?.code) {
-          if (!sessionWabaId || !sessionPhoneNumberId) {
+          if (!sessionWabaId) {
             resolve({
               status: "error",
               message:
-                "WhatsApp signup completed but WABA or phone number info was not received. Please try again.",
+                "WhatsApp signup completed but no WhatsApp Business Account was received. Please try again.",
             });
             return;
           }
@@ -143,7 +151,6 @@ export async function launchEmbeddedSignup(): Promise<EmbeddedSignupResult> {
         override_default_response_type: true,
         extras: {
           setup: {},
-          featureType: "",
           sessionInfoVersion: "3",
         },
       }
