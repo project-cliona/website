@@ -190,20 +190,22 @@ export function AccountMenu() {
                       }`}
                     >
                       <HealthDot account={account} />
-                      <span className="flex flex-col min-w-0 flex-1 leading-tight">
-                        <span
-                          className={`text-sm truncate ${
-                            isActive ? "font-semibold" : "font-medium"
-                          }`}
-                        >
-                          {wabaLabel(account)}
-                        </span>
-                        {wabaHealth(account) !== "healthy" && (
-                          <span className="text-caption text-muted-foreground truncate">
-                            {wabaStatusLabel(account)}
-                          </span>
-                        )}
+                      <span
+                        className={`flex-1 min-w-0 text-sm truncate ${
+                          isActive ? "font-semibold" : "font-medium"
+                        }`}
+                      >
+                        {wabaLabel(account)}
                       </span>
+                      {/* Trails the name on one line rather than sitting under
+                          it: a second line per row doubled the list's height
+                          for a detail that is secondary to the name. shrink-0
+                          so the name truncates before the status does. */}
+                      {wabaHealth(account) !== "healthy" && (
+                        <span className="shrink-0 text-[11px] leading-none text-muted-foreground/70">
+                          {wabaStatusLabel(account)}
+                        </span>
+                      )}
                     </button>
                   );
                 })}
