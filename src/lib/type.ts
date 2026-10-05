@@ -110,6 +110,11 @@ export interface UserProfile {
   userService?: {
     services: UserService[];
   };
+  /** Every WhatsApp account the user owns; see GET /common/profile. */
+  whatsapp?: {
+    accounts: WabaAccount[];
+    defaultWabaId: string | null;
+  };
 }
 
 export type serviceStatus = "active" | "inactive" | "suspended" | "deleted";
@@ -632,3 +637,64 @@ export interface AnalyticsConversations {
   costAvailable: boolean;
   accounts: AnalyticsAccountFetchStatus[];
 }
+
+/* ── WhatsApp Business Accounts (multi-account) ─────────────────────────── */
+
+export type WabaStatus = "active" | "disconnected" | "expired" | "suspended";
+export type WabaConnectionState =
+  | "connected"
+  | "offboarded"
+  | "removed"
+  | "deleted";
+
+/** Shape returned by GET /whatsApp/accounts. Never carries an access token. */
+export interface WabaAccount {
+  id: number;
+  wabaId: string;
+  phoneNumberId: string;
+  displayPhoneNumber: string | null;
+  businessName: string | null;
+  status: WabaStatus;
+  connectionState: WabaConnectionState | null;
+  qualityRating: string | null;
+  banState: string | null;
+  banDate: string | null;
+  restrictionCount: number;
+  tokenExpired: boolean;
+  /** Server's verdict on whether Meta will deliver from this account. */
+  sendable: boolean;
+  createdAt: string;
+  ownerUserId?: number;
+}
+
+export interface WabaAccountsResponse {
+  accounts: WabaAccount[];
+  defaultWabaId: string | null;
+}
+
+export interface WabaAccountCounts {
+  templates: number;
+  templatesApproved: number;
+  campaigns: number;
+  messagesSent30d: number;
+  conversations: number;
+}
+
+export interface WabaAccountDetail {
+  account: WabaAccount & {
+    metaBusinessId: string | null;
+    restrictions: unknown[];
+    violationType: string | null;
+    pricingTier: unknown;
+    primaryLocationCountry: string | null;
+    partnerVerificationStatus: string | null;
+    disconnectionReason: string | null;
+    disconnectionInitiatedBy: string | null;
+    lastAccountEventAt: string | null;
+    updatedAt: string;
+  };
+  counts: WabaAccountCounts;
+}
+
+/** Traffic light derived from the independent health axes. */
+export type WabaHealth = "healthy" | "warning" | "down";

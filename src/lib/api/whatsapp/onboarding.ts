@@ -19,6 +19,12 @@ export async function getWhatsappConnectionStatus(): Promise<WhatsappConnectionS
   return res.data.result as WhatsappConnectionStatus;
 }
 
-export async function disconnectWhatsapp(): Promise<void> {
-  await authenticatedApiClient().delete("/whatsApp/onboarding/disconnect");
+/**
+ * Disconnect one account. The wabaId is required by the API: it previously
+ * disconnected every account the user owned.
+ */
+export async function disconnectWhatsapp(wabaId: string): Promise<void> {
+  await authenticatedApiClient().delete(
+    `/whatsApp/onboarding/disconnect?wabaId=${encodeURIComponent(wabaId)}`
+  );
 }

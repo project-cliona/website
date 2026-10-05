@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
 import { Megaphone, Bell, ShieldCheck } from "lucide-react";
 import { PageHeading } from "@/components/ui/PageHeading";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/badge";
-import { getWhatsappConnectionStatus } from "@/lib/api/whatsapp/onboarding";
+import { useWaba } from "@/providers/wabaProvider";
+import { HEALTH_DOT_CLASS, wabaHealth, wabaLabel } from "@/lib/waba";
 import { Category, categoryConfig, defaultSubType } from "@/lib/utils";
 
 export default function CreateWhatsappTemplate() {
@@ -15,12 +15,13 @@ export default function CreateWhatsappTemplate() {
   const [category, setCategory] = useState<Category>("marketing");
   const [subType, setSubType] = useState<string>("default");
 
-  const { data: connectionStatus } = useQuery({
-    queryKey: ["whatsapp-connection-status"],
-    queryFn: getWhatsappConnectionStatus,
-  });
+  const { selectedWabaId, selected, isReadOnly } = useWaba();
 
-  const wabaId = connectionStatus?.account?.wabaId ?? null;
+  // The builder keeps carrying wabaId in its URL rather than reading the
+  // selection: a half-finished template is a long-lived page, and if the
+  // user switches account mid-edit it must still submit to the account it
+  // was started on.
+  const wabaId = selectedWabaId;
 
   const handleCategoryChange = (newCategory: Category) => {
     setCategory(newCategory);
@@ -31,7 +32,7 @@ export default function CreateWhatsappTemplate() {
     (st) => st.value === subType
   );
   const isSubTypeDisabled = selectedSubType?.disabled ?? false;
-  const canProceed = !!wabaId && !isSubTypeDisabled;
+  const canProceed = !!wabaId && !isSubTypeDisabled && !isReadOnly;
 
   const handleNext = () => {
     if (!canProceed) return;
@@ -123,18 +124,20 @@ export default function CreateWhatsappTemplate() {
         <h2 className="text-sm font-medium text-gray-700 mb-3">
           WhatsApp Business Account
         </h2>
-        {wabaId ? (
+        {wabaId && selected ? (
           <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
-            <div className="h-2 w-2 rounded-full bg-success" />
+            <div
+              className={`h-2 w-2 rounded-full ${HEALTH_DOT_CLASS[wabaHealth(selected)]}`}
+            />
             <div>
+              {/* Identify the account the way the user thinks of it; the raw
+                  id is a detail, not the headline. */}
               <p className="text-sm font-medium text-gray-900">
-                WABA ID: <span className="font-mono">{wabaId}</span>
+                {wabaLabel(selected)}
               </p>
-              {connectionStatus?.account?.businessName && (
-                <p className="text-sm text-gray-500">
-                  {connectionStatus.account.businessName}
-                </p>
-              )}
+              <p className="text-sm text-gray-500">
+                {selected.displayPhoneNumber ?? wabaId}
+              </p>
             </div>
           </div>
         ) : (

@@ -30,6 +30,8 @@ import {
 import { usePageSearch } from "@/providers/searchProvider";
 import { fetchWhatsappTemplates } from "@/lib/api/whatsapp/templates";
 import { useUser } from "@/providers/userProvider";
+import { useWaba } from "@/providers/wabaProvider";
+import { wabaKeys } from "@/lib/queryKeys";
 import type { WhatsappTemplate } from "@/lib/type";
 
 const APPROVED_STATUSES = new Set(["APPROVED", "approved", "active", "ACTIVE"]);
@@ -82,10 +84,14 @@ export default function TemplatesPage() {
   const [q, setQ] = useState("");
   usePageSearch({ placeholder: "Search templates", onChange: setQ });
 
+  const { selectedWabaId } = useWaba();
+
   const { data: templates = [], isLoading } = useQuery({
-    queryKey: ["whatsapp-templates", userId],
-    queryFn: () => fetchWhatsappTemplates(Number(userId)),
-    enabled: !!userId,
+    queryKey: wabaKeys.templates(selectedWabaId ?? ""),
+    queryFn: () => fetchWhatsappTemplates(selectedWabaId!),
+    // selectedWabaId is null while the stored selection hydrates; firing
+    // without it would request ?wabaId=null.
+    enabled: !!selectedWabaId,
   });
 
   const filtered = useMemo(() => {

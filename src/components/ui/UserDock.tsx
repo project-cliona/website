@@ -9,22 +9,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useUser } from "@/providers/userProvider";
+import { getInitials } from "@/lib/utils";
 import { RoleGate } from "@/components/auth/RoleGate";
 import { ROLE_ADMIN } from "@/lib/rbac";
 import Link from "next/link";
 
 interface UserDockProps {
   collapsed?: boolean;
-}
-
-function getInitials(fullName: string | null | undefined, email: string | null | undefined): string {
-  if (fullName && fullName.trim().length > 0) {
-    const parts = fullName.trim().split(/\s+/);
-    const first = parts[0]?.[0] ?? "";
-    const last = parts.length > 1 ? parts[parts.length - 1][0] : "";
-    return (first + last).toUpperCase() || "U";
-  }
-  return (email?.[0] ?? "U").toUpperCase();
 }
 
 export function UserDock({ collapsed = false }: UserDockProps) {
