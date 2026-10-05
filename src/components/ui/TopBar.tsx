@@ -7,6 +7,10 @@ import { Search, Sparkles, ChevronRight } from "lucide-react";
 import { useSearch } from "@/providers/searchProvider";
 import { buildBreadcrumb } from "@/lib/breadcrumbMap";
 import { AIInsightModal } from "@/components/ui/AIInsightModal";
+
+// Temporarily hidden. The modal stays wired up, so restoring it is this one
+// flag rather than reassembling the button and its state.
+const SHOW_AI_INSIGHT = false;
 import { NotificationBell } from "@/components/ui/NotificationBell";
 import { AccountMenu } from "@/components/ui/AccountMenu";
 
@@ -56,14 +60,16 @@ export function TopBar() {
 
         <NotificationBell />
 
-        <button
-          type="button"
-          onClick={() => setAiOpen(true)}
-          className="h-10 px-4 rounded-md inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-ai-gradient shadow-e2 hover:shadow-e3 transition-shadow duration-[var(--motion-fast)] focus-ring"
-        >
-          <Sparkles className="h-4 w-4" />
-          Get AI Insight
-        </button>
+        {SHOW_AI_INSIGHT && (
+          <button
+            type="button"
+            onClick={() => setAiOpen(true)}
+            className="h-10 px-4 rounded-md inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-ai-gradient shadow-e2 hover:shadow-e3 transition-shadow duration-[var(--motion-fast)] focus-ring"
+          >
+            <Sparkles className="h-4 w-4" />
+            Get AI Insight
+          </button>
+        )}
 
         <AccountMenu />
       </div>
