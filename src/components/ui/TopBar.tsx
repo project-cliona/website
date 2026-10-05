@@ -3,10 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Search, Sparkles, ChevronRight } from "lucide-react";
+import { Search, Sparkles, ChevronRight } from "lucide-react";
 import { useSearch } from "@/providers/searchProvider";
 import { buildBreadcrumb } from "@/lib/breadcrumbMap";
 import { AIInsightModal } from "@/components/ui/AIInsightModal";
+import { NotificationBell } from "@/components/ui/NotificationBell";
 
 export function TopBar() {
   const pathname = usePathname();
@@ -52,13 +53,7 @@ export function TopBar() {
           />
         </div>
 
-        <button
-          type="button"
-          aria-label="Notifications"
-          className="relative h-10 w-10 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary focus-ring"
-        >
-          <Bell className="h-4 w-4" />
-        </button>
+        <NotificationBell />
 
         <button
           type="button"

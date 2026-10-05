@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { io, type Socket } from "socket.io-client";
-import type { WhatsappMessage } from "@/lib/type";
+import type { WhatsappMessage, AppNotification } from "@/lib/type";
 
 /**
  * The REST base URL points at `.../api/v1`; the Socket.IO server runs at the
@@ -38,6 +38,38 @@ export function useWhatsappSocket(onMessage: (msg: WhatsappMessage) => void) {
 
     return () => {
       socket.off("whatsapp:message");
+      socket.disconnect();
+    };
+  }, []);
+}
+
+/**
+ * Subscribe to realtime in-app notifications for the logged-in user. Uses the
+ * same JWT-authenticated socket and per-user room as `useWhatsappSocket`; the
+ * backend emits `notification` once per recipient row it writes.
+ */
+export function useNotificationSocket(
+  onNotification: (n: AppNotification) => void
+) {
+  const cbRef = useRef(onNotification);
+  cbRef.current = onNotification;
+
+  useEffect(() => {
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+    if (!token) return;
+
+    const socket: Socket = io(socketBaseUrl(), {
+      auth: { token },
+      path: "/socket.io",
+      transports: ["websocket"],
+      reconnection: true,
+    });
+
+    socket.on("notification", (n: AppNotification) => cbRef.current(n));
+
+    return () => {
+      socket.off("notification");
       socket.disconnect();
     };
   }, []);

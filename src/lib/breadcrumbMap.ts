@@ -15,6 +15,7 @@ const STATIC_MAP: Record<string, string> = {
   "/app/whatsapp/deliveryReport": "Delivery Report",
   "/app/whatsapp/automations": "Automations",
   "/app/whatsapp/analytics": "Analytics",
+  "/app/whatsapp/accounts-health": "Accounts Health",
   "/app/rcs": "RCS",
   "/app/rcs/sendMessage": "Send Message",
   "/app/rcs/templates": "Templates",
