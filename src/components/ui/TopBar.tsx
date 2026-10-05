@@ -8,7 +8,7 @@ import { useSearch } from "@/providers/searchProvider";
 import { buildBreadcrumb } from "@/lib/breadcrumbMap";
 import { AIInsightModal } from "@/components/ui/AIInsightModal";
 import { NotificationBell } from "@/components/ui/NotificationBell";
-import { WabaSwitcher } from "@/components/ui/WabaSwitcher";
+import { AccountMenu } from "@/components/ui/AccountMenu";
 
 export function TopBar() {
   const pathname = usePathname();
@@ -54,8 +54,6 @@ export function TopBar() {
           />
         </div>
 
-        <WabaSwitcher />
-
         <NotificationBell />
 
         <button
@@ -66,6 +64,8 @@ export function TopBar() {
           <Sparkles className="h-4 w-4" />
           Get AI Insight
         </button>
+
+        <AccountMenu />
       </div>
 
       <AIInsightModal open={aiOpen} onClose={() => setAiOpen(false)} />
