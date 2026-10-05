@@ -33,14 +33,13 @@ export default function Dashboard() {
         subtitle="Here's what's happening with your WhatsApp campaigns today."
         actions={
           <>
-            <Button variant="outline" asChild>
+            {/* Create Automation sat here. Hidden with the rest of the
+                automations surface until that page does something. */}
+            <Button asChild>
               <Link href="/app/whatsapp/sendMessage">
                 <Plus className="h-4 w-4" />
                 New Campaign
               </Link>
-            </Button>
-            <Button asChild className="bg-ai-gradient text-white shadow-e2 hover:shadow-e3">
-              <Link href="/app/whatsapp/automations">Create Automation</Link>
             </Button>
           </>
         }

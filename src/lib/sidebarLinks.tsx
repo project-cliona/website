@@ -13,7 +13,6 @@ import {
   User,
   Boxes,
   Users,
-  Workflow,
   MessagesSquare,
   Code2,
   BookOpen,
@@ -41,7 +40,10 @@ export const whatsappLinks = [
   { label: "Dashboard", href: "/app", icon: <LayoutDashboard /> },
   { label: "Send Message", href: "/app/whatsapp/sendMessage", icon: <Send /> },
   { label: "Conversations", href: "/app/whatsapp/conversations", icon: <MessagesSquare /> },
-  { label: "Automations", href: "/app/whatsapp/automations", icon: <Workflow /> },
+  // Automations is hidden until the page is real -- the route still exists
+  // and works, it just is not advertised yet. Restoring it means this line
+  // plus the Workflow icon import.
+  // { label: "Automations", href: "/app/whatsapp/automations", icon: <Workflow /> },
   { label: "Analytics", href: "/app/whatsapp/analytics", icon: <BarChart3 /> },
   { label: "Templates", href: "/app/whatsapp/templates", icon: <Book /> },
   { label: "Contacts", href: "/app/whatsapp/contacts", icon: <Users /> },
