@@ -105,6 +105,7 @@ export default function AccountsHealthPage() {
             <StatsCard
               icon={<ShieldCheck className="h-4 w-4" />}
               label="Healthy accounts"
+          info="Connected, unrestricted and able to send."
               value={`${s?.healthy ?? 0}`}
               trend={{ value: s?.healthyPercent ?? "0%", positive: true }}
             />
@@ -112,6 +113,7 @@ export default function AccountsHealthPage() {
               icon={<Ban className="h-4 w-4" />}
               iconBg="bg-destructive/10 text-destructive"
               label="Banned / scheduled"
+          info="Disabled by Meta, or scheduled to be."
               value={`${s?.banned ?? 0}`}
               trend={{ value: s?.atRiskTrend ?? "+0", positive: (s?.banned ?? 0) === 0 }}
             />
@@ -119,12 +121,14 @@ export default function AccountsHealthPage() {
               icon={<ShieldAlert className="h-4 w-4" />}
               iconBg="bg-warning/10 text-warning"
               label="Restricted"
+          info="Limited by Meta; sending caps apply."
               value={`${s?.restricted ?? 0}`}
             />
             <StatsCard
               icon={<Unplug className="h-4 w-4" />}
               iconBg="bg-warning/10 text-warning"
               label="Disconnected"
+          info="No longer linked; reconnect to resume sending."
               value={`${s?.disconnected ?? 0}`}
             />
           </div>

@@ -3,27 +3,34 @@ import { Card } from "@/components/ui/Card";
 import { StatsCard } from "../../../components/ui/StatsCard";
 import { BarChart, Send, CheckCircle, Users } from 'lucide-react';
 
+// Placeholder figures -- the RCS dashboard is not wired to real data yet,
+// so the card copy says so rather than describing a measurement that is not
+// actually being taken.
 const statsData = [
   {
     label: "Total Campaigns",
+    info: "Sample figure — RCS reporting is not live yet.",
     value: "24",
     icon: <BarChart className="h-4 w-4" />,
     trend: { value: "+12%", positive: true },
   },
   {
     label: "RCS Sent",
+    info: "Sample figure — RCS reporting is not live yet.",
     value: "1,247",
     icon: <Send className="h-4 w-4" />,
     trend: { value: "+8%", positive: true },
   },
   {
     label: "Delivery Rate",
+    info: "Sample figure — RCS reporting is not live yet.",
     value: "94.2%",
     icon: <CheckCircle className="h-4 w-4" />,
     trend: { value: "+2.1%", positive: true },
   },
   {
     label: "Active Agents",
+    info: "Sample figure — RCS reporting is not live yet.",
     value: "8",
     icon: <Users className="h-4 w-4" />,
     trend: { value: "+1", positive: true },
@@ -48,6 +55,7 @@ export default function Dashboard() {
             value={item.value}
             icon={item.icon}
             trend={item.trend}
+            info={item.info}
           />
         ))}
       </div>

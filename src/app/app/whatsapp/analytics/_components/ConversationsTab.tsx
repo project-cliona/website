@@ -131,6 +131,7 @@ export function ConversationsTab({ filters }: { filters: AnalyticsFilterState })
         <StatsCard
           icon={<MessagesSquare className="h-4 w-4" />}
           label="Conversations"
+          info="Billable 24-hour messaging sessions, as counted by Meta."
           value={(data?.totalConversations ?? 0).toLocaleString()}
         />
       </div>

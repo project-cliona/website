@@ -151,24 +151,28 @@ export default function WhatsappContactsPage() {
         <StatsCard
           icon={<Users className="h-4 w-4" />}
           label="Total Contacts"
+          info="Everyone in your phonebook, shared across all accounts."
           value={totalContacts.toLocaleString()}
           trend={{ value: "+12%", positive: true }}
         />
         <StatsCard
           icon={<UserCheck className="h-4 w-4" />}
           label="Subscribed"
+          info="Contacts who have opted in to receive messages."
           value={subscribed.toLocaleString()}
           trend={{ value: "+23%", positive: true }}
         />
         <StatsCard
           icon={<UserX className="h-4 w-4" />}
           label="Unsubscribed"
+          info="Contacts who opted out; campaigns skip them."
           value={unsubscribed.toLocaleString()}
           trend={{ value: "-5%", positive: false }}
         />
         <StatsCard
           icon={<TrendingUp className="h-4 w-4" />}
           label="Engagement Rate"
+          info="Sample figure — not yet calculated from real activity."
           value={engagementRate}
           trend={{ value: "+5.2%", positive: true }}
           accent

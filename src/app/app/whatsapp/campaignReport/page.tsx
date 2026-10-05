@@ -187,24 +187,28 @@ export default function WhatsappCampaignReports() {
         <StatsCard
           icon={<Send className="h-4 w-4" />}
           label="Sent (page)"
+          info="Messages sent across the campaigns listed on this page."
           value={summary.sentToday.toLocaleString()}
           trend={{ value: "+12%", positive: true }}
         />
         <StatsCard
           icon={<CheckCircle2 className="h-4 w-4" />}
           label="Delivery rate"
+          info="Delivered as a share of sent, for this page only."
           value={`${summary.deliveryRate.toFixed(1)}%`}
           trend={{ value: "+1.4%", positive: true }}
         />
         <StatsCard
           icon={<Eye className="h-4 w-4" />}
           label="Read rate"
+          info="Read as a share of delivered, for this page only."
           value={`${summary.readRate.toFixed(1)}%`}
           trend={{ value: "+3.2%", positive: true }}
         />
         <StatsCard
           icon={<Calendar className="h-4 w-4" />}
           label="Total campaigns"
+          info="Campaigns matching the filters above."
           value={summary.total.toLocaleString()}
           trend={{ value: "+8%", positive: true }}
           accent

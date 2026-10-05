@@ -136,21 +136,25 @@ export default function TemplatesPage() {
         <StatsCard
           icon={<FileText className="h-4 w-4" />}
           label="Total Templates"
+          info="All templates on this account, any status."
           value={templates.length.toLocaleString()}
         />
         <StatsCard
           icon={<CheckCircle2 className="h-4 w-4" />}
           label="Approved"
+          info="Approved by Meta and usable in campaigns."
           value={totals.approved.toLocaleString()}
         />
         <StatsCard
           icon={<Clock className="h-4 w-4" />}
           label="Pending review"
+          info="Submitted to Meta and awaiting a decision."
           value={totals.pending.toLocaleString()}
         />
         <StatsCard
           icon={<Mail className="h-4 w-4" />}
           label="Marketing"
+          info="Templates in Meta's marketing category."
           value={(totals.categories.get("marketing") ?? 0).toLocaleString()}
           accent
         />

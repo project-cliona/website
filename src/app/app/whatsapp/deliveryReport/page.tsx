@@ -221,12 +221,14 @@ export default function WhatsappDeliveryReports() {
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <StatsCard
           label="Total Messages"
+          info="All messages matching the filters above."
           value={summary.totalSubmitted.toLocaleString()}
           icon={<Mail className="h-4 w-4" />}
         />
 
         <StatsCard
           label="Sent"
+          info="Accepted by Meta, not yet confirmed delivered."
           value={summary.sent.toLocaleString()}
           icon={<Send className="h-4 w-4" />}
           trend={
@@ -238,6 +240,7 @@ export default function WhatsappDeliveryReports() {
 
         <StatsCard
           label="Delivered"
+          info="Reached the recipient's device."
           value={summary.delivered.toLocaleString()}
           icon={<CheckCircle className="h-4 w-4" />}
           trend={
@@ -249,6 +252,7 @@ export default function WhatsappDeliveryReports() {
 
         <StatsCard
           label="Read"
+          info="Opened by the recipient, where read receipts are on."
           value={summary.read.toLocaleString()}
           icon={<Eye className="h-4 w-4" />}
           trend={
@@ -260,6 +264,7 @@ export default function WhatsappDeliveryReports() {
 
         <StatsCard
           label="Failed"
+          info="Rejected by Meta or undeliverable."
           value={summary.failed.toLocaleString()}
           icon={<XCircle className="h-4 w-4" />}
           trend={

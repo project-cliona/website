@@ -69,6 +69,7 @@ export function OverviewTab({ filters }: { filters: AnalyticsFilterState }) {
       <StatsCard
         icon={<Send className="h-4 w-4" />}
         label="Sent"
+          info="Outbound messages Meta accepted in this period."
         value={(tiles?.sent ?? 0).toLocaleString()}
         trend={
           tiles ? { value: tiles.sentTrend, positive: isPositive(tiles.sentTrend) } : undefined
@@ -77,6 +78,7 @@ export function OverviewTab({ filters }: { filters: AnalyticsFilterState }) {
       <StatsCard
         icon={<CheckCheck className="h-4 w-4" />}
         label="Delivered"
+          info="Reached the recipient's device."
         value={(tiles?.delivered ?? 0).toLocaleString()}
         trend={
           tiles
@@ -87,6 +89,7 @@ export function OverviewTab({ filters }: { filters: AnalyticsFilterState }) {
       <StatsCard
         icon={<Eye className="h-4 w-4" />}
         label="Read"
+          info="Opened by the recipient, where read receipts are on."
         value={(tiles?.read ?? 0).toLocaleString()}
         trend={
           tiles ? { value: tiles.readTrend, positive: isPositive(tiles.readTrend) } : undefined
@@ -95,6 +98,7 @@ export function OverviewTab({ filters }: { filters: AnalyticsFilterState }) {
       <StatsCard
         icon={<XCircle className="h-4 w-4" />}
         label="Failed"
+          info="Rejected by Meta or undeliverable."
         value={(tiles?.failed ?? 0).toLocaleString()}
         // Fewer failures is the good direction, so the sign is inverted here.
         trend={
@@ -106,6 +110,7 @@ export function OverviewTab({ filters }: { filters: AnalyticsFilterState }) {
       <StatsCard
         icon={<Percent className="h-4 w-4" />}
         label="Delivery rate"
+          info="Delivered or read, as a share of all attempted."
         value={tiles?.deliveryRate ?? "0.0%"}
         trend={
           tiles
@@ -119,6 +124,7 @@ export function OverviewTab({ filters }: { filters: AnalyticsFilterState }) {
       <StatsCard
         icon={<BookOpenCheck className="h-4 w-4" />}
         label="Read rate"
+          info="Read, as a share of messages delivered."
         value={tiles?.readRate ?? "0.0%"}
         trend={
           tiles
