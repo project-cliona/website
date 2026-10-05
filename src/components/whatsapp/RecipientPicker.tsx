@@ -213,15 +213,17 @@ export function RecipientPicker({ onChange }: Props) {
           {/* Lists and tags are built on the contacts page, not here, and
               nothing on this screen said so -- a user with no lists met an
               empty dropdown and no way to know what to do about it. */}
-          <p className="flex items-start gap-1.5 text-caption text-muted-foreground">
-            <Info className="h-3.5 w-3.5 shrink-0 mt-px" />
+          <p className="flex items-start gap-1.5 text-[11px] leading-relaxed text-muted-foreground/70">
+            <Info className="h-3 w-3 shrink-0 mt-0.5" />
             <span>
               {hasNoAudience
                 ? "You don't have any lists or tags yet. Import contacts on the "
                 : "Need another list? Import contacts on the "}
               <Link
                 href="/app/whatsapp/contacts"
-                className="font-medium text-primary-700 underline underline-offset-2 hover:text-primary-800"
+                // Carries the only emphasis in the line, so it still reads as a link
+                // without the note competing with the controls above it.
+                className="text-primary-700/80 underline underline-offset-2 hover:text-primary-700"
               >
                 Contacts page
               </Link>
