@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { fetchLists } from "@/lib/api/whatsapp/lists";
@@ -16,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/Select";
-import { Users } from "lucide-react";
+import { Users, Info } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import type { AudiencePreview } from "@/lib/type";
 
@@ -48,6 +49,10 @@ export function RecipientPicker({ onChange }: Props) {
     queryKey: ["whatsapp-tags"],
     queryFn: fetchTags,
   });
+
+  // Drives the stronger wording: with nothing to pick from, the note is the
+  // only thing on the panel telling the user where audiences come from.
+  const hasNoAudience = lists.length === 0 && tagOpts.length === 0;
 
   const pastedPhones = useMemo(() => {
     const raw = pasted
@@ -204,6 +209,25 @@ export function RecipientPicker({ onChange }: Props) {
               </div>
             </div>
           )}
+
+          {/* Lists and tags are built on the contacts page, not here, and
+              nothing on this screen said so -- a user with no lists met an
+              empty dropdown and no way to know what to do about it. */}
+          <p className="flex items-start gap-1.5 text-caption text-muted-foreground">
+            <Info className="h-3.5 w-3.5 shrink-0 mt-px" />
+            <span>
+              {hasNoAudience
+                ? "You don't have any lists or tags yet. Import contacts on the "
+                : "Need another list? Import contacts on the "}
+              <Link
+                href="/app/whatsapp/contacts"
+                className="font-medium text-primary-700 underline underline-offset-2 hover:text-primary-800"
+              >
+                Contacts page
+              </Link>
+              {" to create one."}
+            </span>
+          </p>
         </div>
       ) : (
         <div className="space-y-4">
