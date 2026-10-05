@@ -1,6 +1,11 @@
 "use client";
 
-import { MoreVertical, TrendingUp, TrendingDown } from "lucide-react";
+import { Info, TrendingUp, TrendingDown } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { StatsCardProps } from "@/lib/type";
 import { cn } from "@/lib/utils";
 
@@ -11,7 +16,7 @@ export function StatsCard({
   value,
   trend,
   accent,
-  onMenuOpen,
+  info,
 }: StatsCardProps) {
   return (
     <div
@@ -29,14 +34,28 @@ export function StatsCard({
           )}
           <span className="text-caption text-muted-foreground truncate">{label}</span>
         </div>
-        <button
-          type="button"
-          aria-label="More"
-          onClick={onMenuOpen}
-          className="h-7 w-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-secondary focus-ring"
-        >
-          <MoreVertical className="h-4 w-4" />
-        </button>
+        {/* Rendered only when there is something to say. The overflow menu
+            that used to sit here was never wired to anything, so every card
+            carried an affordance that did nothing when clicked. */}
+        {info && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                aria-label={`What is ${label}?`}
+                // A button rather than a bare icon so it is reachable by
+                // keyboard, and so tapping it opens the tooltip on touch,
+                // where hover does not exist.
+                className="h-7 w-7 shrink-0 rounded-md flex items-center justify-center text-muted-foreground/60 hover:text-muted-foreground hover:bg-secondary focus-ring transition-colors duration-[var(--motion-fast)]"
+              >
+                <Info className="h-4 w-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="top" align="end" className="max-w-[260px]">
+              {info}
+            </TooltipContent>
+          </Tooltip>
+        )}
       </div>
       <div className="mt-3 flex items-baseline justify-between gap-3">
         <p className="text-[32px] leading-none font-bold tabular-nums text-foreground">{value}</p>

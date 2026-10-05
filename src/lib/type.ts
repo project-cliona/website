@@ -8,7 +8,9 @@ export interface StatsCardProps {
   value: string | number;
   trend?: { value: string; positive: boolean };
   accent?: boolean;
-  onMenuOpen?: () => void;
+  /** Explains what this figure measures. Renders an info affordance; omit it
+   *  and the card shows none. */
+  info?: string;
 }
 
 export type Agent = {

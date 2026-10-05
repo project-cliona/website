@@ -53,24 +53,28 @@ export default function Dashboard() {
         <StatsCard
           icon={<BarChart3 className="h-4 w-4" />}
           label="Total Campaigns"
+          info="Every campaign created on this WhatsApp account, in any state — draft, queued, sending or finished. The trend compares the last 30 days with the 30 before."
           value={data?.totalCampaigns?.toLocaleString() ?? "0"}
           trend={data?.campaignsTrend ? { value: data.campaignsTrend, positive: true } : undefined}
         />
         <StatsCard
           icon={<Send className="h-4 w-4" />}
           label="Messages Sent"
+          info="Outbound messages from this account that Meta accepted for delivery. Messages that failed before reaching Meta are not counted. The trend compares the last 30 days with the 30 before."
           value={data?.messagesSent?.toLocaleString() ?? "0"}
           trend={data?.messagesTrend ? { value: data.messagesTrend, positive: true } : undefined}
         />
         <StatsCard
           icon={<CheckCircle className="h-4 w-4" />}
           label="Delivery Rate"
+          info="Share of attempted messages that reached the recipient — delivered or read, over everything sent, delivered, read or failed. Shown in percentage points against the previous 30 days."
           value={data?.deliveryRate ?? "0%"}
           trend={data?.deliveryRateTrend ? { value: data.deliveryRateTrend, positive: true } : undefined}
         />
         <StatsCard
           icon={<Book className="h-4 w-4" />}
           label="Active Templates"
+          info="Templates on this account that Meta has approved, so they can be used in a campaign today. Pending and rejected templates are excluded."
           value={data?.activeTemplates?.toLocaleString() ?? "0"}
           trend={data?.templatesTrend ? { value: data.templatesTrend, positive: true } : undefined}
           accent
