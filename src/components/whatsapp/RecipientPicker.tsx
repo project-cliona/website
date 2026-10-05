@@ -213,8 +213,8 @@ export function RecipientPicker({ onChange }: Props) {
           {/* Lists and tags are built on the contacts page, not here, and
               nothing on this screen said so -- a user with no lists met an
               empty dropdown and no way to know what to do about it. */}
-          <p className="flex items-start gap-1.5 text-[11px] leading-relaxed text-muted-foreground/70">
-            <Info className="h-3 w-3 shrink-0 mt-0.5" />
+          <p className="flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground/70">
+            <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" />
             <span>
               {hasNoAudience
                 ? "You don't have any lists or tags yet. Import contacts on the "
