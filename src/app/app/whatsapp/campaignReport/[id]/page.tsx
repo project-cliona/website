@@ -60,10 +60,10 @@ import type {
   WhatsappCampaignStatus,
 } from "@/lib/type";
 import { exportToCSV } from "@/lib/utils";
-import { usePageSearch } from "@/providers/searchProvider";
 import { notify } from "@/lib/toast";
 import { useWaba } from "@/providers/wabaProvider";
 import { wabaKeys } from "@/lib/queryKeys";
+import { SearchInput } from "@/components/ui/SearchInput";
 
 const MESSAGES_PAGE_SIZE = 100;
 
@@ -117,13 +117,6 @@ export default function WhatsappCampaignDetail({
   const [recipientSearch, setRecipientSearch] = useState("");
   const [page, setPage] = useState(1);
 
-  usePageSearch({
-    placeholder: "Search recipients",
-    onChange: (value) => {
-      setRecipientSearch(value);
-      setPage(1);
-    },
-  });
 
   const campaignQuery = useQuery<WhatsappCampaign>({
     queryKey: wabaKeys.campaign(selectedWabaId ?? "", id),
@@ -395,6 +388,12 @@ export default function WhatsappCampaignDetail({
             </span>
           </h3>
           <div className="flex items-center gap-3">
+            <SearchInput
+              value={recipientSearch}
+              onChange={setRecipientSearch}
+              placeholder="Search recipients"
+              className="w-[220px]"
+            />
             <Label className="text-caption text-muted-foreground">Status</Label>
             <Select
               value={statusFilter || "all"}

@@ -3,8 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Sparkles, ChevronRight } from "lucide-react";
-import { useSearch } from "@/providers/searchProvider";
+import { Sparkles, ChevronRight } from "lucide-react";
 import { buildBreadcrumb } from "@/lib/breadcrumbMap";
 import { AIInsightModal } from "@/components/ui/AIInsightModal";
 
@@ -13,15 +12,13 @@ import { AIInsightModal } from "@/components/ui/AIInsightModal";
 const SHOW_AI_INSIGHT = false;
 import { NotificationBell } from "@/components/ui/NotificationBell";
 import { AccountMenu } from "@/components/ui/AccountMenu";
+import { GlobalSearch } from "@/components/ui/GlobalSearch";
 
 export function TopBar() {
   const pathname = usePathname();
   const breadcrumb = buildBreadcrumb(pathname);
-  const { config, query, setQuery } = useSearch();
   const [aiOpen, setAiOpen] = useState(false);
 
-  const placeholder = config?.placeholder ?? "Search here…";
-  const searchEnabled = config !== null;
 
   return (
     <>
@@ -46,17 +43,7 @@ export function TopBar() {
 
         <div className="flex-1" />
 
-        <div className="relative w-full max-w-[400px] hidden md:block">
-          <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder={placeholder}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            disabled={!searchEnabled}
-            className="h-10 w-full rounded-full border border-input bg-background pl-9 pr-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:opacity-60 disabled:cursor-not-allowed transition-[box-shadow,border-color] duration-[var(--motion-fast)]"
-          />
-        </div>
+        <GlobalSearch />
 
         <NotificationBell />
 

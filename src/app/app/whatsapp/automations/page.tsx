@@ -23,7 +23,6 @@ import {
   TableRow,
   TableSubject,
 } from "@/components/ui/table";
-import { usePageSearch } from "@/providers/searchProvider";
 
 interface AutomationRow {
   id: number;
@@ -46,7 +45,6 @@ const STUB_AUTOMATIONS: AutomationRow[] = [
 export default function AutomationsPage() {
   const [q, setQ] = useState("");
   const [page, setPage] = useState(1);
-  usePageSearch({ placeholder: "Search automations", onChange: setQ });
 
   const filtered = STUB_AUTOMATIONS.filter((a) =>
     a.name.toLowerCase().includes(q.toLowerCase()) ||

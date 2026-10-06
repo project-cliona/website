@@ -27,12 +27,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { usePageSearch } from "@/providers/searchProvider";
 import { fetchWhatsappTemplates } from "@/lib/api/whatsapp/templates";
 import { useUser } from "@/providers/userProvider";
 import { useWaba } from "@/providers/wabaProvider";
 import { wabaKeys } from "@/lib/queryKeys";
 import type { WhatsappTemplate } from "@/lib/type";
+import { SearchInput } from "@/components/ui/SearchInput";
 
 const APPROVED_STATUSES = new Set(["APPROVED", "approved", "active", "ACTIVE"]);
 const PENDING_STATUSES = new Set([
@@ -82,7 +82,6 @@ export default function TemplatesPage() {
   const { user } = useUser();
   const userId = user?.userId;
   const [q, setQ] = useState("");
-  usePageSearch({ placeholder: "Search templates", onChange: setQ });
 
   const { selectedWabaId } = useWaba();
 
@@ -130,6 +129,13 @@ export default function TemplatesPage() {
             </Link>
           </Button>
         }
+      />
+
+      <SearchInput
+        value={q}
+        onChange={setQ}
+        placeholder="Search templates"
+        className="max-w-sm"
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

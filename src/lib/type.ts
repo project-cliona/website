@@ -705,3 +705,22 @@ export interface WabaAccountDetail {
 
 /** Traffic light derived from the independent health axes. */
 export type WabaHealth = "healthy" | "warning" | "down";
+
+/* ── Global search ───────────────────────────────────────────────────────── */
+
+export type SearchResultType = "contact" | "list" | "template" | "campaign";
+
+export interface SearchResult {
+  type: SearchResultType;
+  id: number;
+  title: string;
+  subtitle: string | null;
+  href: string;
+}
+
+export interface SearchResponse {
+  query: string;
+  results: SearchResult[];
+  /** At least one group hit its cap, so there is more than is shown. */
+  truncated: boolean;
+}

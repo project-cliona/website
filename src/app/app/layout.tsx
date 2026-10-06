@@ -13,7 +13,6 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { RoleGate } from "@/components/auth/RoleGate";
 import { ROLE_ADMIN } from "@/lib/rbac";
 import { TopBar } from "@/components/ui/TopBar";
-import { SearchProvider } from "@/providers/searchProvider";
 import { WabaProvider } from "@/providers/wabaProvider";
 import { WabaReadOnlyBanner } from "@/components/whatsapp/WabaReadOnlyBanner";
 
@@ -49,20 +48,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Inside ProtectedRoute: the account list is an authenticated fetch,
           and mounting it any higher would 401 on every public route. */}
       <WabaProvider>
-        <SearchProvider>
-          <Sidebar>
-            <div className="md:flex">
-              <SidebarBody>
-                <SidebarInner />
-              </SidebarBody>
-              <div className="flex-1 min-w-0 flex flex-col">
-                <TopBar />
-                <WabaReadOnlyBanner />
-                <main className="flex-1 w-full px-6 py-6">{children}</main>
-              </div>
+        <Sidebar>
+          <div className="md:flex">
+            <SidebarBody>
+              <SidebarInner />
+            </SidebarBody>
+            <div className="flex-1 min-w-0 flex flex-col">
+              <TopBar />
+              <WabaReadOnlyBanner />
+              <main className="flex-1 w-full px-6 py-6">{children}</main>
             </div>
-          </Sidebar>
-        </SearchProvider>
+          </div>
+        </Sidebar>
       </WabaProvider>
     </ProtectedRoute>
   );

@@ -30,9 +30,9 @@ import { ContactsTable } from "@/components/whatsapp/ContactsTable";
 import { AddContactModal } from "@/components/whatsapp/AddContactModal";
 import { EditContactModal } from "@/components/whatsapp/EditContactModal";
 import { CsvImportModal } from "@/components/whatsapp/CsvImportModal";
-import { usePageSearch } from "@/providers/searchProvider";
 import { notify } from "@/lib/toast";
 import type { WhatsappContact } from "@/lib/type";
+import { SearchInput } from "@/components/ui/SearchInput";
 
 type View = { kind: "all" } | { kind: "list"; listId: number };
 
@@ -45,10 +45,6 @@ export default function WhatsappContactsPage() {
   const [importOpen, setImportOpen] = useState(false);
   const [editing, setEditing] = useState<WhatsappContact | null>(null);
 
-  usePageSearch({
-    placeholder: "Search phone, name, email",
-    onChange: setQ,
-  });
 
   const { data: contactsData, isLoading } = useQuery({
     queryKey: ["whatsapp-contacts", view, q, tagFilter],
@@ -170,6 +166,13 @@ export default function WhatsappContactsPage() {
             </Button>
           </>
         }
+      />
+
+      <SearchInput
+        value={q}
+        onChange={setQ}
+        placeholder="Search phone, name, email"
+        className="max-w-sm"
       />
 
       {/* Trends were hardcoded percentages next to real counts, which read

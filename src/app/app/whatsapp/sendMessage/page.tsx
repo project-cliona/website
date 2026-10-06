@@ -34,7 +34,6 @@ import {
 import { useUser } from "@/providers/userProvider";
 import { useWaba } from "@/providers/wabaProvider";
 import { wabaKeys } from "@/lib/queryKeys";
-import { usePageSearch } from "@/providers/searchProvider";
 import { notify } from "@/lib/toast";
 import { useState, useMemo } from "react";
 import Link from "next/link";
@@ -51,14 +50,6 @@ export default function SendWhatsappMessage() {
   } | null>(null);
 
   // Wires the TopBar search prompt for this page. RecipientPicker doesn't
-  // accept an external search filter today, so we just register the
-  // placeholder — the actual filter still lives inside the picker UI.
-  usePageSearch({
-    placeholder: "Search recipients",
-    onChange: () => {
-      /* no-op: RecipientPicker filters internally */
-    },
-  });
 
   const {
     control,

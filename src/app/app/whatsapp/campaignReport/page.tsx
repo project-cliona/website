@@ -50,9 +50,9 @@ import {
 import { fetchCampaigns } from "@/lib/api/whatsapp/campaigns";
 import type { WhatsappCampaign, WhatsappCampaignStatus } from "@/lib/type";
 import { exportToCSV } from "@/lib/utils";
-import { usePageSearch } from "@/providers/searchProvider";
 import { useWaba } from "@/providers/wabaProvider";
 import { wabaKeys } from "@/lib/queryKeys";
+import { SearchInput } from "@/components/ui/SearchInput";
 
 const PAGE_SIZE = 20;
 
@@ -82,13 +82,6 @@ export default function WhatsappCampaignReports() {
   const [endDate, setEndDate] = useState<string>(formatDateLocal(new Date()));
   const [page, setPage] = useState(1);
 
-  usePageSearch({
-    placeholder: "Search campaigns",
-    onChange: (value) => {
-      setSearch(value);
-      setPage(1);
-    },
-  });
 
   const filters = useMemo(
     () => ({
@@ -183,6 +176,14 @@ export default function WhatsappCampaignReports() {
       />
 
       {/* Stats row */}
+
+      <SearchInput
+        value={search}
+        onChange={setSearch}
+        placeholder="Search campaigns"
+        className="max-w-sm"
+      />
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
           icon={<Send className="h-4 w-4" />}
