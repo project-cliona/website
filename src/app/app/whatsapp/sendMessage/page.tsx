@@ -218,6 +218,11 @@ export default function SendWhatsappMessage() {
         campaignId: result.id,
         count: result.totalRecipients ?? recipientCount,
       });
+      const skipped = [
+        result.skippedOptedOut ? `${result.skippedOptedOut} opted out (replied STOP)` : null,
+        result.skippedInvalid ? `${result.skippedInvalid} invalid number${result.skippedInvalid === 1 ? "" : "s"}` : null,
+      ].filter(Boolean);
+      if (skipped.length > 0) notify.info(`Skipped ${skipped.join(" and ")}.`);
     },
     onError: (error: unknown) => {
       notify.error(error, "Failed to create campaign");
