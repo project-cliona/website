@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect } from "react";
 import { QueryObserverResult, useQuery, useQueryClient } from "@tanstack/react-query";
 import { User, UserProfile } from "@/lib/type";
 import { getCurrentUser, getUserProfile, logoutUser } from "@/lib/api/auth";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import { ROLE_ADMIN, ROLE_RESELLER, ROLE_CLIENT, type Role } from "@/lib/rbac";
 
@@ -26,6 +26,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const router = useRouter();
+    const pathname = usePathname();
     const queryClient = useQueryClient();
 
     const {
@@ -87,14 +88,16 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         if (!profile) return;
 
         if (profile?.profileStatus === "incomplete") {
-            router.replace("/kyc");
+            if (pathname !== "/kyc") router.replace("/kyc");
             return;
         }
 
-        if (profile?.profileStatus === "active") {
+        // Only bounce into the app from outside it, so a reload or a shared
+        // link like /app/whatsapp/templates stays where it is.
+        if (profile?.profileStatus === "active" && !pathname.startsWith("/app")) {
             router.replace("/app");
         }
-    }, [user, profile, userAuthLoading, router]);
+    }, [user, profile, userAuthLoading, router, pathname]);
 
     return (
         <UserContext.Provider

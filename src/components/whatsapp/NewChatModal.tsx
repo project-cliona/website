@@ -6,17 +6,12 @@ import { Search, Phone } from "lucide-react";
 import { Modal, ModalHeader, ModalBody } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { fetchContacts } from "@/lib/api/whatsapp/contacts";
+import { normalizePhone } from "@/lib/phone";
 
 interface NewChatModalProps {
   open: boolean;
   onClose: () => void;
   onStart: (phone: string, name: string | null) => void;
-}
-
-// Loose check: a string that's mostly digits (optionally +) looks like a phone.
-function looksLikePhone(v: string): boolean {
-  const cleaned = v.replace(/[\s-]/g, "");
-  return /^\+?\d{8,15}$/.test(cleaned);
 }
 
 export function NewChatModal({ open, onClose, onStart }: NewChatModalProps) {
@@ -29,7 +24,8 @@ export function NewChatModal({ open, onClose, onStart }: NewChatModalProps) {
   });
 
   const contacts = data?.contacts ?? [];
-  const rawPhone = q.replace(/[\s-]/g, "");
+  // E.164 digits (e.g. "98765 43210" -> "919876543210"), null if not a phone.
+  const typedPhone = normalizePhone(q);
 
   const start = (phone: string, name: string | null) => {
     onStart(phone, name);
@@ -49,15 +45,15 @@ export function NewChatModal({ open, onClose, onStart }: NewChatModalProps) {
           autoFocus
         />
 
-        {looksLikePhone(q) && (
+        {typedPhone && (
           <button
             type="button"
-            onClick={() => start(rawPhone, null)}
+            onClick={() => start(typedPhone, null)}
             className="flex w-full items-center gap-3 rounded-md border border-border px-3 py-2 text-left text-sm hover:bg-accent"
           >
             <Phone className="h-4 w-4 text-primary" />
             <span>
-              Start chat with <span className="font-medium">{rawPhone}</span>
+              Start chat with <span className="font-medium">+{typedPhone}</span>
             </span>
           </button>
         )}

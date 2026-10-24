@@ -6,7 +6,7 @@ export const signupSchema = z
         email: z.string().email("Invalid email address"),
         company: z.string().optional(),
         phone: z.string().optional(),
-        password: z.string().min(6, "Password must be at least 6 characters"),
+        password: z.string().min(8, "Password must be at least 8 characters"),
         confirmPassword: z.string().min(1, "Confirm your password"),
         terms: z
             .boolean()

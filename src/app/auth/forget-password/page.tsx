@@ -38,6 +38,10 @@ function ForgetPasswordForm() {
 
     const verifyOtp = async () => {
         try {
+            if (Password.length < 8) {
+                notify.error("Password must be at least 8 characters")
+                return
+            }
             if (Password !== confirmPassword) {
                 notify.error("Passwords do not match")
                 return

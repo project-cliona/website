@@ -170,6 +170,8 @@ export interface WhatsappCampaignCreateResult {
   id: number;
   totalRecipients: number;
   skippedInvalid: number;
+  /** Recipients left out because they replied STOP. */
+  skippedOptedOut?: number;
   status: WhatsappCampaignStatus;
   scheduledAt: string | null;
 }

@@ -44,7 +44,11 @@ export default function WhatsappConversationsPage() {
     },
     [qc],
   );
-  useWhatsappSocket(onSocketMessage);
+  const onSocketReconnect = useCallback(() => {
+    qc.invalidateQueries({ queryKey: ["wa-conversations"] });
+    qc.invalidateQueries({ queryKey: ["wa-thread"] });
+  }, [qc]);
+  useWhatsappSocket(onSocketMessage, onSocketReconnect);
 
   const markReadMut = useMutation({
     mutationFn: markConversationRead,
@@ -52,7 +56,9 @@ export default function WhatsappConversationsPage() {
   });
 
   const replyMut = useMutation({
-    mutationFn: (text: string) => sendTextReply({ to: selectedPhone as string, text }),
+    // Thread phones are already international (Meta's wa_id); the "+" stops the
+    // backend from treating a 10-digit one as national and adding +91.
+    mutationFn: (text: string) => sendTextReply({ to: `+${selectedPhone}`, text }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["wa-thread", selectedPhone] });
       qc.invalidateQueries({ queryKey: ["wa-conversations"] });
